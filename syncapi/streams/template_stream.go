@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/types"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/types"
 )
 
 type DefaultStreamProvider struct {

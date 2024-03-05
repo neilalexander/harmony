@@ -15,7 +15,7 @@ package routing
 import (
 	"net/http"
 
-	"github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/util"
 )
 

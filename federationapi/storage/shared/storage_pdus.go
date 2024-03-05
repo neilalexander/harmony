@@ -21,8 +21,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/matrix-org/dendrite/federationapi/storage/shared/receipt"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
+	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

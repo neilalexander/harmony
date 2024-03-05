@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/tidwall/gjson"
 
 	"github.com/matrix-org/gomatrixserverlib"
@@ -34,19 +34,19 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/roomserver/acls"
-	"github.com/matrix-org/dendrite/roomserver/internal/helpers"
+	"github.com/neilalexander/harmony/roomserver/acls"
+	"github.com/neilalexander/harmony/roomserver/internal/helpers"
 
-	userAPI "github.com/matrix-org/dendrite/userapi/api"
+	userAPI "github.com/neilalexander/harmony/userapi/api"
 
-	fedapi "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/internal/hooks"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/state"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	fedapi "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/hooks"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/state"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // MaximumMissingProcessingTime is the maximum time we allow "processRoomEvent" to fetch

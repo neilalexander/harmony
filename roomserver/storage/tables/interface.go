@@ -10,7 +10,7 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 var OptimisationNotSupportedError = errors.New("optimisation not supported")

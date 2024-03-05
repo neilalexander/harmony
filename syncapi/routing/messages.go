@@ -27,17 +27,17 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/syncapi/internal"
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/sync"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/syncapi/internal"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/sync"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type messagesReq struct {

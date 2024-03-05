@@ -6,9 +6,9 @@ import (
 
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
-	"github.com/matrix-org/dendrite/syncapi/types"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/types"
 )
 
 type ReceiptStreamProvider struct {

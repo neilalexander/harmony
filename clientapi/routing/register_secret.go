@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal"
+	"github.com/neilalexander/harmony/internal"
 	"github.com/matrix-org/util"
 	cache "github.com/patrickmn/go-cache"
 )

@@ -17,8 +17,8 @@ package routing
 import (
 	"net/http"
 
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/version"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/version"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
 )

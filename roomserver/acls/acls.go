@@ -23,7 +23,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/sirupsen/logrus"

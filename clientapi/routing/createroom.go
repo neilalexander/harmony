@@ -22,13 +22,13 @@ import (
 	"strings"
 	"time"
 
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	roomserverVersion "github.com/matrix-org/dendrite/roomserver/version"
-	"github.com/matrix-org/dendrite/userapi/api"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	roomserverVersion "github.com/neilalexander/harmony/roomserver/version"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/clientapi/httputil"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
 	log "github.com/sirupsen/logrus"

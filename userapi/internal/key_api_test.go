@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/userapi/api"
-	"github.com/matrix-org/dendrite/userapi/internal"
-	"github.com/matrix-org/dendrite/userapi/storage"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/userapi/api"
+	"github.com/neilalexander/harmony/userapi/internal"
+	"github.com/neilalexander/harmony/userapi/storage"
 )
 
 func mustCreateDatabase(t *testing.T, dbType test.DBType) (storage.KeyDatabase, func()) {

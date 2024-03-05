@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 

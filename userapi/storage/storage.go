@@ -19,11 +19,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/userapi/storage/postgres"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/userapi/storage/postgres"
 )
 
 // NewUserDatabase opens a new Postgres or Sqlite database (based on dataSourceName scheme)

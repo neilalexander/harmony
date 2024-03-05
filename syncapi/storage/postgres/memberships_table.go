@@ -19,11 +19,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/types"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/types"
 )
 
 // The memberships table is designed to track the last time that

@@ -17,22 +17,22 @@ package userapi
 import (
 	"time"
 
-	fedsenderapi "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/federationapi/statistics"
-	"github.com/matrix-org/dendrite/internal/pushgateway"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/process"
+	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/federationapi/statistics"
+	"github.com/neilalexander/harmony/internal/pushgateway"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/process"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/sirupsen/logrus"
 
-	rsapi "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/userapi/api"
-	"github.com/matrix-org/dendrite/userapi/consumers"
-	"github.com/matrix-org/dendrite/userapi/internal"
-	"github.com/matrix-org/dendrite/userapi/producers"
-	"github.com/matrix-org/dendrite/userapi/storage"
+	rsapi "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/userapi/api"
+	"github.com/neilalexander/harmony/userapi/consumers"
+	"github.com/neilalexander/harmony/userapi/internal"
+	"github.com/neilalexander/harmony/userapi/producers"
+	"github.com/neilalexander/harmony/userapi/storage"
 )
 
 // NewInternalAPI returns a concrete implementation of the internal API. Callers

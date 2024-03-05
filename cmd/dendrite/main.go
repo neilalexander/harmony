@@ -17,23 +17,23 @@ package main
 import (
 	"flag"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/setup/process"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/setup/process"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/federationapi"
-	"github.com/matrix-org/dendrite/roomserver"
-	"github.com/matrix-org/dendrite/setup"
-	basepkg "github.com/matrix-org/dendrite/setup/base"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/mscs"
-	"github.com/matrix-org/dendrite/userapi"
+	"github.com/neilalexander/harmony/federationapi"
+	"github.com/neilalexander/harmony/roomserver"
+	"github.com/neilalexander/harmony/setup"
+	basepkg "github.com/neilalexander/harmony/setup/base"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/mscs"
+	"github.com/neilalexander/harmony/userapi"
 )
 
 var (

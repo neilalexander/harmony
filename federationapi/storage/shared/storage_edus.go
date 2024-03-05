@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/dendrite/federationapi/storage/shared/receipt"
+	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )

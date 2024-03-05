@@ -28,18 +28,18 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/singleflight"
 
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 
-	"github.com/matrix-org/dendrite/clientapi/api"
-	"github.com/matrix-org/dendrite/clientapi/auth"
-	clientutil "github.com/matrix-org/dendrite/clientapi/httputil"
-	"github.com/matrix-org/dendrite/clientapi/producers"
-	federationAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/transactions"
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/jetstream"
+	"github.com/neilalexander/harmony/clientapi/api"
+	"github.com/neilalexander/harmony/clientapi/auth"
+	clientutil "github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/clientapi/producers"
+	federationAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/transactions"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/jetstream"
 )
 
 type WellKnownClientHomeserver struct {

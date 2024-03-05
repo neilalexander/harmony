@@ -18,10 +18,10 @@ import (
 
 	"github.com/matrix-org/util"
 
-	"github.com/matrix-org/dendrite/clientapi/httputil"
-	"github.com/matrix-org/dendrite/clientapi/producers"
-	"github.com/matrix-org/dendrite/internal/transactions"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/clientapi/producers"
+	"github.com/neilalexander/harmony/internal/transactions"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

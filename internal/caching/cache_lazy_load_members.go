@@ -1,7 +1,7 @@
 package caching
 
 import (
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type lazyLoadingCacheKey struct {

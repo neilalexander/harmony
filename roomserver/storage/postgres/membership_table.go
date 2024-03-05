@@ -22,11 +22,11 @@ import (
 
 	"github.com/lib/pq"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/storage/postgres/deltas"
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/storage/postgres/deltas"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

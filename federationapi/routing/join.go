@@ -27,10 +27,10 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 // MakeJoin implements the /make_join API

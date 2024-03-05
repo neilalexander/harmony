@@ -20,9 +20,9 @@ import (
 	"database/sql"
 
 	"github.com/lib/pq"
-	"github.com/matrix-org/dendrite/federationapi/types"
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
+	"github.com/neilalexander/harmony/federationapi/types"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

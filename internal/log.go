@@ -31,7 +31,7 @@ import (
 	"github.com/matrix-org/dugong"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 // logrus is using a global variable when we're using `logrus.AddHook`

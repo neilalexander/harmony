@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/test"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/storage/postgres"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/test"
 	"github.com/matrix-org/util"
 	"github.com/stretchr/testify/assert"
 )

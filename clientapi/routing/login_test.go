@@ -9,21 +9,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/jetstream"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/util"
 
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/test/testrig"
-	"github.com/matrix-org/dendrite/userapi"
-	uapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/test/testrig"
+	"github.com/neilalexander/harmony/userapi"
+	uapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 func TestLogin(t *testing.T) {

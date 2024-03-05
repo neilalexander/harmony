@@ -13,12 +13,12 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	fedapi "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/state"
-	"github.com/matrix-org/dendrite/roomserver/storage"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	fedapi "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/state"
+	"github.com/neilalexander/harmony/roomserver/storage"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 type parsedRespState struct {

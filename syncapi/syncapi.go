@@ -17,26 +17,26 @@ package syncapi
 import (
 	"context"
 
-	"github.com/matrix-org/dendrite/internal/fulltext"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/process"
+	"github.com/neilalexander/harmony/internal/fulltext"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/process"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/internal/caching"
+	"github.com/neilalexander/harmony/internal/caching"
 
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 
-	"github.com/matrix-org/dendrite/syncapi/consumers"
-	"github.com/matrix-org/dendrite/syncapi/notifier"
-	"github.com/matrix-org/dendrite/syncapi/producers"
-	"github.com/matrix-org/dendrite/syncapi/routing"
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/streams"
-	"github.com/matrix-org/dendrite/syncapi/sync"
+	"github.com/neilalexander/harmony/syncapi/consumers"
+	"github.com/neilalexander/harmony/syncapi/notifier"
+	"github.com/neilalexander/harmony/syncapi/producers"
+	"github.com/neilalexander/harmony/syncapi/routing"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/streams"
+	"github.com/neilalexander/harmony/syncapi/sync"
 )
 
 // AddPublicRoutes sets up and registers HTTP handlers for the SyncAPI

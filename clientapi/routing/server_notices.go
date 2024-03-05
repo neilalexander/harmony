@@ -27,14 +27,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/types"
 
-	"github.com/matrix-org/dendrite/clientapi/httputil"
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/internal/transactions"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/config"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/transactions"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/config"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

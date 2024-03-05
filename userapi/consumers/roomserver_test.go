@@ -6,22 +6,22 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/test/testrig"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/test/testrig"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/matrix-org/dendrite/internal/pushrules"
-	rsapi "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/userapi/storage"
+	"github.com/neilalexander/harmony/internal/pushrules"
+	rsapi "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/userapi/storage"
 )
 
 func mustCreateDatabase(t *testing.T, dbType test.DBType) (storage.UserDatabase, func()) {

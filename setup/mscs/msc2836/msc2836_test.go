@@ -15,19 +15,19 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/matrix-org/dendrite/setup/process"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
+	"github.com/neilalexander/harmony/setup/process"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/internal/hooks"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	roomserver "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/mscs/msc2836"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/hooks"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	roomserver "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/mscs/msc2836"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 var (

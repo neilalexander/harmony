@@ -18,9 +18,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/mediaapi/storage/tables"
-	"github.com/matrix-org/dendrite/mediaapi/types"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/mediaapi/storage/tables"
+	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

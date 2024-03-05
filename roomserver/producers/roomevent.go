@@ -17,14 +17,14 @@ package producers
 import (
 	"encoding/json"
 
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/dendrite/roomserver/acls"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/jetstream"
+	"github.com/neilalexander/harmony/roomserver/acls"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/jetstream"
 )
 
 var keyContentFields = map[string]string{

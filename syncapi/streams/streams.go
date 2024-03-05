@@ -3,13 +3,13 @@ package streams
 import (
 	"context"
 
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	rsapi "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/syncapi/notifier"
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	rsapi "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/syncapi/notifier"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type Streams struct {

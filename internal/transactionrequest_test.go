@@ -29,15 +29,15 @@ import (
 	"go.uber.org/atomic"
 	"gotest.tools/v3/poll"
 
-	"github.com/matrix-org/dendrite/federationapi/producers"
-	rsAPI "github.com/matrix-org/dendrite/roomserver/api"
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/setup/process"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	"github.com/matrix-org/dendrite/test"
-	keyAPI "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/federationapi/producers"
+	rsAPI "github.com/neilalexander/harmony/roomserver/api"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/setup/process"
+	"github.com/neilalexander/harmony/syncapi/types"
+	"github.com/neilalexander/harmony/test"
+	keyAPI "github.com/neilalexander/harmony/userapi/api"
 )
 
 const (

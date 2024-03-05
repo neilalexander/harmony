@@ -28,8 +28,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/clientapi/auth"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/clientapi/auth"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

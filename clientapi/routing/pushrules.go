@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/matrix-org/dendrite/internal/pushrules"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/pushrules"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 )

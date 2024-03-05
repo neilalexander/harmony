@@ -18,9 +18,9 @@ package postgres
 import (
 	// Import the postgres database driver.
 	_ "github.com/lib/pq"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/mediaapi/storage/shared"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/mediaapi/storage/shared"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 // NewDatabase opens a postgres database.

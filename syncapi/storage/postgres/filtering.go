@@ -17,7 +17,7 @@ package postgres
 import (
 	"strings"
 
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 )
 
 // filterConvertWildcardToSQL converts wildcards as defined in

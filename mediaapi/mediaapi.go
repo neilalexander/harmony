@@ -16,11 +16,11 @@ package mediaapi
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/mediaapi/routing"
-	"github.com/matrix-org/dendrite/mediaapi/storage"
-	"github.com/matrix-org/dendrite/setup/config"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/mediaapi/routing"
+	"github.com/neilalexander/harmony/mediaapi/storage"
+	"github.com/neilalexander/harmony/setup/config"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/sirupsen/logrus"
 )

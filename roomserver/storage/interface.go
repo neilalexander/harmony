@@ -18,14 +18,14 @@ import (
 	"context"
 	"crypto/ed25519"
 
-	"github.com/matrix-org/dendrite/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/roomserver/state"
-	"github.com/matrix-org/dendrite/roomserver/storage/shared"
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/state"
+	"github.com/neilalexander/harmony/roomserver/storage/shared"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 type Database interface {

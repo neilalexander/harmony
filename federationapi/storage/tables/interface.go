@@ -18,7 +18,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/matrix-org/dendrite/federationapi/types"
+	"github.com/neilalexander/harmony/federationapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )

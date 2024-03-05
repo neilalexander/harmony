@@ -20,7 +20,7 @@ RUN --mount=target=. \
     GOARCH="$TARGETARCH" \
     GOOS="linux" \
     CGO_ENABLED=$([ "$TARGETARCH" = "$USERARCH" ] && echo "1" || echo "0") \
-    go build -v -trimpath -o /out/ ./cmd/...
+    go build -v -ldflags="-s -w" -trimpath -o /out/ ./cmd/...
 
 
 #

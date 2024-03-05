@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/eventutil"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
@@ -20,13 +20,13 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/constraints"
 
-	clientapi "github.com/matrix-org/dendrite/clientapi/api"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/userapi/api"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	clientapi "github.com/neilalexander/harmony/clientapi/api"
+	"github.com/neilalexander/harmony/internal/httputil"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/userapi/api"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 var validRegistrationTokenRegex = regexp.MustCompile("^[[:ascii:][:digit:]_]*$")

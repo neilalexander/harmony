@@ -12,18 +12,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/setup/process"
-	"github.com/matrix-org/dendrite/test"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/setup/process"
+	"github.com/neilalexander/harmony/test"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/federationapi/routing"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/federationapi/routing"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 type server struct {

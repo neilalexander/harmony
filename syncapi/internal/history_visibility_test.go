@@ -6,9 +6,9 @@ import (
 	"math"
 	"testing"
 
-	rsapi "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/syncapi/storage"
+	rsapi "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"gotest.tools/v3/assert"

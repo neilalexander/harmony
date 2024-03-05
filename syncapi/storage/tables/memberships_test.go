@@ -8,13 +8,13 @@ import (
 
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/syncapi/storage/postgres"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	"github.com/matrix-org/dendrite/test"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/syncapi/storage/postgres"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/types"
+	"github.com/neilalexander/harmony/test"
 )
 
 func newMembershipsTable(t *testing.T, dbType test.DBType) (tables.Memberships, *sql.DB, func()) {

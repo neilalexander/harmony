@@ -35,9 +35,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/matrix-org/dendrite/mediaapi/storage"
-	"github.com/matrix-org/dendrite/mediaapi/types"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/mediaapi/storage"
+	"github.com/neilalexander/harmony/mediaapi/types"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/nfnt/resize"
 	log "github.com/sirupsen/logrus"
 )

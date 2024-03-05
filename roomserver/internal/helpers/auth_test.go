@@ -17,7 +17,7 @@ package helpers
 import (
 	"testing"
 
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 func benchmarkStateEntryMapLookup(entries, lookups int64, b *testing.B) {

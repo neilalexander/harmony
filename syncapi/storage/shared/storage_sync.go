@@ -9,12 +9,12 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type DatabaseTransaction struct {

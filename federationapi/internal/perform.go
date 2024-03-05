@@ -14,10 +14,10 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/federationapi/consumers"
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/federationapi/consumers"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // PerformLeaveRequest implements api.FederationInternalAPI

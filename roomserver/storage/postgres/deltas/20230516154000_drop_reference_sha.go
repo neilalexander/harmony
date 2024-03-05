@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/matrix-org/dendrite/internal"
+	"github.com/neilalexander/harmony/internal"
 	"github.com/matrix-org/util"
 )
 

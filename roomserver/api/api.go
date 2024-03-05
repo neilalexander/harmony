@@ -9,9 +9,9 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 
-	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	fsAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 // ErrInvalidID is an error returned if the userID is invalid

@@ -7,18 +7,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/federationapi/statistics"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/jetstream"
+	"github.com/neilalexander/harmony/federationapi/statistics"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/roomserver"
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/test/testrig"
-	"github.com/matrix-org/dendrite/userapi"
-	uapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/roomserver"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/test/testrig"
+	"github.com/neilalexander/harmony/userapi"
+	uapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 var testIsBlacklistedOrBackingOff = func(s spec.ServerName) (*statistics.ServerStatistics, error) {

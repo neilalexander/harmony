@@ -18,18 +18,18 @@ import (
 	"context"
 	"strings"
 
-	keytypes "github.com/matrix-org/dendrite/userapi/types"
+	keytypes "github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	"github.com/matrix-org/dendrite/userapi/api"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/types"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 // DeviceOTKCounts adds one-time key counts to the /sync response

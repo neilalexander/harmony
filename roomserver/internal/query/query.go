@@ -21,25 +21,25 @@ import (
 	"errors"
 	"fmt"
 
-	//"github.com/matrix-org/dendrite/roomserver/internal"
-	"github.com/matrix-org/dendrite/setup/config"
+	//"github.com/neilalexander/harmony/roomserver/internal"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/roomserver/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
-	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/roomserver/acls"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/internal/helpers"
-	"github.com/matrix-org/dendrite/roomserver/state"
-	"github.com/matrix-org/dendrite/roomserver/storage"
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	fsAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/roomserver/acls"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/internal/helpers"
+	"github.com/neilalexander/harmony/roomserver/state"
+	"github.com/neilalexander/harmony/roomserver/storage"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 type Queryer struct {

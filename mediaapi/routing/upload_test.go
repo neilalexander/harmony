@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/mediaapi/fileutils"
-	"github.com/matrix-org/dendrite/mediaapi/storage"
-	"github.com/matrix-org/dendrite/mediaapi/types"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/mediaapi/fileutils"
+	"github.com/neilalexander/harmony/mediaapi/storage"
+	"github.com/neilalexander/harmony/mediaapi/types"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/util"
 	log "github.com/sirupsen/logrus"
 )

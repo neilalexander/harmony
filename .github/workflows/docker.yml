@@ -46,8 +46,8 @@ jobs:
         id: docker_build_monolith
         uses: docker/build-push-action@v3
         with:
-          cache-from: type=registry,ref=ghcr.io/${{ env.GHCR_NAMESPACE }}/harmony:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ env.GHCR_NAMESPACE }}/harmony:buildcache,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           context: .
           platforms: ${{ env.PLATFORMS }}
           push: true

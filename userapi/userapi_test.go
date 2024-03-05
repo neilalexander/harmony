@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/userapi/producers"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/userapi/producers"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -32,13 +32,13 @@ import (
 	"github.com/nats-io/nats.go"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/test/testrig"
-	"github.com/matrix-org/dendrite/userapi/api"
-	"github.com/matrix-org/dendrite/userapi/internal"
-	"github.com/matrix-org/dendrite/userapi/storage"
-	usertypes "github.com/matrix-org/dendrite/userapi/types"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/test/testrig"
+	"github.com/neilalexander/harmony/userapi/api"
+	"github.com/neilalexander/harmony/userapi/internal"
+	"github.com/neilalexander/harmony/userapi/storage"
+	usertypes "github.com/neilalexander/harmony/userapi/types"
 )
 
 const (
@@ -176,7 +176,7 @@ func TestQueryProfile(t *testing.T) {
 
 // TestPasswordlessLoginFails ensures that a passwordless account cannot
 // be logged into using an arbitrary password (effectively a regression test
-// for https://github.com/matrix-org/dendrite/issues/2780).
+// for https://github.com/neilalexander/harmony/issues/2780).
 func TestPasswordlessLoginFails(t *testing.T) {
 	ctx := context.Background()
 	test.WithAllDatabases(t, func(t *testing.T, dbType test.DBType) {

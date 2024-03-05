@@ -22,19 +22,19 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	rstypes "github.com/matrix-org/dendrite/roomserver/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/synctypes"
-	"github.com/matrix-org/dendrite/syncapi/types"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/syncapi/types"
 )
 
 type Database struct {

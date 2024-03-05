@@ -30,16 +30,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	rsAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/internal/helpers"
-	"github.com/matrix-org/dendrite/roomserver/internal/input"
-	"github.com/matrix-org/dendrite/roomserver/internal/query"
-	"github.com/matrix-org/dendrite/roomserver/storage"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/setup/config"
+	fsAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	rsAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/internal/helpers"
+	"github.com/neilalexander/harmony/roomserver/internal/input"
+	"github.com/neilalexander/harmony/roomserver/internal/query"
+	"github.com/neilalexander/harmony/roomserver/storage"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 type Joiner struct {

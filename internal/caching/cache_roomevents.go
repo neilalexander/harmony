@@ -1,7 +1,7 @@
 package caching
 
 import (
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // RoomServerEventsCache contains the subset of functions needed for

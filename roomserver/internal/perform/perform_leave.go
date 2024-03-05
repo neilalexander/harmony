@@ -21,21 +21,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/matrix-org/gomatrix"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	rsAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/internal/helpers"
-	"github.com/matrix-org/dendrite/roomserver/internal/input"
-	"github.com/matrix-org/dendrite/roomserver/storage"
-	"github.com/matrix-org/dendrite/setup/config"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	fsAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/roomserver/api"
+	rsAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/internal/helpers"
+	"github.com/neilalexander/harmony/roomserver/internal/input"
+	"github.com/neilalexander/harmony/roomserver/storage"
+	"github.com/neilalexander/harmony/setup/config"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type Leaver struct {

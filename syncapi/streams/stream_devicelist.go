@@ -3,11 +3,11 @@ package streams
 import (
 	"context"
 
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/syncapi/internal"
-	"github.com/matrix-org/dendrite/syncapi/storage"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/syncapi/internal"
+	"github.com/neilalexander/harmony/syncapi/storage"
+	"github.com/neilalexander/harmony/syncapi/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type DeviceListStreamProvider struct {

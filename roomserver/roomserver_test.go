@@ -7,35 +7,35 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/federationapi/statistics"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/roomserver/internal/input"
+	"github.com/neilalexander/harmony/federationapi/statistics"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/roomserver/internal/input"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/dendrite/roomserver/acls"
-	"github.com/matrix-org/dendrite/roomserver/state"
-	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/userapi"
+	"github.com/neilalexander/harmony/roomserver/acls"
+	"github.com/neilalexander/harmony/roomserver/state"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/userapi"
 
-	userAPI "github.com/matrix-org/dendrite/userapi/api"
+	userAPI "github.com/neilalexander/harmony/userapi/api"
 
 	"github.com/matrix-org/gomatrixserverlib"
 
-	"github.com/matrix-org/dendrite/federationapi"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	"github.com/matrix-org/dendrite/syncapi"
+	"github.com/neilalexander/harmony/federationapi"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/syncapi"
 
-	"github.com/matrix-org/dendrite/roomserver"
-	"github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/roomserver/storage"
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/dendrite/test/testrig"
+	"github.com/neilalexander/harmony/roomserver"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/storage"
+	"github.com/neilalexander/harmony/test"
+	"github.com/neilalexander/harmony/test/testrig"
 )
 
 var testIsBlacklistedOrBackingOff = func(s spec.ServerName) (*statistics.ServerStatistics, error) {
@@ -1017,7 +1017,7 @@ func TestUpgrade(t *testing.T) {
 			validateFunc: validate,
 		},
 		{
-			name:        "custom state is not taken to the new room", // https://github.com/matrix-org/dendrite/issues/2912
+			name:        "custom state is not taken to the new room", // https://github.com/neilalexander/harmony/issues/2912
 			upgradeUser: charlie.ID,
 			roomFunc: func(rsAPI api.RoomserverInternalAPI) string {
 				r := test.NewRoom(t, alice, test.RoomVersion(gomatrixserverlib.RoomVersionV6))

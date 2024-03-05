@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/matrix-org/dendrite/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"

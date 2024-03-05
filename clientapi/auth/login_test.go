@@ -22,9 +22,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matrix-org/dendrite/clientapi/userutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	uapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/clientapi/userutil"
+	"github.com/neilalexander/harmony/setup/config"
+	uapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"

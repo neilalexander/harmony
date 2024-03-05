@@ -7,7 +7,7 @@ import (
 
 	"github.com/matrix-org/gomatrixserverlib"
 
-	"github.com/matrix-org/dendrite/roomserver/types"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 type RoomUpdater struct {

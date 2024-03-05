@@ -17,28 +17,28 @@ package federationapi
 import (
 	"time"
 
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/process"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/process"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/sirupsen/logrus"
 
-	federationAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/federationapi/consumers"
-	"github.com/matrix-org/dendrite/federationapi/internal"
-	"github.com/matrix-org/dendrite/federationapi/producers"
-	"github.com/matrix-org/dendrite/federationapi/queue"
-	"github.com/matrix-org/dendrite/federationapi/statistics"
-	"github.com/matrix-org/dendrite/federationapi/storage"
-	"github.com/matrix-org/dendrite/internal/caching"
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/jetstream"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	federationAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/federationapi/consumers"
+	"github.com/neilalexander/harmony/federationapi/internal"
+	"github.com/neilalexander/harmony/federationapi/producers"
+	"github.com/neilalexander/harmony/federationapi/queue"
+	"github.com/neilalexander/harmony/federationapi/statistics"
+	"github.com/neilalexander/harmony/federationapi/storage"
+	"github.com/neilalexander/harmony/internal/caching"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 
 	"github.com/matrix-org/gomatrixserverlib"
 
-	"github.com/matrix-org/dendrite/federationapi/routing"
+	"github.com/neilalexander/harmony/federationapi/routing"
 )
 
 // AddPublicRoutes sets up and registers HTTP handlers on the base API muxes for the FederationAPI component.

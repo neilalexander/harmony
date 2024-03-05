@@ -18,9 +18,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
 )
 
 const backwardExtremitiesSchema = `

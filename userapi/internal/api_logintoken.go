@@ -19,7 +19,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
 )

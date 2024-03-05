@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )

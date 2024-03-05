@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/userapi/storage/tables"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/userapi/storage/tables"
 )
 
 const keyBackupVersionTableSchema = `

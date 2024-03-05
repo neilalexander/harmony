@@ -25,8 +25,8 @@ import (
 	"github.com/matrix-org/gomatrix"
 	"github.com/matrix-org/util"
 
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 

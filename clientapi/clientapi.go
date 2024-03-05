@@ -15,19 +15,19 @@
 package clientapi
 
 import (
-	"github.com/matrix-org/dendrite/internal/httputil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/process"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/process"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 
-	"github.com/matrix-org/dendrite/clientapi/api"
-	"github.com/matrix-org/dendrite/clientapi/producers"
-	"github.com/matrix-org/dendrite/clientapi/routing"
-	federationAPI "github.com/matrix-org/dendrite/federationapi/api"
-	"github.com/matrix-org/dendrite/internal/transactions"
-	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
-	"github.com/matrix-org/dendrite/setup/jetstream"
+	"github.com/neilalexander/harmony/clientapi/api"
+	"github.com/neilalexander/harmony/clientapi/producers"
+	"github.com/neilalexander/harmony/clientapi/routing"
+	federationAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal/transactions"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/setup/jetstream"
 )
 
 // AddPublicRoutes sets up and registers HTTP handlers for the ClientAPI component.

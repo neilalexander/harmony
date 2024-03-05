@@ -19,14 +19,14 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	clientapi "github.com/matrix-org/dendrite/clientapi/api"
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
-	"github.com/matrix-org/dendrite/userapi/types"
+	clientapi "github.com/neilalexander/harmony/clientapi/api"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/userapi/types"
 )
 
 type RegistrationTokensTable interface {

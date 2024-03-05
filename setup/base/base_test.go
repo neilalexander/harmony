@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/httputil"
-	basepkg "github.com/matrix-org/dendrite/setup/base"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/setup/process"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/httputil"
+	basepkg "github.com/neilalexander/harmony/setup/base"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/setup/process"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	"github.com/matrix-org/dendrite/syncapi/storage/postgres"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/types"
-	"github.com/matrix-org/dendrite/test"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/syncapi/storage/postgres"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/types"
+	"github.com/neilalexander/harmony/test"
 )
 
 func newRelationsTable(t *testing.T, dbType test.DBType) (tables.Relations, *sql.DB, func()) {

@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/dendrite/federationapi/storage/shared/receipt"
-	"github.com/matrix-org/dendrite/federationapi/storage/tables"
-	"github.com/matrix-org/dendrite/federationapi/types"
-	"github.com/matrix-org/dendrite/internal/caching"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
+	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
+	"github.com/neilalexander/harmony/federationapi/storage/tables"
+	"github.com/neilalexander/harmony/federationapi/types"
+	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )

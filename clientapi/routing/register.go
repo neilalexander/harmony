@@ -30,11 +30,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/matrix-org/dendrite/internal"
+	"github.com/neilalexander/harmony/internal"
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/setup/config"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/setup/config"
 
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -43,11 +43,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/clientapi/auth"
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
-	"github.com/matrix-org/dendrite/clientapi/httputil"
-	"github.com/matrix-org/dendrite/clientapi/userutil"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
+	"github.com/neilalexander/harmony/clientapi/auth"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/clientapi/userutil"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 var (

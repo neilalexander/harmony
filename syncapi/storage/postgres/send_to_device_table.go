@@ -19,11 +19,11 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/matrix-org/dendrite/internal"
-	"github.com/matrix-org/dendrite/internal/sqlutil"
-	"github.com/matrix-org/dendrite/syncapi/storage/postgres/deltas"
-	"github.com/matrix-org/dendrite/syncapi/storage/tables"
-	"github.com/matrix-org/dendrite/syncapi/types"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/syncapi/storage/postgres/deltas"
+	"github.com/neilalexander/harmony/syncapi/storage/tables"
+	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/sirupsen/logrus"
 )
 

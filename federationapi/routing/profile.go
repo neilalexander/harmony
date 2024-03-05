@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/matrix-org/dendrite/internal/eventutil"
-	"github.com/matrix-org/dendrite/setup/config"
-	userapi "github.com/matrix-org/dendrite/userapi/api"
-	usertypes "github.com/matrix-org/dendrite/userapi/types"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/setup/config"
+	userapi "github.com/neilalexander/harmony/userapi/api"
+	usertypes "github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 )

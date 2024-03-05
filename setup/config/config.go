@@ -23,7 +23,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"golang.org/x/crypto/ed25519"
