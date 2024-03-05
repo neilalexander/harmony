@@ -169,7 +169,7 @@ func (a *FederationInternalAPI) doRequestIfNotBackingOffOrBlacklisted(
 			RetryAfter:  retryAfter,
 		}
 	}
-	stats.Success(statistics.SendDirect)
+	stats.Success()
 	return res, nil
 }
 

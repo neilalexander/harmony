@@ -8,7 +8,6 @@ import (
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/roomserver/types"
 	"github.com/matrix-org/dendrite/setup/config"
@@ -30,10 +29,6 @@ func mustCreateUserRoomKeysTable(t *testing.T, dbType test.DBType) (tab tables.U
 		err = postgres.CreateUserRoomKeysTable(db)
 		assert.NoError(t, err)
 		tab, err = postgres.PrepareUserRoomKeysTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreateUserRoomKeysTable(db)
-		assert.NoError(t, err)
-		tab, err = sqlite3.PrepareUserRoomKeysTable(db)
 	}
 	assert.NoError(t, err)
 

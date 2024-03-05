@@ -119,7 +119,10 @@ func (s *oneTimeKeysStatements) CountOneTimeKeys(ctx context.Context, userID, de
 	counts := &api.OneTimeKeysCount{
 		DeviceID: deviceID,
 		UserID:   userID,
-		KeyCount: make(map[string]int),
+		KeyCount: map[string]int{
+			// TODO: This probably isn't the right place to maintain this list
+			"signed_curve25519": 0,
+		},
 	}
 	rows, err := s.selectKeysCountStmt.QueryContext(ctx, userID, deviceID)
 	if err != nil {

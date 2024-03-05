@@ -18,7 +18,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"time"
 
 	"github.com/matrix-org/dendrite/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
@@ -128,13 +127,6 @@ type NotificationTable interface {
 	SelectRoomCounts(ctx context.Context, txn *sql.Tx, localpart string, serverName spec.ServerName, roomID string) (total int64, highlight int64, _ error)
 }
 
-type StatsTable interface {
-	UserStatistics(ctx context.Context, txn *sql.Tx) (*types.UserStatistics, *types.DatabaseEngine, error)
-	DailyRoomsMessages(ctx context.Context, txn *sql.Tx, serverName spec.ServerName) (msgStats types.MessageStats, activeRooms, activeE2EERooms int64, err error)
-	UpdateUserDailyVisits(ctx context.Context, txn *sql.Tx, startTime, lastUpdate time.Time) error
-	UpsertDailyStats(ctx context.Context, txn *sql.Tx, serverName spec.ServerName, stats types.MessageStats, activeRooms, activeE2EERooms int64) error
-}
-
 type NotificationFilter uint32
 
 const (
@@ -166,6 +158,14 @@ type OneTimeKeys interface {
 	// Returns an empty map if the key does not exist.
 	SelectAndDeleteOneTimeKey(ctx context.Context, txn *sql.Tx, userID, deviceID, algorithm string) (map[string]json.RawMessage, error)
 	DeleteOneTimeKeys(ctx context.Context, txn *sql.Tx, userID, deviceID string) error
+}
+
+type FallbackKeys interface {
+	SelectFallbackKeys(ctx context.Context, userID, deviceID string, keyIDsWithAlgorithms []string) (map[string]json.RawMessage, error)
+	SelectUnusedFallbackKeyAlgorithms(ctx context.Context, userID, deviceID string) ([]string, error)
+	InsertFallbackKeys(ctx context.Context, txn *sql.Tx, keys api.FallbackKeys) ([]string, error)
+	DeleteFallbackKeys(ctx context.Context, txn *sql.Tx, userID, deviceID string) error
+	SelectAndUpdateFallbackKey(ctx context.Context, txn *sql.Tx, userID, deviceID, algorithm string) (map[string]json.RawMessage, error)
 }
 
 type DeviceKeys interface {

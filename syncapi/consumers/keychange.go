@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/getsentry/sentry-go"
 	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/setup/jetstream"
@@ -113,7 +112,6 @@ func (s *OutputKeyChangeEventConsumer) onDeviceKeyMessage(m api.DeviceMessage, d
 	}, &queryRes)
 	if err != nil {
 		logrus.WithError(err).Error("syncapi: failed to QuerySharedUsers for key change event from key server")
-		sentry.CaptureException(err)
 		return true
 	}
 	// make sure we get our own key updates too!
@@ -138,7 +136,6 @@ func (s *OutputKeyChangeEventConsumer) onCrossSigningMessage(m api.DeviceMessage
 	}, &queryRes)
 	if err != nil {
 		logrus.WithError(err).Error("syncapi: failed to QuerySharedUsers for key change event from key server")
-		sentry.CaptureException(err)
 		return true
 	}
 	// make sure we get our own key updates too!

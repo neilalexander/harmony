@@ -7,7 +7,6 @@ import (
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/roomserver/types"
 	"github.com/matrix-org/dendrite/setup/config"
@@ -28,10 +27,6 @@ func mustCreateEventsTable(t *testing.T, dbType test.DBType) (tables.Events, fun
 		err = postgres.CreateEventsTable(db)
 		assert.NoError(t, err)
 		tab, err = postgres.PrepareEventsTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreateEventsTable(db)
-		assert.NoError(t, err)
-		tab, err = sqlite3.PrepareEventsTable(db)
 	}
 	assert.NoError(t, err)
 

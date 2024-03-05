@@ -319,7 +319,7 @@ func TestRoomsV3URLEscapeDoNot404(t *testing.T) {
 		},
 	}
 
-	cfg, processCtx, close := testrig.CreateConfig(t, test.DBTypeSQLite)
+	cfg, processCtx, close := testrig.CreateConfig(t, test.DBTypePostgres)
 	defer close()
 	routers := httputil.NewRouters()
 

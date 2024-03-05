@@ -18,7 +18,6 @@ import (
 	"errors"
 	"net/http"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/clientapi/httputil"
 	"github.com/matrix-org/dendrite/internal/eventutil"
 	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
@@ -44,7 +43,6 @@ func UpgradeRoom(
 	cfg *config.ClientAPI,
 	roomID string, profileAPI userapi.ClientUserAPI,
 	rsAPI roomserverAPI.ClientRoomserverAPI,
-	asAPI appserviceAPI.AppServiceInternalAPI,
 ) util.JSONResponse {
 	var r upgradeRoomRequest
 	if rErr := httputil.UnmarshalJSONRequest(req, &r); rErr != nil {

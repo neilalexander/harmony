@@ -16,9 +16,7 @@ package main
 
 import (
 	"flag"
-	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/dendrite/internal"
 	"github.com/matrix-org/dendrite/internal/caching"
 	"github.com/matrix-org/dendrite/internal/httputil"
@@ -29,7 +27,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/appservice"
 	"github.com/matrix-org/dendrite/federationapi"
 	"github.com/matrix-org/dendrite/roomserver"
 	"github.com/matrix-org/dendrite/setup"
@@ -110,37 +107,6 @@ func main() {
 		)
 	}
 
-	// setup tracing
-	closer, err := cfg.SetupTracing()
-	if err != nil {
-		logrus.WithError(err).Panicf("failed to start opentracing")
-	}
-	defer closer.Close() // nolint: errcheck
-
-	// setup sentry
-	if cfg.Global.Sentry.Enabled {
-		logrus.Info("Setting up Sentry for debugging...")
-		err = sentry.Init(sentry.ClientOptions{
-			Dsn:              cfg.Global.Sentry.DSN,
-			Environment:      cfg.Global.Sentry.Environment,
-			Debug:            true,
-			ServerName:       string(cfg.Global.ServerName),
-			Release:          "dendrite@" + internal.VersionString(),
-			AttachStacktrace: true,
-		})
-		if err != nil {
-			logrus.WithError(err).Panic("failed to start Sentry")
-		}
-		go func() {
-			processCtx.ComponentStarted()
-			<-processCtx.WaitForShutdown()
-			if !sentry.Flush(time.Second * 5) {
-				logrus.Warnf("failed to flush all Sentry events!")
-			}
-			processCtx.ComponentFinished()
-		}()
-	}
-
 	federationClient := basepkg.CreateFederationClient(cfg, dnsCache)
 	httpClient := basepkg.CreateClient(cfg, dnsCache)
 
@@ -163,9 +129,6 @@ func main() {
 	rsAPI.SetFederationAPI(fsAPI, keyRing)
 
 	userAPI := userapi.NewInternalAPI(processCtx, cfg, cm, &natsInstance, rsAPI, federationClient, caching.EnableMetrics, fsAPI.IsBlacklistedOrBackingOff)
-	asAPI := appservice.NewInternalAPI(processCtx, cfg, &natsInstance, userAPI, rsAPI)
-
-	rsAPI.SetAppserviceAPI(asAPI)
 	rsAPI.SetUserAPI(userAPI)
 
 	monolith := setup.Monolith{
@@ -174,7 +137,6 @@ func main() {
 		FedClient: federationClient,
 		KeyRing:   keyRing,
 
-		AppserviceAPI: asAPI,
 		// always use the concrete impl here even in -http mode because adding public routes
 		// must be done on the concrete impl not an HTTP client else fedapi will call itself
 		FederationAPI: fsAPI,

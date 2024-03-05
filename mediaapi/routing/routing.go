@@ -90,12 +90,12 @@ func Setup(
 		MXCToResult: map[string]*types.RemoteRequestResult{},
 	}
 
-	downloadHandler := makeDownloadAPI("download", &cfg.MediaAPI, rateLimits, db, client, activeRemoteRequests, activeThumbnailGeneration)
+	downloadHandler := makeDownloadAPI("download", &cfg.MediaAPI, rateLimits, db, userAPI, client, activeRemoteRequests, activeThumbnailGeneration)
 	v3mux.Handle("/download/{serverName}/{mediaId}", downloadHandler).Methods(http.MethodGet, http.MethodOptions)
 	v3mux.Handle("/download/{serverName}/{mediaId}/{downloadName}", downloadHandler).Methods(http.MethodGet, http.MethodOptions)
 
 	v3mux.Handle("/thumbnail/{serverName}/{mediaId}",
-		makeDownloadAPI("thumbnail", &cfg.MediaAPI, rateLimits, db, client, activeRemoteRequests, activeThumbnailGeneration),
+		makeDownloadAPI("thumbnail", &cfg.MediaAPI, rateLimits, db, userAPI, client, activeRemoteRequests, activeThumbnailGeneration),
 	).Methods(http.MethodGet, http.MethodOptions)
 }
 
@@ -104,6 +104,7 @@ func makeDownloadAPI(
 	cfg *config.MediaAPI,
 	rateLimits *httputil.RateLimits,
 	db storage.Database,
+	_ userapi.MediaUserAPI,
 	client *fclient.Client,
 	activeRemoteRequests *types.ActiveRemoteRequests,
 	activeThumbnailGeneration *types.ActiveThumbnailGeneration,

@@ -4,28 +4,23 @@ import (
 	"math"
 	"testing"
 	"time"
-
-	"github.com/matrix-org/dendrite/test"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/stretchr/testify/assert"
 )
 
 const (
-	FailuresUntilAssumedOffline = 3
-	FailuresUntilBlacklist      = 8
+	FailuresUntilBlacklist = 8
 )
 
 func TestBackoff(t *testing.T) {
-	stats := NewStatistics(nil, FailuresUntilBlacklist, FailuresUntilAssumedOffline, false)
+	stats := NewStatistics(nil, FailuresUntilBlacklist)
 	server := ServerStatistics{
 		statistics: &stats,
 		serverName: "test.com",
 	}
 
 	// Start by checking that counting successes works.
-	server.Success(SendDirect)
-	if successes := server.SuccessCount(); successes != 1 {
-		t.Fatalf("Expected success count 1, got %d", successes)
+	server.Success()
+	if successes := server.SuccessCount(); successes != 0 {
+		t.Fatalf("Expected success count 0, got %d", successes)
 	}
 
 	// Register a failure.
@@ -41,34 +36,12 @@ func TestBackoff(t *testing.T) {
 		// then we'll fail.
 		until, blacklisted := server.Failure()
 		blacklist := server.Blacklisted()
-		assumedOffline := server.AssumedOffline()
 		duration := time.Until(until)
 
 		// Unset the backoff, or otherwise our next call will think that
 		// there's a backoff in progress and return the same result.
 		server.cancel()
 		server.backoffStarted.Store(false)
-
-		if i >= stats.FailuresUntilAssumedOffline {
-			if !assumedOffline {
-				t.Fatalf("Backoff %d should have resulted in assuming the destination was offline but didn't", i)
-			}
-		}
-
-		// Check if we should be assumed offline by now.
-		if i >= stats.FailuresUntilAssumedOffline {
-			if !assumedOffline {
-				t.Fatalf("Backoff %d should have resulted in assumed offline but didn't", i)
-			} else {
-				t.Logf("Backoff %d is assumed offline as expected", i)
-			}
-		} else {
-			if assumedOffline {
-				t.Fatalf("Backoff %d should not have resulted in assumed offline but did", i)
-			} else {
-				t.Logf("Backoff %d is not assumed offline as expected", i)
-			}
-		}
 
 		// Check if we should be blacklisted by now.
 		if i >= stats.FailuresUntilBlacklist {
@@ -103,15 +76,4 @@ func TestBackoff(t *testing.T) {
 			t.Fatalf("Backoff %d should have been between %s and %s but was %s", i, minDuration, maxDuration, duration)
 		}
 	}
-}
-
-func TestRelayServersListing(t *testing.T) {
-	stats := NewStatistics(test.NewInMemoryFederationDatabase(), FailuresUntilBlacklist, FailuresUntilAssumedOffline, false)
-	server := ServerStatistics{statistics: &stats}
-	server.AddRelayServers([]spec.ServerName{"relay1", "relay1", "relay2"})
-	relayServers := server.KnownRelayServers()
-	assert.Equal(t, []spec.ServerName{"relay1", "relay2"}, relayServers)
-	server.AddRelayServers([]spec.ServerName{"relay1", "relay1", "relay2"})
-	relayServers = server.KnownRelayServers()
-	assert.Equal(t, []spec.ServerName{"relay1", "relay2"}, relayServers)
 }

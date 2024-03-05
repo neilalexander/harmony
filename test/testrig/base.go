@@ -16,7 +16,6 @@ package testrig
 
 import (
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/matrix-org/dendrite/setup/config"
@@ -48,7 +47,7 @@ func CreateConfig(t *testing.T, dbType test.DBType) (*config.Dendrite, *process.
 			SingleDatabase: true,
 		})
 		cfg.Global.ServerName = "test"
-		// use a distinct prefix else concurrent postgres/sqlite runs will clash since NATS will use
+		// use a distinct prefix else concurrent postgres runs will clash since NATS will use
 		// the file system event with InMemory=true :(
 		cfg.Global.JetStream.TopicPrefix = fmt.Sprintf("Test_%d_", dbType)
 		cfg.SyncAPI.Fulltext.InMemory = true
@@ -64,33 +63,6 @@ func CreateConfig(t *testing.T, dbType test.DBType) (*config.Dendrite, *process.
 			ctx.ShutdownDendrite()
 			ctx.WaitForShutdown()
 			closeDb()
-		}
-	case test.DBTypeSQLite:
-		cfg.Defaults(config.DefaultOpts{
-			Generate:       true,
-			SingleDatabase: false,
-		})
-		cfg.Global.ServerName = "test"
-		cfg.SyncAPI.Fulltext.InMemory = true
-		// use a distinct prefix else concurrent postgres/sqlite runs will clash since NATS will use
-		// the file system event with InMemory=true :(
-		cfg.Global.JetStream.TopicPrefix = fmt.Sprintf("Test_%d_", dbType)
-
-		// Use a temp dir provided by go for tests, this will be cleanup by a call to t.CleanUp()
-		tempDir := t.TempDir()
-		cfg.FederationAPI.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "federationapi.db"))
-		cfg.KeyServer.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "keyserver.db"))
-		cfg.MSCs.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "mscs.db"))
-		cfg.MediaAPI.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "mediaapi.db"))
-		cfg.RoomServer.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "roomserver.db"))
-		cfg.SyncAPI.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "syncapi.db"))
-		cfg.UserAPI.AccountDatabase.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "userapi.db"))
-		cfg.RelayAPI.Database.ConnectionString = config.DataSource(filepath.Join("file://", tempDir, "relayapi.db"))
-
-		return &cfg, ctx, func() {
-			ctx.ShutdownDendrite()
-			ctx.WaitForShutdown()
-			t.Cleanup(func() {}) // removes t.TempDir, where all database files are created
 		}
 	default:
 		t.Fatalf("unknown db type: %v", dbType)

@@ -326,141 +326,6 @@ func validateRecaptcha(
 	return nil
 }
 
-// UserIDIsWithinApplicationServiceNamespace checks to see if a given userID
-// falls within any of the namespaces of a given Application Service. If no
-// Application Service is given, it will check to see if it matches any
-// Application Service's namespace.
-func UserIDIsWithinApplicationServiceNamespace(
-	cfg *config.ClientAPI,
-	userID string,
-	appservice *config.ApplicationService,
-) bool {
-
-	var local, domain, err = gomatrixserverlib.SplitID('@', userID)
-	if err != nil {
-		// Not a valid userID
-		return false
-	}
-
-	if !cfg.Matrix.IsLocalServerName(domain) {
-		return false
-	}
-
-	if appservice != nil {
-		if appservice.SenderLocalpart == local {
-			return true
-		}
-
-		// Loop through given application service's namespaces and see if any match
-		for _, namespace := range appservice.NamespaceMap["users"] {
-			// AS namespaces are checked for validity in config
-			if namespace.RegexpObject.MatchString(userID) {
-				return true
-			}
-		}
-		return false
-	}
-
-	// Loop through all known application service's namespaces and see if any match
-	for _, knownAppService := range cfg.Derived.ApplicationServices {
-		if knownAppService.SenderLocalpart == local {
-			return true
-		}
-		for _, namespace := range knownAppService.NamespaceMap["users"] {
-			// AS namespaces are checked for validity in config
-			if namespace.RegexpObject.MatchString(userID) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// UsernameMatchesMultipleExclusiveNamespaces will check if a given username matches
-// more than one exclusive namespace. More than one is not allowed
-func UsernameMatchesMultipleExclusiveNamespaces(
-	cfg *config.ClientAPI,
-	username string,
-) bool {
-	userID := userutil.MakeUserID(username, cfg.Matrix.ServerName)
-
-	// Check namespaces and see if more than one match
-	matchCount := 0
-	for _, appservice := range cfg.Derived.ApplicationServices {
-		if appservice.OwnsNamespaceCoveringUserId(userID) {
-			if matchCount++; matchCount > 1 {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// UsernameMatchesExclusiveNamespaces will check if a given username matches any
-// application service's exclusive users namespace
-func UsernameMatchesExclusiveNamespaces(
-	cfg *config.ClientAPI,
-	username string,
-) bool {
-	userID := userutil.MakeUserID(username, cfg.Matrix.ServerName)
-	return cfg.Derived.ExclusiveApplicationServicesUsernameRegexp.MatchString(userID)
-}
-
-// validateApplicationService checks if a provided application service token
-// corresponds to one that is registered. If so, then it checks if the desired
-// username is within that application service's namespace. As long as these
-// two requirements are met, no error will be returned.
-func validateApplicationService(
-	cfg *config.ClientAPI,
-	username string,
-	accessToken string,
-) (string, *util.JSONResponse) {
-	// Check if the token if the application service is valid with one we have
-	// registered in the config.
-	var matchedApplicationService *config.ApplicationService
-	for _, appservice := range cfg.Derived.ApplicationServices {
-		if appservice.ASToken == accessToken {
-			matchedApplicationService = &appservice
-			break
-		}
-	}
-	if matchedApplicationService == nil {
-		return "", &util.JSONResponse{
-			Code: http.StatusUnauthorized,
-			JSON: spec.UnknownToken("Supplied access_token does not match any known application service"),
-		}
-	}
-
-	userID := userutil.MakeUserID(username, cfg.Matrix.ServerName)
-
-	// Ensure the desired username is within at least one of the application service's namespaces.
-	if !UserIDIsWithinApplicationServiceNamespace(cfg, userID, matchedApplicationService) {
-		// If we didn't find any matches, return M_EXCLUSIVE
-		return "", &util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.ASExclusive(fmt.Sprintf(
-				"Supplied username %s did not match any namespaces for application service ID: %s", username, matchedApplicationService.ID)),
-		}
-	}
-
-	// Check this user does not fit multiple application service namespaces
-	if UsernameMatchesMultipleExclusiveNamespaces(cfg, userID) {
-		return "", &util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.ASExclusive(fmt.Sprintf(
-				"Supplied username %s matches multiple exclusive application service namespaces. Only 1 match allowed", username)),
-		}
-	}
-
-	// Check username application service is trying to register is valid
-	if err := internal.ValidateApplicationServiceUsername(username, cfg.Matrix.ServerName); err != nil {
-		return "", internal.UsernameResponse(err)
-	}
-
-	// No errors, registration valid
-	return matchedApplicationService.ID, nil
-}
-
 // Register processes a /register request.
 // https://spec.matrix.org/v1.7/client-server-api/#post_matrixclientv3register
 func Register(
@@ -538,23 +403,17 @@ func Register(
 
 	// Is this an appservice registration? It will be if the access
 	// token is supplied
-	accessToken, accessTokenErr := auth.ExtractAccessToken(req)
+	_, accessTokenErr := auth.ExtractAccessToken(req)
 
 	// Squash username to all lowercase letters
 	r.Username = strings.ToLower(r.Username)
 	switch {
-	case r.Type == authtypes.LoginTypeApplicationService && accessTokenErr == nil:
-		// Spec-compliant case (the access_token is specified and the login type
-		// is correctly set, so it's an appservice registration)
-		if err = internal.ValidateApplicationServiceUsername(r.Username, r.ServerName); err != nil {
-			return *internal.UsernameResponse(err)
-		}
 	case accessTokenErr == nil:
 		// Non-spec-compliant case (the access_token is specified but the login
 		// type is not known or specified)
 		return util.JSONResponse{
 			Code: http.StatusBadRequest,
-			JSON: spec.MissingParam("A known registration type (e.g. m.login.application_service) must be specified if an access_token is provided"),
+			JSON: spec.MissingParam("A known registration type must be specified if an access_token is provided"),
 		}
 	default:
 		// Spec-compliant case (neither the access_token nor the login type are
@@ -574,7 +433,7 @@ func Register(
 		"session_id": r.Auth.Session,
 	}).Info("Processing registration request")
 
-	return handleRegistrationFlow(req, r, sessionID, cfg, userAPI, accessToken, accessTokenErr)
+	return handleRegistrationFlow(req, r, sessionID, cfg, userAPI)
 }
 
 func handleGuestRegistration(
@@ -648,16 +507,6 @@ func handleGuestRegistration(
 	}
 }
 
-// localpartMatchesExclusiveNamespaces will check if a given username matches any
-// application service's exclusive users namespace
-func localpartMatchesExclusiveNamespaces(
-	cfg *config.ClientAPI,
-	localpart string,
-) bool {
-	userID := userutil.MakeUserID(localpart, cfg.Matrix.ServerName)
-	return cfg.Derived.ExclusiveApplicationServicesUsernameRegexp.MatchString(userID)
-}
-
 // handleRegistrationFlow will direct and complete registration flow stages
 // that the client has requested.
 // nolint: gocyclo
@@ -667,8 +516,6 @@ func handleRegistrationFlow(
 	sessionID string,
 	cfg *config.ClientAPI,
 	userAPI userapi.ClientUserAPI,
-	accessToken string,
-	accessTokenErr error,
 ) util.JSONResponse {
 	// TODO: Enable registration config flag
 	// TODO: Guest account upgrading
@@ -682,10 +529,11 @@ func handleRegistrationFlow(
 	// registration or user exclusivity. We'll go onto the appservice
 	// registration flow if a valid access token was provided or if
 	// the login type specifically requests it.
-	if r.Type == authtypes.LoginTypeApplicationService && accessTokenErr == nil {
-		return handleApplicationServiceRegistration(
-			accessToken, accessTokenErr, req, r, cfg, userAPI,
-		)
+	if r.Type == authtypes.LoginTypeApplicationService {
+		return util.JSONResponse{
+			Code: http.StatusForbidden,
+			JSON: spec.Forbidden("Appservices are not supported"),
+		}
 	}
 
 	registrationEnabled := !cfg.RegistrationDisabled
@@ -698,18 +546,6 @@ func handleRegistrationFlow(
 			JSON: spec.Forbidden(
 				fmt.Sprintf("Registration is disabled on %q", r.ServerName),
 			),
-		}
-	}
-
-	// Make sure normal user isn't registering under an exclusive application
-	// service namespace. Skip this check if no app services are registered.
-	// If an access token is provided, ignore this check this is an appservice
-	// request and we will validate in validateApplicationService
-	if len(cfg.Derived.ApplicationServices) != 0 &&
-		localpartMatchesExclusiveNamespaces(cfg, r.Username) {
-		return util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.ASExclusive("This username is reserved by an application service."),
 		}
 	}
 
@@ -754,50 +590,6 @@ func handleRegistrationFlow(
 	// will be returned if a flow has not been successfully completed yet
 	return checkAndCompleteFlow(sessions.getCompletedStages(sessionID),
 		req, r, sessionID, cfg, userAPI)
-}
-
-// handleApplicationServiceRegistration handles the registration of an
-// application service's user by validating the AS from its access token and
-// registering the user. Its two first parameters must be the two return values
-// of the auth.ExtractAccessToken function.
-// Returns an error if the access token couldn't be extracted from the request
-// at an earlier step of the registration workflow, or if the provided access
-// token doesn't belong to a valid AS, or if there was an issue completing the
-// registration process.
-func handleApplicationServiceRegistration(
-	accessToken string,
-	tokenErr error,
-	req *http.Request,
-	r registerRequest,
-	cfg *config.ClientAPI,
-	userAPI userapi.ClientUserAPI,
-) util.JSONResponse {
-	// Check if we previously had issues extracting the access token from the
-	// request.
-	if tokenErr != nil {
-		return util.JSONResponse{
-			Code: http.StatusUnauthorized,
-			JSON: spec.MissingToken(tokenErr.Error()),
-		}
-	}
-
-	// Check application service register user request is valid.
-	// The application service's ID is returned if so.
-	appserviceID, err := internal.ValidateApplicationServiceRequest(
-		cfg, r.Username, accessToken,
-	)
-	if err != nil {
-		return *err
-	}
-
-	// If no error, application service was successfully validated.
-	// Don't need to worry about appending to registration stages as
-	// application service registration is entirely separate.
-	return completeRegistration(
-		req.Context(), userAPI, r.Username, r.ServerName, "", "", appserviceID, req.RemoteAddr,
-		req.UserAgent(), r.Auth.Session, r.InhibitLogin, r.InitialDisplayName, r.DeviceID,
-		userapi.AccountTypeAppService,
-	)
 }
 
 // checkAndCompleteFlow checks if a given registration flow is completed given
@@ -1029,17 +821,6 @@ func RegisterAvailable(
 
 	if err := internal.ValidateUsername(username, domain); err != nil {
 		return *internal.UsernameResponse(err)
-	}
-
-	// Check if this username is reserved by an application service
-	userID := userutil.MakeUserID(username, domain)
-	for _, appservice := range cfg.Derived.ApplicationServices {
-		if appservice.OwnsNamespaceCoveringUserId(userID) {
-			return util.JSONResponse{
-				Code: http.StatusBadRequest,
-				JSON: spec.UserInUse("Desired user ID is reserved by an application service."),
-			}
-		}
 	}
 
 	res := &userapi.QueryAccountAvailabilityResponse{}

@@ -20,7 +20,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -296,13 +295,11 @@ func (oqs *OutgoingQueues) SendEDU(
 
 	ephemeralJSON, err := json.Marshal(e)
 	if err != nil {
-		sentry.CaptureException(err)
 		return fmt.Errorf("json.Marshal: %w", err)
 	}
 
 	nid, err := oqs.db.StoreJSON(oqs.process.Context(), string(ephemeralJSON))
 	if err != nil {
-		sentry.CaptureException(err)
 		return fmt.Errorf("sendevent: oqs.db.StoreJSON: %w", err)
 	}
 

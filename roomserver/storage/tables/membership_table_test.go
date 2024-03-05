@@ -7,7 +7,6 @@ import (
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/roomserver/types"
 	"github.com/matrix-org/dendrite/setup/config"
@@ -31,14 +30,6 @@ func mustCreateMembershipTable(t *testing.T, dbType test.DBType) (tab tables.Mem
 		tab, err = postgres.PrepareMembershipTable(db)
 		assert.NoError(t, err)
 		stateKeyTab, err = postgres.PrepareEventStateKeysTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreateEventStateKeysTable(db)
-		assert.NoError(t, err)
-		err = sqlite3.CreateMembershipTable(db)
-		assert.NoError(t, err)
-		tab, err = sqlite3.PrepareMembershipTable(db)
-		assert.NoError(t, err)
-		stateKeyTab, err = sqlite3.PrepareEventStateKeysTable(db)
 	}
 	assert.NoError(t, err)
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/test"
@@ -26,10 +25,6 @@ func mustCreateRedactionsTable(t *testing.T, dbType test.DBType) (tab tables.Red
 		err = postgres.CreateRedactionsTable(db)
 		assert.NoError(t, err)
 		tab, err = postgres.PrepareRedactionsTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreateRedactionsTable(db)
-		assert.NoError(t, err)
-		tab, err = sqlite3.PrepareRedactionsTable(db)
 	}
 	assert.NoError(t, err)
 

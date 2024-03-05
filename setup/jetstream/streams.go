@@ -20,7 +20,6 @@ var (
 	InputDeviceListUpdate   = "InputDeviceListUpdate"
 	InputSigningKeyUpdate   = "InputSigningKeyUpdate"
 	OutputRoomEvent         = "OutputRoomEvent"
-	OutputAppserviceEvent   = "OutputAppserviceEvent"
 	OutputSendToDeviceEvent = "OutputSendToDeviceEvent"
 	OutputKeyChangeEvent    = "OutputKeyChangeEvent"
 	OutputTypingEvent       = "OutputTypingEvent"
@@ -63,11 +62,6 @@ var streams = []*nats.StreamConfig{
 	},
 	{
 		Name:      OutputRoomEvent,
-		Retention: nats.InterestPolicy,
-		Storage:   nats.FileStorage,
-	},
-	{
-		Name:      OutputAppserviceEvent,
 		Retention: nats.InterestPolicy,
 		Storage:   nats.FileStorage,
 	},

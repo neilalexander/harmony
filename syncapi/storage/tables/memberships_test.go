@@ -12,7 +12,6 @@ import (
 	rstypes "github.com/matrix-org/dendrite/roomserver/types"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/syncapi/storage/postgres"
-	"github.com/matrix-org/dendrite/syncapi/storage/sqlite3"
 	"github.com/matrix-org/dendrite/syncapi/storage/tables"
 	"github.com/matrix-org/dendrite/syncapi/types"
 	"github.com/matrix-org/dendrite/test"
@@ -32,8 +31,6 @@ func newMembershipsTable(t *testing.T, dbType test.DBType) (tables.Memberships, 
 	switch dbType {
 	case test.DBTypePostgres:
 		tab, err = postgres.NewPostgresMembershipsTable(db)
-	case test.DBTypeSQLite:
-		tab, err = sqlite3.NewSqliteMembershipsTable(db)
 	}
 	if err != nil {
 		t.Fatalf("failed to make new table: %s", err)

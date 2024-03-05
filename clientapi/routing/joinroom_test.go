@@ -14,7 +14,6 @@ import (
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/matrix-org/dendrite/appservice"
 	"github.com/matrix-org/dendrite/roomserver"
 	"github.com/matrix-org/dendrite/test"
 	"github.com/matrix-org/dendrite/test/testrig"
@@ -42,7 +41,6 @@ func TestJoinRoomByIDOrAlias(t *testing.T) {
 		rsAPI := roomserver.NewInternalAPI(processCtx, cfg, cm, &natsInstance, caches, caching.DisableMetrics)
 		rsAPI.SetFederationAPI(nil, nil) // creates the rs.Inputer etc
 		userAPI := userapi.NewInternalAPI(processCtx, cfg, cm, &natsInstance, rsAPI, nil, caching.DisableMetrics, testIsBlacklistedOrBackingOff)
-		asAPI := appservice.NewInternalAPI(processCtx, cfg, &natsInstance, userAPI, rsAPI)
 
 		// Create the users in the userapi
 		for _, u := range []*test.User{alice, bob, charlie} {
@@ -72,7 +70,7 @@ func TestJoinRoomByIDOrAlias(t *testing.T) {
 			Preset:        spec.PresetPublicChat,
 			RoomAliasName: "alias",
 			Invite:        []string{bob.ID},
-		}, aliceDev, &cfg.ClientAPI, userAPI, rsAPI, asAPI, time.Now())
+		}, aliceDev, &cfg.ClientAPI, userAPI, rsAPI, time.Now())
 		crResp, ok := resp.JSON.(createRoomResponse)
 		if !ok {
 			t.Fatalf("response is not a createRoomResponse: %+v", resp)
@@ -86,7 +84,7 @@ func TestJoinRoomByIDOrAlias(t *testing.T) {
 			Visibility: "public",
 			Preset:     spec.PresetPublicChat,
 			Invite:     []string{charlie.ID},
-		}, aliceDev, &cfg.ClientAPI, userAPI, rsAPI, asAPI, time.Now())
+		}, aliceDev, &cfg.ClientAPI, userAPI, rsAPI, time.Now())
 		crRespWithGuestAccess, ok := resp.JSON.(createRoomResponse)
 		if !ok {
 			t.Fatalf("response is not a createRoomResponse: %+v", resp)

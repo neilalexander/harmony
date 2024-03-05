@@ -15,6 +15,7 @@ import (
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/setup/jetstream"
 	"github.com/matrix-org/dendrite/setup/process"
+	"github.com/matrix-org/dendrite/test"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -92,12 +93,9 @@ func TestMain(m *testing.M) {
 			cfg.Global.KeyID = serverKeyID
 			cfg.Global.KeyValidityPeriod = s.validity
 			cfg.FederationAPI.KeyPerspectives = nil
-			f, err := os.CreateTemp(d, "federation_keys_test*.db")
-			if err != nil {
-				return -1
-			}
-			defer f.Close()
-			cfg.FederationAPI.Database.ConnectionString = config.DataSource("file:" + f.Name())
+			cstr, close := test.PrepareDBConnectionString(&testing.T{}, test.DBTypePostgres)
+			defer close()
+			cfg.FederationAPI.Database.ConnectionString = config.DataSource(cstr)
 			s.config = &cfg.FederationAPI
 
 			// Create a transport which redirects federation requests to

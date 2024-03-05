@@ -166,10 +166,6 @@ func (d *DatabaseTransaction) InviteEventsInRange(ctx context.Context, targetUse
 	return d.Invites.SelectInviteEventsInRange(ctx, d.txn, targetUserID, r)
 }
 
-func (d *DatabaseTransaction) PeeksInRange(ctx context.Context, userID, deviceID string, r types.Range) (peeks []types.Peek, err error) {
-	return d.Peeks.SelectPeeksInRange(ctx, d.txn, userID, deviceID, r)
-}
-
 func (d *DatabaseTransaction) RoomReceiptsAfter(ctx context.Context, roomIDs []string, streamPos types.StreamPosition) (types.StreamPosition, []types.OutputReceiptEvent, error) {
 	return d.Receipts.SelectRoomReceiptsAfter(ctx, d.txn, roomIDs, streamPos)
 }
@@ -196,10 +192,6 @@ func (d *DatabaseTransaction) AllJoinedUsersInRooms(ctx context.Context) (map[st
 
 func (d *DatabaseTransaction) AllJoinedUsersInRoom(ctx context.Context, roomIDs []string) (map[string][]string, error) {
 	return d.CurrentRoomState.SelectJoinedUsersInRoom(ctx, d.txn, roomIDs)
-}
-
-func (d *DatabaseTransaction) AllPeekingDevicesInRooms(ctx context.Context) (map[string][]types.PeekingDevice, error) {
-	return d.Peeks.SelectPeekingDevices(ctx, d.txn)
 }
 
 func (d *DatabaseTransaction) SharedUsers(ctx context.Context, userID string, otherUserIDs []string) ([]string, error) {
@@ -398,36 +390,6 @@ func (d *DatabaseTransaction) GetStateDeltas(
 		}
 	}
 
-	// find out which rooms this user is peeking, if any.
-	// We do this before joins so any peeks get overwritten
-	peeks, err := d.Peeks.SelectPeeksInRange(ctx, d.txn, userID, device.ID, r)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, nil, err
-	}
-
-	// add peek blocks
-	for _, peek := range peeks {
-		if peek.New {
-			// send full room state down instead of a delta
-			var s []types.StreamEvent
-			s, err = d.currentStateStreamEventsForRoom(ctx, peek.RoomID, stateFilter)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					continue
-				}
-				return nil, nil, err
-			}
-			state[peek.RoomID] = s
-		}
-		if !peek.Deleted {
-			deltas = append(deltas, types.StateDelta{
-				Membership:  spec.Peek,
-				StateEvents: d.StreamEventsToEvents(ctx, device, state[peek.RoomID], rsAPI),
-				RoomID:      peek.RoomID,
-			})
-		}
-	}
-
 	// handle newly joined rooms and non-joined rooms
 	newlyJoinedRooms := make(map[string]bool, len(state))
 	for roomID, stateStreamEvents := range state {
@@ -518,29 +480,6 @@ func (d *DatabaseTransaction) GetStateDeltasForFullStateSync(
 
 	// Use a reasonable initial capacity
 	deltas := make(map[string]types.StateDelta)
-
-	peeks, err := d.Peeks.SelectPeeksInRange(ctx, d.txn, userID, device.ID, r)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, nil, err
-	}
-
-	// Add full states for all peeking rooms
-	for _, peek := range peeks {
-		if !peek.Deleted {
-			s, stateErr := d.currentStateStreamEventsForRoom(ctx, peek.RoomID, stateFilter)
-			if stateErr != nil {
-				if stateErr == sql.ErrNoRows {
-					continue
-				}
-				return nil, nil, stateErr
-			}
-			deltas[peek.RoomID] = types.StateDelta{
-				Membership:  spec.Peek,
-				StateEvents: d.StreamEventsToEvents(ctx, device, s, rsAPI),
-				RoomID:      peek.RoomID,
-			}
-		}
-	}
 
 	// Get all the state events ever between these two positions
 	stateNeeded, eventMap, err := d.OutputEvents.SelectStateInRange(ctx, d.txn, r, stateFilter, allRoomIDs)
@@ -684,9 +623,6 @@ func (d *Database) PurgeRoom(ctx context.Context, roomID string) error {
 		}
 		if err := d.Topology.PurgeEventsTopology(ctx, txn, roomID); err != nil {
 			return fmt.Errorf("failed to purge events topology: %w", err)
-		}
-		if err := d.Peeks.PurgePeeks(ctx, txn, roomID); err != nil {
-			return fmt.Errorf("failed to purge peeks: %w", err)
 		}
 		if err := d.Receipts.PurgeReceipts(ctx, txn, roomID); err != nil {
 			return fmt.Errorf("failed to purge receipts: %w", err)

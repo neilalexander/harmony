@@ -45,16 +45,6 @@ type Invites interface {
 	PurgeInvites(ctx context.Context, txn *sql.Tx, roomID string) error
 }
 
-type Peeks interface {
-	InsertPeek(ctx context.Context, txn *sql.Tx, roomID, userID, deviceID string) (streamPos types.StreamPosition, err error)
-	DeletePeek(ctx context.Context, txn *sql.Tx, roomID, userID, deviceID string) (streamPos types.StreamPosition, err error)
-	DeletePeeks(ctx context.Context, txn *sql.Tx, roomID, userID string) (streamPos types.StreamPosition, err error)
-	SelectPeeksInRange(ctxt context.Context, txn *sql.Tx, userID, deviceID string, r types.Range) (peeks []types.Peek, err error)
-	SelectPeekingDevices(ctxt context.Context, txn *sql.Tx) (peekingDevices map[string][]types.PeekingDevice, err error)
-	SelectMaxPeekID(ctx context.Context, txn *sql.Tx) (id int64, err error)
-	PurgePeeks(ctx context.Context, txn *sql.Tx, roomID string) error
-}
-
 type Events interface {
 	SelectStateInRange(ctx context.Context, txn *sql.Tx, r types.Range, stateFilter *synctypes.StateFilter, roomIDs []string) (map[string]map[string]bool, map[string]types.StreamEvent, error)
 	SelectMaxEventID(ctx context.Context, txn *sql.Tx) (id int64, err error)

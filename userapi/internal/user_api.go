@@ -23,7 +23,6 @@ import (
 	"strconv"
 	"time"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
 	fedsenderapi "github.com/matrix-org/dendrite/federationapi/api"
 	"github.com/matrix-org/dendrite/internal/pushrules"
@@ -45,23 +44,21 @@ import (
 	"github.com/matrix-org/dendrite/userapi/producers"
 	"github.com/matrix-org/dendrite/userapi/storage"
 	"github.com/matrix-org/dendrite/userapi/storage/tables"
+	usertypes "github.com/matrix-org/dendrite/userapi/types"
 	userapiUtil "github.com/matrix-org/dendrite/userapi/util"
 )
 
 type UserInternalAPI struct {
-	DB                storage.UserDatabase
-	KeyDatabase       storage.KeyDatabase
-	SyncProducer      *producers.SyncAPI
-	KeyChangeProducer *producers.KeyChange
-	Config            *config.UserAPI
-
+	DB                   storage.UserDatabase
+	KeyDatabase          storage.KeyDatabase
+	SyncProducer         *producers.SyncAPI
+	KeyChangeProducer    *producers.KeyChange
+	Config               *config.UserAPI
 	DisableTLSValidation bool
-	// AppServices is the list of all registered AS
-	AppServices []config.ApplicationService
-	RSAPI       rsapi.UserRoomserverAPI
-	PgClient    pushgateway.Client
-	FedClient   fedsenderapi.KeyserverFederationAPI
-	Updater     *DeviceListUpdater
+	RSAPI                rsapi.UserRoomserverAPI
+	PgClient             pushgateway.Client
+	FedClient            fedsenderapi.KeyserverFederationAPI
+	Updater              *DeviceListUpdater
 }
 
 func (a *UserInternalAPI) PerformAdminCreateRegistrationToken(ctx context.Context, registrationToken *clientapi.RegistrationToken) (bool, error) {
@@ -470,7 +467,7 @@ func (a *UserInternalAPI) QueryProfile(ctx context.Context, userID string) (*aut
 	prof, err := a.DB.GetProfileByLocalpart(ctx, local, domain)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, appserviceAPI.ErrProfileNotExists
+			return nil, usertypes.ErrProfileNotExists
 		}
 		return nil, err
 	}
@@ -562,18 +559,6 @@ func (a *UserInternalAPI) QueryAccountData(ctx context.Context, req *api.QueryAc
 }
 
 func (a *UserInternalAPI) QueryAccessToken(ctx context.Context, req *api.QueryAccessTokenRequest, res *api.QueryAccessTokenResponse) error {
-	if req.AppServiceUserID != "" {
-		appServiceDevice, err := a.queryAppServiceToken(ctx, req.AccessToken, req.AppServiceUserID)
-		if err != nil || appServiceDevice != nil {
-			if err != nil {
-				res.Err = err.Error()
-			}
-			res.Device = appServiceDevice
-
-			return nil
-		}
-		// If the provided token wasn't an as_token (both err and appServiceDevice are nil), continue with normal auth.
-	}
 	device, err := a.DB.GetDeviceByAccessToken(ctx, req.AccessToken)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -600,54 +585,6 @@ func (a *UserInternalAPI) QueryAccessToken(ctx context.Context, req *api.QueryAc
 func (a *UserInternalAPI) QueryAccountByLocalpart(ctx context.Context, req *api.QueryAccountByLocalpartRequest, res *api.QueryAccountByLocalpartResponse) (err error) {
 	res.Account, err = a.DB.GetAccountByLocalpart(ctx, req.Localpart, req.ServerName)
 	return
-}
-
-// Return the appservice 'device' or nil if the token is not an appservice. Returns an error if there was a problem
-// creating a 'device'.
-func (a *UserInternalAPI) queryAppServiceToken(ctx context.Context, token, appServiceUserID string) (*api.Device, error) {
-	// Search for app service with given access_token
-	var appService *config.ApplicationService
-	for _, as := range a.AppServices {
-		if as.ASToken == token {
-			appService = &as
-			break
-		}
-	}
-	if appService == nil {
-		return nil, nil
-	}
-
-	// Create a dummy device for AS user
-	dev := api.Device{
-		// Use AS dummy device ID
-		ID: "AS_Device",
-		// AS dummy device has AS's token.
-		AccessToken:  token,
-		AppserviceID: appService.ID,
-		AccountType:  api.AccountTypeAppService,
-	}
-
-	localpart, domain, err := userutil.ParseUsernameParam(appServiceUserID, a.Config.Matrix)
-	if err != nil {
-		return nil, err
-	}
-
-	if localpart != "" { // AS is masquerading as another user
-		// Verify that the user is registered
-		account, err := a.DB.GetAccountByLocalpart(ctx, localpart, domain)
-		// Verify that the account exists and either appServiceID matches or
-		// it belongs to the appservice user namespaces
-		if err == nil && (account.AppServiceID == appService.ID || appService.IsInterestedInUserID(appServiceUserID)) {
-			// Set the userID of dummy device
-			dev.UserID = appServiceUserID
-			return &dev, nil
-		}
-		return nil, &api.ErrorForbidden{Message: "appservice has not registered this user"}
-	}
-
-	// AS is not masquerading as any user, so use AS's sender_localpart
-	dev.UserID = appService.SenderLocalpart
-	return &dev, nil
 }
 
 // PerformAccountDeactivation deactivates the user's account, removing all ability for the user to login again.

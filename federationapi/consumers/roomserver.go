@@ -96,7 +96,7 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msgs []*nats.Ms
 
 	// Only handle events we care about, avoids unneeded unmarshalling
 	switch receivedType {
-	case api.OutputTypeNewRoomEvent, api.OutputTypeNewInboundPeek, api.OutputTypePurgeRoom:
+	case api.OutputTypeNewRoomEvent, api.OutputTypePurgeRoom:
 	default:
 		return true
 	}
@@ -123,15 +123,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msgs []*nats.Ms
 			}).Panicf("roomserver output log: write room event failure")
 		}
 
-	case api.OutputTypeNewInboundPeek:
-		if err := s.processInboundPeek(*output.NewInboundPeek); err != nil {
-			log.WithFields(log.Fields{
-				"event":      output.NewInboundPeek,
-				log.ErrorKey: err,
-			}).Panicf("roomserver output log: remote peek event failure")
-			return false
-		}
-
 	case api.OutputTypePurgeRoom:
 		log.WithField("room_id", output.PurgeRoom.RoomID).Warn("Purging room from federation API")
 		if err := s.db.PurgeRoom(ctx, output.PurgeRoom.RoomID); err != nil {
@@ -147,23 +138,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msgs []*nats.Ms
 	}
 
 	return true
-}
-
-// processInboundPeek starts tracking a new federated inbound peek (replacing the existing one if any)
-// causing the federationapi to start sending messages to the peeking server
-func (s *OutputRoomEventConsumer) processInboundPeek(orp api.OutputNewInboundPeek) error {
-
-	// FIXME: there's a race here - we should start /sending new peeked events
-	// atomically after the orp.LatestEventID to ensure there are no gaps between
-	// the peek beginning and the send stream beginning.
-	//
-	// We probably need to track orp.LatestEventID on the inbound peek, but it's
-	// unclear how we then use that to prevent the race when we start the send
-	// stream.
-	//
-	// This is making the tests flakey.
-
-	return s.db.AddInboundPeek(s.ctx, orp.ServerName, orp.RoomID, orp.PeekID, orp.RenewalInterval)
 }
 
 // processMessage updates the list of currently joined hosts in the room
@@ -240,10 +214,6 @@ func (s *OutputRoomEventConsumer) processMessage(ore api.OutputNewRoomEvent, rew
 	if err != nil {
 		return err
 	}
-
-	// TODO: do housekeeping to evict unrenewed peeking hosts
-
-	// TODO: implement query to let the fedapi check whether a given peek is live or not
 
 	// Send the event.
 	return s.queues.SendEvent(
@@ -322,7 +292,7 @@ func (s *OutputRoomEventConsumer) sendPresence(roomID string, addedJoined []type
 }
 
 // joinedHostsAtEvent works out a list of matrix servers that were joined to
-// the room at the event (including peeking ones)
+// the room at the event.
 // It is important to use the state at the event for sending messages because:
 //
 //  1. We shouldn't send messages to servers that weren't in the room.
@@ -373,15 +343,6 @@ func (s *OutputRoomEventConsumer) joinedHostsAtEvent(
 		// This m.room.member event was part of the state of the room at the
 		// event, but isn't part of the current state of the room now.
 		joined[joinedHost.ServerName] = true
-	}
-
-	// handle peeking hosts
-	inboundPeeks, err := s.db.GetInboundPeeks(s.ctx, ore.Event.PDU.RoomID().String())
-	if err != nil {
-		return nil, err
-	}
-	for _, inboundPeek := range inboundPeeks {
-		joined[inboundPeek.ServerName] = true
 	}
 
 	var result []spec.ServerName

@@ -28,7 +28,6 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	"github.com/Arceliar/phony"
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/nats-io/nats.go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -108,14 +107,12 @@ type worker struct {
 	r            *Inputer
 	roomID       string
 	subscription *nats.Subscription
-	sentryHub    *sentry.Hub
 }
 
 func (r *Inputer) startWorkerForRoom(roomID string) {
 	v, loaded := r.workers.LoadOrStore(roomID, &worker{
-		r:         r,
-		roomID:    roomID,
-		sentryHub: sentry.CurrentHub().Clone(),
+		r:      r,
+		roomID: roomID,
 	})
 	w := v.(*worker)
 	w.Lock()
@@ -267,9 +264,6 @@ func (w *worker) _next() {
 	// Look up what the next event is that's waiting to be processed.
 	ctx, cancel := context.WithTimeout(w.r.ProcessContext.Context(), time.Minute)
 	defer cancel()
-	w.sentryHub.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetTag("room_id", w.roomID)
-	})
 	msgs, err := w.subscription.Fetch(1, nats.Context(ctx))
 	switch err {
 	case nil:
@@ -325,10 +319,6 @@ func (w *worker) _next() {
 		return
 	}
 
-	w.sentryHub.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetTag("event_id", inputRoomEvent.Event.EventID())
-	})
-
 	// Process the room event. If something goes wrong then we'll tell
 	// NATS to terminate the message. We'll store the error result as
 	// a string, because we might want to return that to the caller if
@@ -348,9 +338,6 @@ func (w *worker) _next() {
 				"type":     inputRoomEvent.Event.Type(),
 			}).Warn("Roomserver rejected event")
 		default:
-			if !errors.Is(err, context.DeadlineExceeded) && !errors.Is(err, context.Canceled) {
-				w.sentryHub.CaptureException(err)
-			}
 			logrus.WithError(err).WithFields(logrus.Fields{
 				"room_id":  w.roomID,
 				"event_id": inputRoomEvent.Event.EventID(),

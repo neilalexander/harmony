@@ -106,7 +106,7 @@ func (p *PDUStreamProvider) CompleteSync(
 
 		// get the join response for each room
 		jr, jerr := p.getJoinResponseForCompleteSync(
-			ctx, snapshot, roomID, &stateFilter, req.WantFullState, req.Device, false,
+			ctx, snapshot, roomID, &stateFilter, req.WantFullState, req.Device,
 			events.Events, events.Limited, eventFormat,
 		)
 		if jerr != nil {
@@ -118,43 +118,6 @@ func (p *PDUStreamProvider) CompleteSync(
 		}
 		req.Response.Rooms.Join[roomID] = jr
 		req.Rooms[roomID] = spec.Join
-	}
-
-	// Add peeked rooms.
-	peeks, err := snapshot.PeeksInRange(ctx, req.Device.UserID, req.Device.ID, r)
-	if err != nil {
-		req.Log.WithError(err).Error("p.DB.PeeksInRange failed")
-		return from
-	}
-	if len(peeks) > 0 {
-		peekRooms := make([]string, 0, len(peeks))
-		for _, peek := range peeks {
-			if !peek.Deleted {
-				peekRooms = append(peekRooms, peek.RoomID)
-			}
-		}
-
-		recentEvents, err = snapshot.RecentEvents(ctx, peekRooms, r, &eventFilter, true, true)
-		if err != nil {
-			return from
-		}
-
-		for _, roomID := range peekRooms {
-			var jr *types.JoinResponse
-			events := recentEvents[roomID]
-			jr, err = p.getJoinResponseForCompleteSync(
-				ctx, snapshot, roomID, &stateFilter, req.WantFullState, req.Device, true,
-				events.Events, events.Limited, eventFormat,
-			)
-			if err != nil {
-				req.Log.WithError(err).Error("p.getJoinResponseForCompleteSync failed")
-				if err == context.DeadlineExceeded || err == context.Canceled || err == sql.ErrTxDone {
-					return from
-				}
-				continue
-			}
-			req.Response.Rooms.Peek[roomID] = jr
-		}
 	}
 
 	return to
@@ -451,19 +414,6 @@ func (p *PDUStreamProvider) addRoomDeltaToResponse(
 		})
 		req.Response.Rooms.Join[delta.RoomID] = jr
 
-	case spec.Peek:
-		jr := types.NewJoinResponse()
-		jr.Timeline.PrevBatch = &prevBatch
-		// TODO: Apply history visibility on peeked rooms
-		jr.Timeline.Events = synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(recentEvents), eventFormat, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return p.rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		})
-		jr.Timeline.Limited = limited
-		jr.State.Events = synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(delta.StateEvents), eventFormat, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return p.rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		})
-		req.Response.Rooms.Peek[delta.RoomID] = jr
-
 	case spec.Leave:
 		fallthrough // transitions to leave are the same as ban
 
@@ -547,7 +497,6 @@ func (p *PDUStreamProvider) getJoinResponseForCompleteSync(
 	stateFilter *synctypes.StateFilter,
 	wantFullState bool,
 	device *userapi.Device,
-	isPeek bool,
 	recentStreamEvents []types.StreamEvent,
 	limited bool,
 	eventFormat synctypes.ClientEventFormat,
@@ -585,13 +534,9 @@ func (p *PDUStreamProvider) getJoinResponseForCompleteSync(
 	// "Can sync a room with a message with a transaction id" - which does a complete sync to check.
 	recentEvents := snapshot.StreamEventsToEvents(ctx, device, recentStreamEvents, p.rsAPI)
 
-	events := recentEvents
-	// Only apply history visibility checks if the response is for joined rooms
-	if !isPeek {
-		events, err = applyHistoryVisibilityFilter(ctx, snapshot, p.rsAPI, roomID, device.UserID, recentEvents)
-		if err != nil {
-			logrus.WithError(err).Error("unable to apply history visibility filter")
-		}
+	events, err := applyHistoryVisibilityFilter(ctx, snapshot, p.rsAPI, roomID, device.UserID, recentEvents)
+	if err != nil {
+		logrus.WithError(err).Error("unable to apply history visibility filter")
 	}
 
 	// If we are limited by the filter AND the history visibility filter

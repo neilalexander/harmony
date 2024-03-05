@@ -25,7 +25,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/matrix-org/dendrite/federationapi/statistics"
 	rsapi "github.com/matrix-org/dendrite/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -37,6 +36,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	fedsenderapi "github.com/matrix-org/dendrite/federationapi/api"
+	"github.com/matrix-org/dendrite/federationapi/statistics"
 	"github.com/matrix-org/dendrite/setup/process"
 	"github.com/matrix-org/dendrite/userapi/api"
 )

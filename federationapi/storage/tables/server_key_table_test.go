@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/matrix-org/dendrite/federationapi/storage/postgres"
-	"github.com/matrix-org/dendrite/federationapi/storage/sqlite3"
 	"github.com/matrix-org/dendrite/federationapi/storage/tables"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/setup/config"
@@ -28,8 +27,6 @@ func mustCreateServerKeyDB(t *testing.T, dbType test.DBType) (tables.FederationS
 	switch dbType {
 	case test.DBTypePostgres:
 		tab, err = postgres.NewPostgresServerSigningKeysTable(db)
-	case test.DBTypeSQLite:
-		tab, err = sqlite3.NewSQLiteServerSigningKeysTable(db)
 	}
 	if err != nil {
 		t.Fatalf("failed to create table: %s", err)

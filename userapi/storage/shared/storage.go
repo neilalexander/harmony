@@ -56,7 +56,6 @@ type Database struct {
 	LoginTokens           tables.LoginTokenTable
 	Notifications         tables.NotificationTable
 	Pushers               tables.PusherTable
-	Stats                 tables.StatsTable
 	LoginTokenLifetime    time.Duration
 	ServerName            spec.ServerName
 	BcryptCost            int
@@ -65,6 +64,7 @@ type Database struct {
 
 type KeyDatabase struct {
 	OneTimeKeysTable      tables.OneTimeKeys
+	FallbackKeysTable     tables.FallbackKeys
 	DeviceKeysTable       tables.DeviceKeys
 	KeyChangesTable       tables.KeyChanges
 	StaleDeviceListsTable tables.StaleDeviceLists
@@ -910,25 +910,6 @@ func (d *Database) RemovePushers(
 	})
 }
 
-// UserStatistics populates types.UserStatistics, used in reports.
-func (d *Database) UserStatistics(ctx context.Context) (*types.UserStatistics, *types.DatabaseEngine, error) {
-	return d.Stats.UserStatistics(ctx, nil)
-}
-
-func (d *Database) UpsertDailyRoomsMessages(ctx context.Context, serverName spec.ServerName, stats types.MessageStats, activeRooms, activeE2EERooms int64) error {
-	return d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		return d.Stats.UpsertDailyStats(ctx, txn, serverName, stats, activeRooms, activeE2EERooms)
-	})
-}
-
-func (d *Database) DailyRoomsMessages(
-	ctx context.Context, serverName spec.ServerName,
-) (stats types.MessageStats, activeRooms, activeE2EERooms int64, err error) {
-	return d.Stats.DailyRoomsMessages(ctx, nil, serverName)
-}
-
-//
-
 func (d *KeyDatabase) ExistingOneTimeKeys(ctx context.Context, userID, deviceID string, keyIDsWithAlgorithms []string) (map[string]json.RawMessage, error) {
 	return d.OneTimeKeysTable.SelectOneTimeKeys(ctx, userID, deviceID, keyIDsWithAlgorithms)
 }
@@ -943,6 +924,22 @@ func (d *KeyDatabase) StoreOneTimeKeys(ctx context.Context, keys api.OneTimeKeys
 
 func (d *KeyDatabase) OneTimeKeysCount(ctx context.Context, userID, deviceID string) (*api.OneTimeKeysCount, error) {
 	return d.OneTimeKeysTable.CountOneTimeKeys(ctx, userID, deviceID)
+}
+
+func (d *KeyDatabase) StoreFallbackKeys(ctx context.Context, keys api.FallbackKeys) (unused []string, err error) {
+	_ = d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
+		unused, err = d.FallbackKeysTable.InsertFallbackKeys(ctx, txn, keys)
+		return err
+	})
+	return
+}
+
+func (d *KeyDatabase) DeleteFallbackKeys(ctx context.Context, userID, deviceID string) error {
+	return d.FallbackKeysTable.DeleteFallbackKeys(ctx, nil, userID, deviceID)
+}
+
+func (d *KeyDatabase) UnusedFallbackKeyAlgorithms(ctx context.Context, userID, deviceID string) ([]string, error) {
+	return d.FallbackKeysTable.SelectUnusedFallbackKeyAlgorithms(ctx, userID, deviceID)
 }
 
 func (d *KeyDatabase) DeviceKeysJSON(ctx context.Context, keys []api.DeviceMessage) error {
@@ -1006,6 +1003,12 @@ func (d *KeyDatabase) ClaimKeys(ctx context.Context, userToDeviceToAlgorithm map
 				keyJSON, err := d.OneTimeKeysTable.SelectAndDeleteOneTimeKey(ctx, txn, userID, deviceID, algo)
 				if err != nil {
 					return err
+				}
+				if len(keyJSON) == 0 {
+					keyJSON, err = d.FallbackKeysTable.SelectAndUpdateFallbackKey(ctx, txn, userID, deviceID, algo)
+					if err != nil {
+						return err
+					}
 				}
 				if keyJSON != nil {
 					result = append(result, api.OneTimeKeys{

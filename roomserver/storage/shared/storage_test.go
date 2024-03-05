@@ -16,7 +16,6 @@ import (
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
 	"github.com/matrix-org/dendrite/roomserver/storage/shared"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/test"
@@ -53,22 +52,6 @@ func mustCreateRoomserverDatabase(t *testing.T, dbType test.DBType) (*shared.Dat
 		stateKeyTable, err = postgres.PrepareEventStateKeysTable(db)
 		assert.NoError(t, err)
 		userRoomKeys, err = postgres.PrepareUserRoomKeysTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreateRoomsTable(db)
-		assert.NoError(t, err)
-		err = sqlite3.CreateEventStateKeysTable(db)
-		assert.NoError(t, err)
-		err = sqlite3.CreateMembershipTable(db)
-		assert.NoError(t, err)
-		err = sqlite3.CreateUserRoomKeysTable(db)
-		assert.NoError(t, err)
-		roomsTable, err = sqlite3.PrepareRoomsTable(db)
-		assert.NoError(t, err)
-		membershipTable, err = sqlite3.PrepareMembershipTable(db)
-		assert.NoError(t, err)
-		stateKeyTable, err = sqlite3.PrepareEventStateKeysTable(db)
-		assert.NoError(t, err)
-		userRoomKeys, err = sqlite3.PrepareUserRoomKeysTable(db)
 	}
 	assert.NoError(t, err)
 

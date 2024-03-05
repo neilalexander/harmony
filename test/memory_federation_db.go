@@ -359,75 +359,6 @@ func (d *InMemoryFederationDatabase) IsServerAssumedOffline(
 	return assumedOffline, nil
 }
 
-func (d *InMemoryFederationDatabase) P2PGetRelayServersForServer(
-	ctx context.Context,
-	serverName spec.ServerName,
-) ([]spec.ServerName, error) {
-	d.dbMutex.Lock()
-	defer d.dbMutex.Unlock()
-
-	knownRelayServers := []spec.ServerName{}
-	if relayServers, ok := d.relayServers[serverName]; ok {
-		knownRelayServers = relayServers
-	}
-
-	return knownRelayServers, nil
-}
-
-func (d *InMemoryFederationDatabase) P2PAddRelayServersForServer(
-	ctx context.Context,
-	serverName spec.ServerName,
-	relayServers []spec.ServerName,
-) error {
-	d.dbMutex.Lock()
-	defer d.dbMutex.Unlock()
-
-	if knownRelayServers, ok := d.relayServers[serverName]; ok {
-		for _, relayServer := range relayServers {
-			alreadyKnown := false
-			for _, knownRelayServer := range knownRelayServers {
-				if relayServer == knownRelayServer {
-					alreadyKnown = true
-				}
-			}
-			if !alreadyKnown {
-				d.relayServers[serverName] = append(d.relayServers[serverName], relayServer)
-			}
-		}
-	} else {
-		d.relayServers[serverName] = relayServers
-	}
-
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) P2PRemoveRelayServersForServer(
-	ctx context.Context,
-	serverName spec.ServerName,
-	relayServers []spec.ServerName,
-) error {
-	d.dbMutex.Lock()
-	defer d.dbMutex.Unlock()
-
-	if knownRelayServers, ok := d.relayServers[serverName]; ok {
-		for _, relayServer := range relayServers {
-			for i, knownRelayServer := range knownRelayServers {
-				if relayServer == knownRelayServer {
-					d.relayServers[serverName] = append(
-						d.relayServers[serverName][:i],
-						d.relayServers[serverName][i+1:]...,
-					)
-					break
-				}
-			}
-		}
-	} else {
-		d.relayServers[serverName] = relayServers
-	}
-
-	return nil
-}
-
 func (d *InMemoryFederationDatabase) FetchKeys(ctx context.Context, requests map[gomatrixserverlib.PublicKeyLookupRequest]spec.Timestamp) (map[gomatrixserverlib.PublicKeyLookupRequest]gomatrixserverlib.PublicKeyLookupResult, error) {
 	return nil, nil
 }
@@ -458,42 +389,6 @@ func (d *InMemoryFederationDatabase) GetJoinedHostsForRooms(ctx context.Context,
 
 func (d *InMemoryFederationDatabase) RemoveAllServersAssumedOffline(ctx context.Context) error {
 	return nil
-}
-
-func (d *InMemoryFederationDatabase) P2PRemoveAllRelayServersForServer(ctx context.Context, serverName spec.ServerName) error {
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) AddOutboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string, renewalInterval int64) error {
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) RenewOutboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string, renewalInterval int64) error {
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) GetOutboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string) (*types.OutboundPeek, error) {
-	return nil, nil
-}
-
-func (d *InMemoryFederationDatabase) GetOutboundPeeks(ctx context.Context, roomID string) ([]types.OutboundPeek, error) {
-	return nil, nil
-}
-
-func (d *InMemoryFederationDatabase) AddInboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string, renewalInterval int64) error {
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) RenewInboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string, renewalInterval int64) error {
-	return nil
-}
-
-func (d *InMemoryFederationDatabase) GetInboundPeek(ctx context.Context, serverName spec.ServerName, roomID, peekID string) (*types.InboundPeek, error) {
-	return nil, nil
-}
-
-func (d *InMemoryFederationDatabase) GetInboundPeeks(ctx context.Context, roomID string) ([]types.InboundPeek, error) {
-	return nil, nil
 }
 
 func (d *InMemoryFederationDatabase) UpdateNotaryKeys(ctx context.Context, serverName spec.ServerName, serverKeys gomatrixserverlib.ServerKeys) error {

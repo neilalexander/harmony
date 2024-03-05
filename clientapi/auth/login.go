@@ -69,20 +69,6 @@ func LoginFromJSONReader(
 			UserAPI: userAPI,
 			Config:  cfg,
 		}
-	case authtypes.LoginTypeApplicationService:
-		token, err := ExtractAccessToken(req)
-		if err != nil {
-			err := &util.JSONResponse{
-				Code: http.StatusForbidden,
-				JSON: spec.MissingToken(err.Error()),
-			}
-			return nil, nil, err
-		}
-
-		typ = &LoginTypeApplicationService{
-			Config: cfg,
-			Token:  token,
-		}
 	default:
 		err := util.JSONResponse{
 			Code: http.StatusBadRequest,

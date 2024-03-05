@@ -101,10 +101,6 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 	if err != nil {
 		return nil, fmt.Errorf("NewPostgresNotificationTable: %w", err)
 	}
-	statsTable, err := NewPostgresStatsTable(db, serverName)
-	if err != nil {
-		return nil, fmt.Errorf("NewPostgresStatsTable: %w", err)
-	}
 
 	m = sqlutil.NewMigrator(db)
 	m.AddMigrations(sqlutil.Migration{
@@ -130,7 +126,6 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 		Pushers:               pusherTable,
 		Notifications:         notificationsTable,
 		RegistrationTokens:    registationTokensTable,
-		Stats:                 statsTable,
 		ServerName:            serverName,
 		DB:                    db,
 		Writer:                writer,
@@ -146,6 +141,10 @@ func NewKeyDatabase(conMan *sqlutil.Connections, dbProperties *config.DatabaseOp
 		return nil, err
 	}
 	otk, err := NewPostgresOneTimeKeysTable(db)
+	if err != nil {
+		return nil, err
+	}
+	fk, err := NewPostgresFallbackKeysTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +171,7 @@ func NewKeyDatabase(conMan *sqlutil.Connections, dbProperties *config.DatabaseOp
 
 	return &shared.KeyDatabase{
 		OneTimeKeysTable:      otk,
+		FallbackKeysTable:     fk,
 		DeviceKeysTable:       dk,
 		KeyChangesTable:       kc,
 		StaleDeviceListsTable: sdl,

@@ -33,8 +33,8 @@ func main() {
 			cfg.Global.ServerName = spec.ServerName(*serverName)
 		}
 		uri := config.DataSource(*dbURI)
-		if uri.IsSQLite() || uri == "" {
-			for name, db := range map[string]*config.DatabaseOptions{
+		/* if uri == "" {
+			for _, db := range map[string]*config.DatabaseOptions{
 				"federationapi": &cfg.FederationAPI.Database,
 				"keyserver":     &cfg.KeyServer.Database,
 				"mscs":          &cfg.MSCs.Database,
@@ -42,18 +42,12 @@ func main() {
 				"roomserver":    &cfg.RoomServer.Database,
 				"syncapi":       &cfg.SyncAPI.Database,
 				"userapi":       &cfg.UserAPI.AccountDatabase,
-				"relayapi":      &cfg.RelayAPI.Database,
 			} {
-				if uri == "" {
-					path := filepath.Join(*dirPath, fmt.Sprintf("dendrite_%s.db", name))
-					db.ConnectionString = config.DataSource(fmt.Sprintf("file:%s", path))
-				} else {
-					db.ConnectionString = uri
-				}
+				db.ConnectionString = uri
 			}
-		} else {
-			cfg.Global.DatabaseOptions.ConnectionString = uri
-		}
+		} else { */
+		cfg.Global.DatabaseOptions.ConnectionString = uri
+		// }
 		cfg.MediaAPI.BasePath = config.Path(filepath.Join(*dirPath, "media"))
 		cfg.Global.JetStream.StoragePath = config.Path(*dirPath)
 		cfg.SyncAPI.Fulltext.IndexPath = config.Path(filepath.Join(*dirPath, "searchindex"))
@@ -67,7 +61,6 @@ func main() {
 			},
 		}
 		if *defaultsForCI {
-			cfg.AppServiceAPI.DisableTLSValidation = true
 			cfg.ClientAPI.RateLimiting.Enabled = false
 			cfg.FederationAPI.DisableTLSValidation = false
 			cfg.FederationAPI.DisableHTTPKeepalives = true

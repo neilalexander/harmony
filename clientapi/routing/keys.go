@@ -27,8 +27,9 @@ import (
 )
 
 type uploadKeysRequest struct {
-	DeviceKeys  json.RawMessage            `json:"device_keys"`
-	OneTimeKeys map[string]json.RawMessage `json:"one_time_keys"`
+	DeviceKeys   json.RawMessage            `json:"device_keys"`
+	OneTimeKeys  map[string]json.RawMessage `json:"one_time_keys"`
+	FallbackKeys map[string]json.RawMessage `json:"fallback_keys"`
 }
 
 func UploadKeys(req *http.Request, keyAPI api.ClientKeyAPI, device *api.Device) util.JSONResponse {
@@ -57,6 +58,15 @@ func UploadKeys(req *http.Request, keyAPI api.ClientKeyAPI, device *api.Device) 
 				DeviceID: device.ID,
 				UserID:   device.UserID,
 				KeyJSON:  r.OneTimeKeys,
+			},
+		}
+	}
+	if r.FallbackKeys != nil {
+		uploadReq.FallbackKeys = []api.FallbackKeys{
+			{
+				DeviceID: device.ID,
+				UserID:   device.UserID,
+				KeyJSON:  r.FallbackKeys,
 			},
 		}
 	}

@@ -10,7 +10,6 @@ import (
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/storage/postgres"
-	"github.com/matrix-org/dendrite/roomserver/storage/sqlite3"
 	"github.com/matrix-org/dendrite/roomserver/storage/tables"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/test"
@@ -28,10 +27,6 @@ func mustCreatePublishedTable(t *testing.T, dbType test.DBType) (tab tables.Publ
 		err = postgres.CreatePublishedTable(db)
 		assert.NoError(t, err)
 		tab, err = postgres.PreparePublishedTable(db)
-	case test.DBTypeSQLite:
-		err = sqlite3.CreatePublishedTable(db)
-		assert.NoError(t, err)
-		tab, err = sqlite3.PreparePublishedTable(db)
 	}
 	assert.NoError(t, err)
 

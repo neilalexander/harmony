@@ -41,8 +41,6 @@ type Notifier struct {
 	rsAPI api.SyncRoomserverAPI
 	// A map of RoomID => Set<UserID> : Must only be accessed by the OnNewEvent goroutine
 	roomIDToJoinedUsers map[string]*userIDSet
-	// A map of RoomID => Set<UserID> : Must only be accessed by the OnNewEvent goroutine
-	roomIDToPeekingDevices map[string]peekingDeviceSet
 	// The latest sync position
 	currPos types.StreamingToken
 	// A map of user_id => device_id => UserStream which can be used to wake a given user's /sync request.
@@ -59,14 +57,13 @@ type Notifier struct {
 // the joined users within each of them by calling Notifier.Load(*storage.SyncServerDatabase).
 func NewNotifier(rsAPI api.SyncRoomserverAPI) *Notifier {
 	return &Notifier{
-		rsAPI:                  rsAPI,
-		roomIDToJoinedUsers:    make(map[string]*userIDSet),
-		roomIDToPeekingDevices: make(map[string]peekingDeviceSet),
-		userDeviceStreams:      make(map[string]map[string]*UserDeviceStream),
-		lock:                   &sync.RWMutex{},
-		lastCleanUpTime:        time.Now(),
-		_sharedUserMap:         map[string]struct{}{},
-		_wakeupUserMap:         map[string]struct{}{},
+		rsAPI:               rsAPI,
+		roomIDToJoinedUsers: make(map[string]*userIDSet),
+		userDeviceStreams:   make(map[string]map[string]*UserDeviceStream),
+		lock:                &sync.RWMutex{},
+		lastCleanUpTime:     time.Now(),
+		_sharedUserMap:      map[string]struct{}{},
+		_wakeupUserMap:      map[string]struct{}{},
 	}
 }
 
@@ -103,8 +100,6 @@ func (n *Notifier) OnNewEvent(
 	if ev != nil {
 		// Map this event's room_id to a list of joined users, and wake them up.
 		usersToNotify := n._joinedUsers(ev.RoomID().String())
-		// Map this event's room_id to a list of peeking devices, and wake them up.
-		peekingDevicesToNotify := n._peekingDevices(ev.RoomID().String())
 		// If this is an invite, also add in the invitee to this list.
 		if ev.Type() == "m.room.member" && ev.StateKey() != nil {
 			targetUserID, err := n.rsAPI.QueryUserIDForSender(context.Background(), ev.RoomID(), spec.SenderID(*ev.StateKey()))
@@ -137,11 +132,11 @@ func (n *Notifier) OnNewEvent(
 			}
 		}
 
-		n._wakeupUsers(usersToNotify, peekingDevicesToNotify, n.currPos)
+		n._wakeupUsers(usersToNotify, n.currPos)
 	} else if roomID != "" {
-		n._wakeupUsers(n._joinedUsers(roomID), n._peekingDevices(roomID), n.currPos)
+		n._wakeupUsers(n._joinedUsers(roomID), n.currPos)
 	} else if len(userIDs) > 0 {
-		n._wakeupUsers(userIDs, nil, n.currPos)
+		n._wakeupUsers(userIDs, n.currPos)
 	} else {
 		log.WithFields(log.Fields{
 			"posUpdate": posUpdate.String,
@@ -156,35 +151,7 @@ func (n *Notifier) OnNewAccountData(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers([]string{userID}, nil, posUpdate)
-}
-
-func (n *Notifier) OnNewPeek(
-	roomID, userID, deviceID string,
-	posUpdate types.StreamingToken,
-) {
-	n.lock.Lock()
-	defer n.lock.Unlock()
-
-	n.currPos.ApplyUpdates(posUpdate)
-	n._addPeekingDevice(roomID, userID, deviceID)
-
-	// we don't wake up devices here given the roomserver consumer will do this shortly afterwards
-	// by calling OnNewEvent.
-}
-
-func (n *Notifier) OnRetirePeek(
-	roomID, userID, deviceID string,
-	posUpdate types.StreamingToken,
-) {
-	n.lock.Lock()
-	defer n.lock.Unlock()
-
-	n.currPos.ApplyUpdates(posUpdate)
-	n._removePeekingDevice(roomID, userID, deviceID)
-
-	// we don't wake up devices here given the roomserver consumer will do this shortly afterwards
-	// by calling OnRetireEvent.
+	n._wakeupUsers([]string{userID}, posUpdate)
 }
 
 func (n *Notifier) OnNewSendToDevice(
@@ -207,7 +174,7 @@ func (n *Notifier) OnNewTyping(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers(n._joinedUsers(roomID), nil, n.currPos)
+	n._wakeupUsers(n._joinedUsers(roomID), n.currPos)
 }
 
 // OnNewReceipt updates the current position
@@ -219,7 +186,7 @@ func (n *Notifier) OnNewReceipt(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers(n._joinedUsers(roomID), nil, n.currPos)
+	n._wakeupUsers(n._joinedUsers(roomID), n.currPos)
 }
 
 func (n *Notifier) OnNewKeyChange(
@@ -229,7 +196,7 @@ func (n *Notifier) OnNewKeyChange(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers([]string{wakeUserID}, nil, n.currPos)
+	n._wakeupUsers([]string{wakeUserID}, n.currPos)
 }
 
 func (n *Notifier) OnNewInvite(
@@ -239,7 +206,7 @@ func (n *Notifier) OnNewInvite(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers([]string{wakeUserID}, nil, n.currPos)
+	n._wakeupUsers([]string{wakeUserID}, n.currPos)
 }
 
 func (n *Notifier) OnNewNotificationData(
@@ -250,7 +217,7 @@ func (n *Notifier) OnNewNotificationData(
 	defer n.lock.Unlock()
 
 	n.currPos.ApplyUpdates(posUpdate)
-	n._wakeupUsers([]string{userID}, nil, n.currPos)
+	n._wakeupUsers([]string{userID}, n.currPos)
 }
 
 func (n *Notifier) OnNewPresence(
@@ -263,7 +230,7 @@ func (n *Notifier) OnNewPresence(
 	sharedUsers := n._sharedUsers(userID)
 	sharedUsers = append(sharedUsers, userID)
 
-	n._wakeupUsers(sharedUsers, nil, n.currPos)
+	n._wakeupUsers(sharedUsers, n.currPos)
 }
 
 func (n *Notifier) SharedUsers(userID string) []string {
@@ -316,9 +283,6 @@ func (n *Notifier) GetListener(req types.SyncRequest) UserDeviceStreamListener {
 	// - Incoming events wake requests for a matching room ID
 	// - Incoming events wake requests for a matching user ID (needed for invites)
 
-	// TODO: v1 /events 'peeking' has an 'explicit room ID' which is also tracked,
-	//       but given we don't do /events, let's pretend it doesn't exist.
-
 	n.lock.Lock()
 	defer n.lock.Unlock()
 
@@ -344,12 +308,6 @@ func (n *Notifier) Load(ctx context.Context, db storage.Database) error {
 		return err
 	}
 	n.setUsersJoinedToRooms(roomToUsers)
-
-	roomToPeekingDevices, err := snapshot.AllPeekingDevicesInRooms(ctx)
-	if err != nil {
-		return err
-	}
-	n.setPeekingDevices(roomToPeekingDevices)
 
 	succeeded = true
 	return nil
@@ -401,24 +359,9 @@ func (n *Notifier) setUsersJoinedToRooms(roomIDToUserIDs map[string][]string) {
 	}
 }
 
-// setPeekingDevices marks the given devices as peeking in the given rooms, such that new events from
-// these rooms will wake the given devices' /sync requests. This should be called prior to ANY calls to
-// OnNewEvent (eg on startup) to prevent racing.
-func (n *Notifier) setPeekingDevices(roomIDToPeekingDevices map[string][]types.PeekingDevice) {
-	// This is just the bulk form of addPeekingDevice
-	for roomID, peekingDevices := range roomIDToPeekingDevices {
-		if _, ok := n.roomIDToPeekingDevices[roomID]; !ok {
-			n.roomIDToPeekingDevices[roomID] = make(peekingDeviceSet, len(peekingDevices))
-		}
-		for _, peekingDevice := range peekingDevices {
-			n.roomIDToPeekingDevices[roomID].add(peekingDevice)
-		}
-	}
-}
-
 // _wakeupUsers will wake up the sync strems for all of the devices for all of the
-// specified user IDs, and also the specified peekingDevices
-func (n *Notifier) _wakeupUsers(userIDs []string, peekingDevices []types.PeekingDevice, newPos types.StreamingToken) {
+// specified user IDs.
+func (n *Notifier) _wakeupUsers(userIDs []string, newPos types.StreamingToken) {
 	for _, userID := range userIDs {
 		n._wakeupUserMap[userID] = struct{}{}
 	}
@@ -430,13 +373,6 @@ func (n *Notifier) _wakeupUsers(userIDs []string, peekingDevices []types.Peeking
 			stream.Broadcast(newPos) // wake up all goroutines Wait()ing on this stream
 		}
 		delete(n._wakeupUserMap, userID)
-	}
-
-	for _, peekingDevice := range peekingDevices {
-		// TODO: don't bother waking up for devices whose users we already woke up
-		if stream := n._fetchUserDeviceStream(peekingDevice.UserID, peekingDevice.DeviceID, false); stream != nil {
-			stream.Broadcast(newPos) // wake up all goroutines Wait()ing on this stream
-		}
 	}
 }
 
@@ -519,34 +455,6 @@ func (n *Notifier) _joinedUsers(roomID string) (userIDs []string) {
 	return n.roomIDToJoinedUsers[roomID].values()
 }
 
-func (n *Notifier) _addPeekingDevice(roomID, userID, deviceID string) {
-	if _, ok := n.roomIDToPeekingDevices[roomID]; !ok {
-		n.roomIDToPeekingDevices[roomID] = make(peekingDeviceSet)
-	}
-	n.roomIDToPeekingDevices[roomID].add(types.PeekingDevice{UserID: userID, DeviceID: deviceID})
-}
-
-func (n *Notifier) _removePeekingDevice(roomID, userID, deviceID string) {
-	if _, ok := n.roomIDToPeekingDevices[roomID]; !ok {
-		n.roomIDToPeekingDevices[roomID] = make(peekingDeviceSet)
-	}
-	// XXX: is this going to work as a key?
-	n.roomIDToPeekingDevices[roomID].remove(types.PeekingDevice{UserID: userID, DeviceID: deviceID})
-}
-
-func (n *Notifier) PeekingDevices(roomID string) (peekingDevices []types.PeekingDevice) {
-	n.lock.RLock()
-	defer n.lock.RUnlock()
-	return n._peekingDevices(roomID)
-}
-
-func (n *Notifier) _peekingDevices(roomID string) (peekingDevices []types.PeekingDevice) {
-	if _, ok := n.roomIDToPeekingDevices[roomID]; !ok {
-		return
-	}
-	return n.roomIDToPeekingDevices[roomID].values()
-}
-
 // _removeEmptyUserStreams iterates through the user stream map and removes any
 // that have been empty for a certain amount of time. This is a crude way of
 // ensuring that the userStreams map doesn't grow forver.
@@ -622,27 +530,6 @@ func (s *userIDSet) values() (vals []string) {
 	vals = make([]string, 0, len(s.set))
 	for str := range s.set {
 		vals = append(vals, str)
-	}
-	return
-}
-
-// A set of PeekingDevices, similar to userIDSet
-
-type peekingDeviceSet map[types.PeekingDevice]struct{}
-
-func (s peekingDeviceSet) add(d types.PeekingDevice) {
-	s[d] = struct{}{}
-}
-
-// nolint:unused
-func (s peekingDeviceSet) remove(d types.PeekingDevice) {
-	delete(s, d)
-}
-
-func (s peekingDeviceSet) values() (vals []types.PeekingDevice) {
-	vals = make([]types.PeekingDevice, 0, len(s))
-	for d := range s {
-		vals = append(vals, d)
 	}
 	return
 }

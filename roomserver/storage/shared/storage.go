@@ -805,9 +805,8 @@ func (d *EventDatabase) StoreEvent(
 		}
 
 		if prevEvents := event.PrevEventIDs(); len(prevEvents) > 0 {
-			// Create an updater - NB: on sqlite this WILL create a txn as we are directly calling the shared DB form of
-			// GetLatestEventsForUpdate - not via the SQLiteDatabase form which has `nil` txns. This
-			// function only does SELECTs though so the created txn (at this point) is just a read txn like
+			// Create an updater.
+			// This function only does SELECTs though so the created txn (at this point) is just a read txn like
 			// any other so this is fine. If we ever update GetLatestEventsForUpdate or NewLatestEventsUpdater
 			// to do writes however then this will need to go inside `Writer.Do`.
 
@@ -1187,7 +1186,7 @@ func (d *Database) GetHistoryVisibilityState(ctx context.Context, roomInfo *type
 	if err != nil {
 		return nil, err
 	}
-	eventIDs, _ := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
+	eventIDs, err := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
 	if err != nil {
 		eventIDs = map[types.EventNID]string{}
 	}
@@ -1255,7 +1254,7 @@ func (d *Database) GetStateEvent(ctx context.Context, roomID, evType, stateKey s
 	if err != nil {
 		return nil, err
 	}
-	eventIDs, _ := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
+	eventIDs, err := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
 	if err != nil {
 		eventIDs = map[types.EventNID]string{}
 	}
@@ -1316,7 +1315,7 @@ func (d *Database) GetStateEventsWithEventType(ctx context.Context, roomID, evTy
 			eventNIDs = append(eventNIDs, e.EventNID)
 		}
 	}
-	eventIDs, _ := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
+	eventIDs, err := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
 	if err != nil {
 		eventIDs = map[types.EventNID]string{}
 	}
@@ -1499,7 +1498,7 @@ func (d *Database) GetBulkStateContent(ctx context.Context, roomIDs []string, tu
 			}
 		}
 	}
-	eventIDs, _ := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
+	eventIDs, err := d.EventsTable.BulkSelectEventID(ctx, nil, eventNIDs)
 	if err != nil {
 		eventIDs = map[types.EventNID]string{}
 	}

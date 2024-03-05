@@ -20,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
@@ -163,7 +162,6 @@ func (s *OutputClientDataConsumer) onMessage(ctx context.Context, msgs []*nats.M
 	if err := json.Unmarshal(msg.Data, &output); err != nil {
 		// If the message was invalid, log it and move on to the next message in the stream
 		log.WithError(err).Errorf("client API server output log: message parse failure")
-		sentry.CaptureException(err)
 		return true
 	}
 
@@ -176,7 +174,6 @@ func (s *OutputClientDataConsumer) onMessage(ctx context.Context, msgs []*nats.M
 		s.ctx, userID, output.RoomID, output.Type,
 	)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithFields(log.Fields{
 			"type":       output.Type,
 			"room_id":    output.RoomID,
@@ -190,7 +187,6 @@ func (s *OutputClientDataConsumer) onMessage(ctx context.Context, msgs []*nats.M
 			log.WithError(err).WithFields(logrus.Fields{
 				"user_id": userID,
 			}).Errorf("Failed to update ignored users")
-			sentry.CaptureException(err)
 		}
 	}
 

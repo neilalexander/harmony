@@ -33,7 +33,6 @@ import (
 	"github.com/matrix-org/dendrite/userapi/internal"
 	"github.com/matrix-org/dendrite/userapi/producers"
 	"github.com/matrix-org/dendrite/userapi/storage"
-	"github.com/matrix-org/dendrite/userapi/util"
 )
 
 // NewInternalAPI returns a concrete implementation of the internal API. Callers
@@ -52,7 +51,6 @@ func NewInternalAPI(
 	blacklistedOrBackingOffFn func(s spec.ServerName) (*statistics.ServerStatistics, error),
 ) *internal.UserInternalAPI {
 	js, _ := natsInstance.Prepare(processContext, &dendriteCfg.Global.JetStream)
-	appServices := dendriteCfg.Derived.ApplicationServices
 
 	pgClient := pushgateway.NewHTTPClient(dendriteCfg.UserAPI.PushGatewayDisableTLSValidation)
 
@@ -96,7 +94,6 @@ func NewInternalAPI(
 		SyncProducer:         syncProducer,
 		KeyChangeProducer:    keyChangeProducer,
 		Config:               &dendriteCfg.UserAPI,
-		AppServices:          appServices,
 		RSAPI:                rsAPI,
 		DisableTLSValidation: dendriteCfg.UserAPI.PushGatewayDisableTLSValidation,
 		PgClient:             pgClient,
@@ -153,10 +150,6 @@ func NewInternalAPI(
 		time.AfterFunc(time.Hour, cleanOldNotifs)
 	}
 	time.AfterFunc(time.Minute, cleanOldNotifs)
-
-	if dendriteCfg.Global.ReportStats.Enabled {
-		go util.StartPhoneHomeCollector(time.Now(), dendriteCfg, db)
-	}
 
 	return userAPI
 }

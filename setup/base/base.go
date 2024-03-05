@@ -31,7 +31,6 @@ import (
 	"syscall"
 	"time"
 
-	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/atomic"
@@ -71,7 +70,7 @@ func CreateClient(cfg *config.Dendrite, dnsCache *fclient.DNSCache) *fclient.Cli
 		opts = append(opts, fclient.WithDNSCache(dnsCache))
 	}
 	client := fclient.NewClient(opts...)
-	client.SetUserAgent(fmt.Sprintf("Dendrite/%s", internal.VersionString()))
+	client.SetUserAgent(fmt.Sprintf("Harmony/%s", internal.VersionString()))
 	return client
 }
 
@@ -88,7 +87,7 @@ func CreateFederationClient(cfg *config.Dendrite, dnsCache *fclient.DNSCache) fc
 		fclient.WithTimeout(time.Minute * 5),
 		fclient.WithSkipVerify(cfg.FederationAPI.DisableTLSValidation),
 		fclient.WithKeepAlives(!cfg.FederationAPI.DisableHTTPKeepalives),
-		fclient.WithUserAgent(fmt.Sprintf("Dendrite/%s", internal.VersionString())),
+		fclient.WithUserAgent(fmt.Sprintf("Harmony/%s", internal.VersionString())),
 	}
 	if cfg.Global.DNSCache.Enabled {
 		opts = append(opts, fclient.WithDNSCache(dnsCache))
@@ -169,22 +168,8 @@ func SetupAndServeHTTP(
 	// Serve a static page for login fallback
 	routers.Static.PathPrefix("/client/login/").Handler(http.StripPrefix("/_matrix/static/client/login/", http.FileServer(http.FS(sub))))
 
-	var clientHandler http.Handler
-	clientHandler = routers.Client
-	if cfg.Global.Sentry.Enabled {
-		sentryHandler := sentryhttp.New(sentryhttp.Options{
-			Repanic: true,
-		})
-		clientHandler = sentryHandler.Handle(routers.Client)
-	}
-	var federationHandler http.Handler
-	federationHandler = routers.Federation
-	if cfg.Global.Sentry.Enabled {
-		sentryHandler := sentryhttp.New(sentryhttp.Options{
-			Repanic: true,
-		})
-		federationHandler = sentryHandler.Handle(routers.Federation)
-	}
+	clientHandler := routers.Client
+	federationHandler := routers.Federation
 	externalRouter.PathPrefix(httputil.DendriteAdminPathPrefix).Handler(routers.DendriteAdmin)
 	externalRouter.PathPrefix(httputil.PublicClientPathPrefix).Handler(clientHandler)
 	if !cfg.Global.DisableFederation {

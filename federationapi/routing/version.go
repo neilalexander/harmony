@@ -36,7 +36,7 @@ func Version() util.JSONResponse {
 		Code: http.StatusOK,
 		JSON: &version{
 			server{
-				Name:    "Dendrite",
+				Name:    "Harmony",
 				Version: internal.VersionString(),
 			},
 		},

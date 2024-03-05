@@ -29,7 +29,6 @@ import (
 
 	"github.com/matrix-org/dendrite/roomserver/types"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/clientapi/httputil"
 	"github.com/matrix-org/dendrite/internal/eventutil"
 	"github.com/matrix-org/dendrite/internal/transactions"
@@ -59,7 +58,6 @@ func SendServerNotice(
 	cfgClient *config.ClientAPI,
 	userAPI userapi.ClientUserAPI,
 	rsAPI api.ClientRoomserverAPI,
-	asAPI appserviceAPI.AppServiceInternalAPI,
 	device *userapi.Device,
 	senderDevice *userapi.Device,
 	txnID *string,
@@ -169,7 +167,7 @@ func SendServerNotice(
 			PowerLevelContentOverride: pl,
 		}
 
-		roomRes := createRoom(ctx, crReq, senderDevice, cfgClient, userAPI, rsAPI, asAPI, time.Now())
+		roomRes := createRoom(ctx, crReq, senderDevice, cfgClient, userAPI, rsAPI, time.Now())
 
 		switch data := roomRes.JSON.(type) {
 		case createRoomResponse:

@@ -20,12 +20,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
-	"github.com/matrix-org/dendrite/internal"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/api"
 	"github.com/matrix-org/dendrite/roomserver/state"
@@ -59,9 +57,6 @@ func (r *Inputer) updateLatestEvents(
 	rewritesState bool,
 	historyVisibility gomatrixserverlib.HistoryVisibility,
 ) (err error) {
-	trace, ctx := internal.StartRegion(ctx, "updateLatestEvents")
-	defer trace.EndRegion()
-
 	var succeeded bool
 	updater, err := r.DB.GetRoomUpdater(ctx, roomInfo)
 	if err != nil {
@@ -209,9 +204,7 @@ func (u *latestEventsUpdater) doUpdateLatestEvents() error {
 }
 
 func (u *latestEventsUpdater) latestState() error {
-	trace, ctx := internal.StartRegion(u.ctx, "processEventWithMissingState")
-	defer trace.EndRegion()
-
+	ctx := u.ctx
 	var err error
 	roomState := state.NewStateResolution(u.updater, u.roomInfo, u.api.Queryer)
 
@@ -296,19 +289,6 @@ func (u *latestEventsUpdater) latestState() error {
 			"old_latest":    u.oldLatest.EventIDs(),
 			"new_latest":    u.latest.EventIDs(),
 		}).Warnf("State reset detected (removing %d events)", removed)
-		sentry.WithScope(func(scope *sentry.Scope) {
-			scope.SetLevel("warning")
-			scope.SetTag("room_id", u.event.RoomID().String())
-			scope.SetContext("State reset", map[string]interface{}{
-				"Event ID":      u.event.EventID(),
-				"Old state NID": fmt.Sprintf("%d", u.oldStateNID),
-				"New state NID": fmt.Sprintf("%d", u.newStateNID),
-				"Old latest":    u.oldLatest.EventIDs(),
-				"New latest":    u.latest.EventIDs(),
-				"State removed": removed,
-			})
-			sentry.CaptureMessage("State reset detected")
-		})
 	}
 
 	// Also work out the state before the event removes and the event
@@ -330,9 +310,6 @@ func (u *latestEventsUpdater) calculateLatest(
 	newEvent gomatrixserverlib.PDU,
 	newStateAndRef types.StateAtEventAndReference,
 ) (bool, error) {
-	trace, _ := internal.StartRegion(u.ctx, "calculateLatest")
-	defer trace.EndRegion()
-
 	// First of all, get a list of all of the events in our current
 	// set of forward extremities.
 	existingRefs := make(map[string]*types.StateAtEventAndReference)

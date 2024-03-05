@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/setup/process"
 
 	natsserver "github.com/nats-io/nats-server/v2/server"
+	"github.com/nats-io/nats.go"
 	natsclient "github.com/nats-io/nats.go"
 )
 
@@ -91,7 +91,9 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsclient.Conn) (natsclient.JetStreamContext, *natsclient.Conn) {
 	if nc == nil {
 		var err error
-		opts := []natsclient.Option{}
+		opts := []natsclient.Option{
+			nats.Name("Harmony"),
+		}
 		if cfg.DisableTLSValidation {
 			opts = append(opts, natsclient.Secure(&tls.Config{
 				InsecureSkipVerify: true,
@@ -104,7 +106,11 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 		}
 	}
 
-	s, err := nc.JetStream()
+	jsOpts := []natsclient.JSOpt{}
+	if cfg.JetStreamDomain != "" {
+		jsOpts = append(jsOpts, natsclient.Domain(cfg.JetStreamDomain))
+	}
+	s, err := nc.JetStream(jsOpts...)
 	if err != nil {
 		logrus.WithError(err).Panic("Unable to get JetStream context")
 		return nil, nil
@@ -184,7 +190,6 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 				// we can't recover anything that was queued on the disk but we
 				// will still be able to start and run hopefully in the meantime.
 				logger.WithError(err).Error("Unable to add stream")
-				sentry.CaptureException(fmt.Errorf("Unable to add stream %q: %w", namespaced.Name, err))
 
 				namespaced.Storage = natsclient.MemoryStorage
 				if _, err = s.AddStream(&namespaced); err != nil {
@@ -199,7 +204,6 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 					// disk will be left alone, but our ability to recover from a
 					// future crash will be limited. Yell about it.
 					err := fmt.Errorf("Stream %q is running in-memory; this may be due to data corruption in the JetStream storage directory", namespaced.Name)
-					sentry.CaptureException(err)
 					process.Degraded(err)
 				}
 			}

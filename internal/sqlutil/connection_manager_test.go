@@ -25,11 +25,6 @@ func TestConnectionManager(t *testing.T) {
 			}
 
 			switch dbType {
-			case test.DBTypeSQLite:
-				_, ok := writer.(*sqlutil.ExclusiveWriter)
-				if !ok {
-					t.Fatalf("expected exclusive writer")
-				}
 			case test.DBTypePostgres:
 				_, ok := writer.(*sqlutil.DummyWriter)
 				if !ok {
@@ -80,11 +75,6 @@ func TestConnectionManager(t *testing.T) {
 			}
 
 			switch dbType {
-			case test.DBTypeSQLite:
-				_, ok := writer.(*sqlutil.ExclusiveWriter)
-				if !ok {
-					t.Fatalf("expected exclusive writer")
-				}
 			case test.DBTypePostgres:
 				_, ok := writer.(*sqlutil.DummyWriter)
 				if !ok {

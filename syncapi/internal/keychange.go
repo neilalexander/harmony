@@ -43,6 +43,7 @@ func DeviceOTKCounts(ctx context.Context, keyAPI api.SyncKeyAPI, userID, deviceI
 		return queryRes.Error
 	}
 	res.DeviceListsOTKCount = queryRes.Count.KeyCount
+	res.DeviceListsUnusedFallbackAlgorithms = queryRes.UnusedFallbackAlgorithms
 	return nil
 }
 

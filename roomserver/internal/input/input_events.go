@@ -90,11 +90,6 @@ func (r *Inputer) processRoomEvent(
 	default:
 	}
 
-	trace, ctx := internal.StartRegion(ctx, "processRoomEvent")
-	trace.SetTag("room_id", input.Event.RoomID().String())
-	trace.SetTag("event_id", input.Event.EventID())
-	defer trace.EndRegion()
-
 	// Measure how long it takes to process this event.
 	started := time.Now()
 	defer func() {
@@ -689,9 +684,6 @@ func (r *Inputer) fetchAuthEvents(
 	known map[string]*types.Event,
 	servers []spec.ServerName,
 ) error {
-	trace, ctx := internal.StartRegion(ctx, "fetchAuthEvents")
-	defer trace.EndRegion()
-
 	unknown := map[string]struct{}{}
 	authEventIDs := event.AuthEventIDs()
 	if len(authEventIDs) == 0 {
@@ -838,9 +830,6 @@ func (r *Inputer) calculateAndSetState(
 	event gomatrixserverlib.PDU,
 	isRejected bool,
 ) error {
-	trace, ctx := internal.StartRegion(ctx, "calculateAndSetState")
-	defer trace.EndRegion()
-
 	var succeeded bool
 	updater, err := r.DB.GetRoomUpdater(ctx, roomInfo)
 	if err != nil {

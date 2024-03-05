@@ -9,7 +9,6 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 
-	asAPI "github.com/matrix-org/dendrite/appservice/api"
 	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
 	"github.com/matrix-org/dendrite/roomserver/types"
 	userapi "github.com/matrix-org/dendrite/userapi/api"
@@ -63,7 +62,6 @@ type DefaultRoomVersionAPI interface {
 // RoomserverInputAPI is used to write events to the room server.
 type RoomserverInternalAPI interface {
 	SyncRoomserverAPI
-	AppserviceRoomserverAPI
 	ClientRoomserverAPI
 	UserRoomserverAPI
 	FederationRoomserverAPI
@@ -74,7 +72,6 @@ type RoomserverInternalAPI interface {
 	// needed to avoid chicken and egg scenario when setting up the
 	// interdependencies between the roomserver and other input APIs
 	SetFederationAPI(fsAPI fsAPI.RoomserverFederationAPI, keyRing *gomatrixserverlib.KeyRing)
-	SetAppserviceAPI(asAPI asAPI.AppServiceInternalAPI)
 	SetUserAPI(userAPI userapi.RoomserverUserAPI)
 
 	// QueryAuthChain returns the entire auth chain for the event IDs given.
@@ -242,8 +239,6 @@ type ClientRoomserverAPI interface {
 	PerformAdminEvacuateUser(ctx context.Context, userID string) (affected []string, err error)
 	PerformAdminPurgeRoom(ctx context.Context, roomID string) error
 	PerformAdminDownloadState(ctx context.Context, roomID, userID string, serverName spec.ServerName) error
-	PerformPeek(ctx context.Context, req *PerformPeekRequest) (roomID string, err error)
-	PerformUnpeek(ctx context.Context, roomID, userID, deviceID string) error
 	PerformInvite(ctx context.Context, req *PerformInviteRequest) error
 	PerformJoin(ctx context.Context, req *PerformJoinRequest) (roomID string, joinedVia spec.ServerName, err error)
 	PerformLeave(ctx context.Context, req *PerformLeaveRequest, res *PerformLeaveResponse) error
@@ -305,7 +300,6 @@ type FederationRoomserverAPI interface {
 	QueryServerAllowedToSeeEvent(ctx context.Context, serverName spec.ServerName, eventID string, roomID string) (allowed bool, err error)
 	QueryRoomsForUser(ctx context.Context, userID spec.UserID, desiredMembership string) ([]spec.RoomID, error)
 	QueryRestrictedJoinAllowed(ctx context.Context, roomID spec.RoomID, senderID spec.SenderID) (string, error)
-	PerformInboundPeek(ctx context.Context, req *PerformInboundPeekRequest, res *PerformInboundPeekResponse) error
 	HandleInvite(ctx context.Context, event *types.HeaderedEvent) error
 
 	PerformInvite(ctx context.Context, req *PerformInviteRequest) error

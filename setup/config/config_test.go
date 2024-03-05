@@ -172,18 +172,6 @@ relay_api:
 mscs:
   database:
     connection_string: file:mscs.db
-tracing:
-  enabled: false
-  jaeger:
-    serviceName: ""
-    disabled: false
-    rpc_metrics: false
-    tags: []
-    sampler: null
-    reporter: null
-    headers: null
-    baggage_restrictions: null
-    throttler: null
 logging:
 - type: file
   level: info

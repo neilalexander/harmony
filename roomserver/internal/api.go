@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/ed25519"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -12,7 +11,6 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 
-	asAPI "github.com/matrix-org/dendrite/appservice/api"
 	fsAPI "github.com/matrix-org/dendrite/federationapi/api"
 	"github.com/matrix-org/dendrite/internal/caching"
 	"github.com/matrix-org/dendrite/roomserver/acls"
@@ -35,9 +33,6 @@ type RoomserverInternalAPI struct {
 	*query.Queryer
 	*perform.Inviter
 	*perform.Joiner
-	*perform.Peeker
-	*perform.InboundPeeker
-	*perform.Unpeeker
 	*perform.Leaver
 	*perform.Publisher
 	*perform.Backfiller
@@ -53,7 +48,6 @@ type RoomserverInternalAPI struct {
 	KeyRing                gomatrixserverlib.JSONVerifier
 	ServerACLs             *acls.ServerACLs
 	fsAPI                  fsAPI.RoomserverFederationAPI
-	asAPI                  asAPI.AppServiceInternalAPI
 	NATSClient             *nats.Conn
 	JetStream              nats.JetStreamContext
 	Durable                string
@@ -148,23 +142,6 @@ func (r *RoomserverInternalAPI) SetFederationAPI(fsAPI fsAPI.RoomserverFederatio
 		Inputer: r.Inputer,
 		Queryer: r.Queryer,
 	}
-	r.Peeker = &perform.Peeker{
-		ServerName: r.ServerName,
-		Cfg:        &r.Cfg.RoomServer,
-		DB:         r.DB,
-		FSAPI:      r.fsAPI,
-		Inputer:    r.Inputer,
-	}
-	r.InboundPeeker = &perform.InboundPeeker{
-		DB:      r.DB,
-		Inputer: r.Inputer,
-	}
-	r.Unpeeker = &perform.Unpeeker{
-		ServerName: r.ServerName,
-		Cfg:        &r.Cfg.RoomServer,
-		FSAPI:      r.fsAPI,
-		Inputer:    r.Inputer,
-	}
 	r.Leaver = &perform.Leaver{
 		Cfg:     &r.Cfg.RoomServer,
 		DB:      r.DB,
@@ -216,10 +193,6 @@ func (r *RoomserverInternalAPI) SetUserAPI(userAPI userapi.RoomserverUserAPI) {
 	r.Inputer.UserAPI = userAPI
 }
 
-func (r *RoomserverInternalAPI) SetAppserviceAPI(asAPI asAPI.AppServiceInternalAPI) {
-	r.asAPI = asAPI
-}
-
 func (r *RoomserverInternalAPI) DefaultRoomVersion() gomatrixserverlib.RoomVersion {
 	return r.defaultRoomVersion
 }
@@ -262,7 +235,6 @@ func (r *RoomserverInternalAPI) PerformLeave(
 ) error {
 	outputEvents, err := r.Leaver.PerformLeave(ctx, req, res)
 	if err != nil {
-		sentry.CaptureException(err)
 		return err
 	}
 	if len(outputEvents) == 0 {

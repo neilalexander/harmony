@@ -53,14 +53,11 @@ type DatabaseTransaction interface {
 	GetBackwardTopologyPos(ctx context.Context, events []*rstypes.HeaderedEvent) (types.TopologyToken, error)
 	PositionInTopology(ctx context.Context, eventID string) (pos types.StreamPosition, spos types.StreamPosition, err error)
 	InviteEventsInRange(ctx context.Context, targetUserID string, r types.Range) (map[string]*rstypes.HeaderedEvent, map[string]*rstypes.HeaderedEvent, types.StreamPosition, error)
-	PeeksInRange(ctx context.Context, userID, deviceID string, r types.Range) (peeks []types.Peek, err error)
 	RoomReceiptsAfter(ctx context.Context, roomIDs []string, streamPos types.StreamPosition) (types.StreamPosition, []types.OutputReceiptEvent, error)
 	// AllJoinedUsersInRooms returns a map of room ID to a list of all joined user IDs.
 	AllJoinedUsersInRooms(ctx context.Context) (map[string][]string, error)
 	// AllJoinedUsersInRoom returns a map of room ID to a list of all joined user IDs for a given room.
 	AllJoinedUsersInRoom(ctx context.Context, roomIDs []string) (map[string][]string, error)
-	// AllPeekingDevicesInRooms returns a map of room ID to a list of all peeking devices.
-	AllPeekingDevicesInRooms(ctx context.Context) (map[string][]types.PeekingDevice, error)
 	// Events lookups a list of event by their event ID.
 	// Returns a list of events matching the requested IDs found in the database.
 	// If an event is not found in the database then it will be omitted from the list.
@@ -154,15 +151,6 @@ type Database interface {
 	// RetireInviteEvent removes an old invite event from the database. Returns the new position of the retired invite.
 	// Returns an error if there was a problem communicating with the database.
 	RetireInviteEvent(ctx context.Context, inviteEventID string) (types.StreamPosition, error)
-	// AddPeek adds a new peek to our DB for a given room by a given user's device.
-	// Returns an error if there was a problem communicating with the database.
-	AddPeek(ctx context.Context, RoomID, UserID, DeviceID string) (types.StreamPosition, error)
-	// DeletePeek removes an existing peek from the database for a given room by a user's device.
-	// Returns an error if there was a problem communicating with the database.
-	DeletePeek(ctx context.Context, roomID, userID, deviceID string) (sp types.StreamPosition, err error)
-	// DeletePeek deletes all peeks for a given room by a given user
-	// Returns an error if there was a problem communicating with the database.
-	DeletePeeks(ctx context.Context, RoomID, UserID string) (types.StreamPosition, error)
 	// StoreNewSendForDeviceMessage stores a new send-to-device event for a user's device.
 	StoreNewSendForDeviceMessage(ctx context.Context, userID, deviceID string, event gomatrixserverlib.SendToDeviceEvent) (types.StreamPosition, error)
 	// CleanSendToDeviceUpdates removes all send-to-device messages BEFORE the specified

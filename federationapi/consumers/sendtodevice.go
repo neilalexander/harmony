@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
@@ -79,7 +78,6 @@ func (t *OutputSendToDeviceConsumer) onMessage(ctx context.Context, msgs []*nats
 	sender := msg.Header.Get("sender")
 	_, originServerName, err := gomatrixserverlib.SplitID('@', sender)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).WithField("user_id", sender).Error("Failed to extract domain from send-to-device sender")
 		return true
 	}
@@ -89,14 +87,12 @@ func (t *OutputSendToDeviceConsumer) onMessage(ctx context.Context, msgs []*nats
 	// Extract the send-to-device event from msg.
 	var ote syncTypes.OutputSendToDeviceEvent
 	if err = json.Unmarshal(msg.Data, &ote); err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).Errorf("output log: message parse failed (expected send-to-device)")
 		return true
 	}
 
 	_, destServerName, err := gomatrixserverlib.SplitID('@', ote.UserID)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).WithField("user_id", ote.UserID).Error("Failed to extract domain from send-to-device destination")
 		return true
 	}
@@ -122,7 +118,6 @@ func (t *OutputSendToDeviceConsumer) onMessage(ctx context.Context, msgs []*nats
 		},
 	}
 	if edu.Content, err = json.Marshal(tdm); err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).Error("failed to marshal EDU JSON")
 		return true
 	}

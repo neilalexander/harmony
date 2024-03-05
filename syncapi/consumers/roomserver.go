@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/dendrite/internal/fulltext"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/roomserver/api"
@@ -70,7 +69,6 @@ func NewOutputRoomEventConsumer(
 	inviteStream streams.StreamProvider,
 	rsAPI api.SyncRoomserverAPI,
 	fts *fulltext.Search,
-	asProducer *producers.AppserviceEventProducer,
 ) *OutputRoomEventConsumer {
 	return &OutputRoomEventConsumer{
 		ctx:          process.Context(),
@@ -84,7 +82,6 @@ func NewOutputRoomEventConsumer(
 		inviteStream: inviteStream,
 		rsAPI:        rsAPI,
 		fts:          fts,
-		asProducer:   asProducer,
 	}
 }
 
@@ -134,10 +131,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msgs []*nats.Ms
 		s.onNewInviteEvent(s.ctx, *output.NewInviteEvent)
 	case api.OutputTypeRetireInviteEvent:
 		s.onRetireInviteEvent(s.ctx, *output.RetireInviteEvent)
-	case api.OutputTypeNewPeek:
-		s.onNewPeek(s.ctx, *output.NewPeek)
-	case api.OutputTypeRetirePeek:
-		s.onRetirePeek(s.ctx, *output.RetirePeek)
 	case api.OutputTypeRedactedEvent:
 		err = s.onRedactEvent(s.ctx, *output.RedactedEvent)
 	case api.OutputTypePurgeRoom:
@@ -159,7 +152,6 @@ func (s *OutputRoomEventConsumer) onMessage(ctx context.Context, msgs []*nats.Ms
 		log.WithFields(log.Fields{
 			"type": output.Type,
 		}).WithError(err).Error("roomserver output log: failed to process event")
-		sentry.CaptureException(err)
 		return false
 	}
 
@@ -297,11 +289,6 @@ func (s *OutputRoomEventConsumer) onNewRoomEvent(
 		}).WithError(err).Warn("failed to index fulltext element")
 	}
 
-	if pduPos, err = s.notifyJoinedPeeks(ctx, ev, pduPos); err != nil {
-		log.WithError(err).Errorf("Failed to notifyJoinedPeeks for PDU pos %d", pduPos)
-		return err
-	}
-
 	if err = s.db.UpdateRelations(ctx, ev); err != nil {
 		log.WithFields(log.Fields{
 			"event_id": ev.EventID(),
@@ -361,50 +348,10 @@ func (s *OutputRoomEventConsumer) onOldRoomEvent(
 		return err
 	}
 
-	if pduPos, err = s.notifyJoinedPeeks(ctx, ev, pduPos); err != nil {
-		log.WithError(err).Errorf("Failed to notifyJoinedPeeks for PDU pos %d", pduPos)
-		return err
-	}
-
 	s.pduStream.Advance(pduPos)
 	s.notifier.OnNewEvent(ev, ev.RoomID().String(), nil, types.StreamingToken{PDUPosition: pduPos})
 
 	return nil
-}
-
-func (s *OutputRoomEventConsumer) notifyJoinedPeeks(ctx context.Context, ev *rstypes.HeaderedEvent, sp types.StreamPosition) (types.StreamPosition, error) {
-	if ev.Type() != spec.MRoomMember {
-		return sp, nil
-	}
-	membership, err := ev.Membership()
-	if err != nil {
-		return sp, fmt.Errorf("ev.Membership: %w", err)
-	}
-	// TODO: check that it's a join and not a profile change (means unmarshalling prev_content)
-	if membership == spec.Join {
-		// check it's a local join
-		if ev.StateKey() == nil {
-			return sp, fmt.Errorf("unexpected nil state_key")
-		}
-
-		userID, err := s.rsAPI.QueryUserIDForSender(ctx, ev.RoomID(), spec.SenderID(*ev.StateKey()))
-		if err != nil || userID == nil {
-			return sp, fmt.Errorf("failed getting userID for sender: %w", err)
-		}
-		if !s.cfg.Matrix.IsLocalServerName(userID.Domain()) {
-			return sp, nil
-		}
-
-		// cancel any peeks for it
-		peekSP, peekErr := s.db.DeletePeeks(ctx, ev.RoomID().String(), *ev.StateKey())
-		if peekErr != nil {
-			return sp, fmt.Errorf("s.db.DeletePeeks: %w", peekErr)
-		}
-		if peekSP > 0 {
-			sp = peekSP
-		}
-	}
-	return sp, nil
 }
 
 func (s *OutputRoomEventConsumer) onNewInviteEvent(
@@ -483,44 +430,6 @@ func (s *OutputRoomEventConsumer) onRetireInviteEvent(
 		return
 	}
 	s.notifier.OnNewInvite(types.StreamingToken{InvitePosition: pduPos}, userID.String())
-}
-
-func (s *OutputRoomEventConsumer) onNewPeek(
-	ctx context.Context, msg api.OutputNewPeek,
-) {
-	sp, err := s.db.AddPeek(ctx, msg.RoomID, msg.UserID, msg.DeviceID)
-	if err != nil {
-		// panic rather than continue with an inconsistent database
-		log.WithFields(log.Fields{
-			log.ErrorKey: err,
-		}).Errorf("roomserver output log: write peek failure")
-		return
-	}
-
-	// tell the notifier about the new peek so it knows to wake up new devices
-	// TODO: This only works because the peeks table is reusing the same
-	// index as PDUs, but we should fix this
-	s.pduStream.Advance(sp)
-	s.notifier.OnNewPeek(msg.RoomID, msg.UserID, msg.DeviceID, types.StreamingToken{PDUPosition: sp})
-}
-
-func (s *OutputRoomEventConsumer) onRetirePeek(
-	ctx context.Context, msg api.OutputRetirePeek,
-) {
-	sp, err := s.db.DeletePeek(ctx, msg.RoomID, msg.UserID, msg.DeviceID)
-	if err != nil {
-		// panic rather than continue with an inconsistent database
-		log.WithFields(log.Fields{
-			log.ErrorKey: err,
-		}).Errorf("roomserver output log: write peek failure")
-		return
-	}
-
-	// tell the notifier about the new peek so it knows to wake up new devices
-	// TODO: This only works because the peeks table is reusing the same
-	// index as PDUs, but we should fix this
-	s.pduStream.Advance(sp)
-	s.notifier.OnRetirePeek(msg.RoomID, msg.UserID, msg.DeviceID, types.StreamingToken{PDUPosition: sp})
 }
 
 func (s *OutputRoomEventConsumer) onPurgeRoom(

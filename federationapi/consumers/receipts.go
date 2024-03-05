@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/dendrite/federationapi/queue"
 	"github.com/matrix-org/dendrite/federationapi/storage"
 	fedTypes "github.com/matrix-org/dendrite/federationapi/types"
@@ -104,7 +103,6 @@ func (t *OutputReceiptConsumer) onMessage(ctx context.Context, msgs []*nats.Msg)
 	if err != nil {
 		// If the message was invalid, log it and move on to the next message in the stream
 		log.WithError(err).Errorf("EDU output log: message parse failure")
-		sentry.CaptureException(err)
 		return true
 	}
 

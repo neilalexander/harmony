@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/matrix-org/dendrite/userapi/storage/postgres"
-	"github.com/matrix-org/dendrite/userapi/storage/sqlite3"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	"github.com/matrix-org/dendrite/internal/sqlutil"
@@ -26,8 +25,6 @@ func mustCreateTable(t *testing.T, dbType test.DBType) (tab tables.StaleDeviceLi
 	switch dbType {
 	case test.DBTypePostgres:
 		tab, err = postgres.NewPostgresStaleDeviceListsTable(db)
-	case test.DBTypeSQLite:
-		tab, err = sqlite3.NewSqliteStaleDeviceListsTable(db)
 	}
 	if err != nil {
 		t.Fatalf("failed to create new table: %s", err)

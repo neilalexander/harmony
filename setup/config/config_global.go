@@ -70,17 +70,11 @@ type Global struct {
 	// Metrics configuration
 	Metrics Metrics `yaml:"metrics"`
 
-	// Sentry configuration
-	Sentry Sentry `yaml:"sentry"`
-
 	// DNS caching options for all outbound HTTP requests
 	DNSCache DNSCacheOptions `yaml:"dns_cache"`
 
 	// ServerNotices configuration used for sending server notices
 	ServerNotices ServerNotices `yaml:"server_notices"`
-
-	// ReportStats configures opt-in phone-home statistics reporting.
-	ReportStats ReportStats `yaml:"report_stats"`
 
 	// Configuration for the caches.
 	Cache Cache `yaml:"cache"`
@@ -104,9 +98,7 @@ func (c *Global) Defaults(opts DefaultOpts) {
 	c.JetStream.Defaults(opts)
 	c.Metrics.Defaults(opts)
 	c.DNSCache.Defaults()
-	c.Sentry.Defaults()
 	c.ServerNotices.Defaults(opts)
-	c.ReportStats.Defaults()
 	c.Cache.Defaults()
 }
 
@@ -125,10 +117,8 @@ func (c *Global) Verify(configErrs *ConfigErrors) {
 
 	c.JetStream.Verify(configErrs)
 	c.Metrics.Verify(configErrs)
-	c.Sentry.Verify(configErrs)
 	c.DNSCache.Verify(configErrs)
 	c.ServerNotices.Verify(configErrs)
-	c.ReportStats.Verify(configErrs)
 	c.Cache.Verify(configErrs)
 }
 
@@ -317,49 +307,6 @@ func (c *Cache) Defaults() {
 
 func (c *Cache) Verify(errors *ConfigErrors) {
 	checkPositive(errors, "max_size_estimated", int64(c.EstimatedMaxSize))
-}
-
-// ReportStats configures opt-in phone-home statistics reporting.
-type ReportStats struct {
-	// Enabled configures phone-home statistics of the server
-	Enabled bool `yaml:"enabled"`
-
-	// Endpoint the endpoint to report stats to
-	Endpoint string `yaml:"endpoint"`
-}
-
-func (c *ReportStats) Defaults() {
-	c.Enabled = false
-	c.Endpoint = "https://panopticon.matrix.org/push"
-}
-
-func (c *ReportStats) Verify(configErrs *ConfigErrors) {
-	// We prefer to hit panopticon (https://github.com/matrix-org/panopticon) directly over
-	// the "old" matrix.org endpoint.
-	if c.Endpoint == "https://matrix.org/report-usage-stats/push" {
-		c.Endpoint = "https://panopticon.matrix.org/push"
-	}
-	if c.Enabled {
-		checkNotEmpty(configErrs, "global.report_stats.endpoint", c.Endpoint)
-	}
-}
-
-// The configuration to use for Sentry error reporting
-type Sentry struct {
-	Enabled bool `yaml:"enabled"`
-	// The DSN to connect to e.g "https://examplePublicKey@o0.ingest.sentry.io/0"
-	// See https://docs.sentry.io/platforms/go/configuration/options/
-	DSN string `yaml:"dsn"`
-	// The environment e.g "production"
-	// See https://docs.sentry.io/platforms/go/configuration/environments/
-	Environment string `yaml:"environment"`
-}
-
-func (c *Sentry) Defaults() {
-	c.Enabled = false
-}
-
-func (c *Sentry) Verify(configErrs *ConfigErrors) {
 }
 
 type DatabaseOptions struct {

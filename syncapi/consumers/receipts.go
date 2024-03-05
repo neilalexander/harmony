@@ -18,7 +18,6 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 
@@ -85,7 +84,6 @@ func (s *OutputReceiptEventConsumer) onMessage(ctx context.Context, msgs []*nats
 	if err != nil {
 		// If the message was invalid, log it and move on to the next message in the stream
 		log.WithError(err).Errorf("output log: message parse failure")
-		sentry.CaptureException(err)
 		return true
 	}
 
@@ -100,7 +98,6 @@ func (s *OutputReceiptEventConsumer) onMessage(ctx context.Context, msgs []*nats
 		output.Timestamp,
 	)
 	if err != nil {
-		sentry.CaptureException(err)
 		return true
 	}
 

@@ -15,7 +15,6 @@
 package sqlutil
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 
@@ -25,9 +24,6 @@ import (
 // ParseFileURI returns the filepath in the given file: URI. Specifically, this will handle
 // both relative (file:foo.db) and absolute (file:///path/to/foo) paths.
 func ParseFileURI(dataSourceName config.DataSource) (string, error) {
-	if !dataSourceName.IsSQLite() {
-		return "", errors.New("ParseFileURI expects SQLite connection string")
-	}
 	uri, err := url.Parse(string(dataSourceName))
 	if err != nil {
 		return "", err

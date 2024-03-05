@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
@@ -86,7 +85,6 @@ func (s *OutputSendToDeviceEventConsumer) onMessage(ctx context.Context, msgs []
 	userID := msg.Header.Get(jetstream.UserID)
 	_, domain, err := gomatrixserverlib.SplitID('@', userID)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).Errorf("send-to-device: failed to split user id, dropping message")
 		return true
 	}
@@ -99,7 +97,6 @@ func (s *OutputSendToDeviceEventConsumer) onMessage(ctx context.Context, msgs []
 	if err = json.Unmarshal(msg.Data, &output); err != nil {
 		// If the message was invalid, log it and move on to the next message in the stream
 		log.WithError(err).Errorf("send-to-device: message parse failure")
-		sentry.CaptureException(err)
 		return true
 	}
 
@@ -130,7 +127,6 @@ func (s *OutputSendToDeviceEventConsumer) onMessage(ctx context.Context, msgs []
 		s.ctx, output.UserID, output.DeviceID, output.SendToDeviceEvent,
 	)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithError(err).Errorf("send-to-device: failed to store message")
 		return false
 	}

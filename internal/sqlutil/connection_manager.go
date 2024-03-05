@@ -53,9 +53,6 @@ func (c *Connections) Connection(dbProperties *config.DatabaseOptions) (*sql.DB,
 	}
 
 	writer := NewDummyWriter()
-	if dbProperties.ConnectionString.IsSQLite() {
-		writer = NewExclusiveWriter()
-	}
 
 	existing, loaded := c.existingConnections.LoadOrStore(dbProperties.ConnectionString, &con{})
 	if loaded {

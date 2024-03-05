@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -54,7 +53,6 @@ func (b *ProcessContext) Degraded(err error) {
 	defer b.mu.Unlock()
 	if _, ok := b.degraded[err.Error()]; !ok {
 		logrus.WithError(err).Warn("Dendrite has entered a degraded state")
-		sentry.CaptureException(err)
 		b.degraded[err.Error()] = struct{}{}
 	}
 }

@@ -371,7 +371,7 @@ func (oq *destinationQueue) backgroundSend() {
 
 		// If we have pending PDUs or EDUs then construct a transaction.
 		// Try sending the next transaction and see what happens.
-		terr, sendMethod := oq.nextTransaction(toSendPDUs, toSendEDUs)
+		terr := oq.nextTransaction(toSendPDUs, toSendEDUs)
 		if terr != nil {
 			// We failed to send the transaction. Mark it as a failure.
 			_, blacklisted := oq.statistics.Failure()
@@ -388,7 +388,7 @@ func (oq *destinationQueue) backgroundSend() {
 				return
 			}
 		} else {
-			oq.handleTransactionSuccess(pduCount, eduCount, sendMethod)
+			oq.handleTransactionSuccess(pduCount, eduCount)
 		}
 	}
 }
@@ -400,7 +400,7 @@ func (oq *destinationQueue) backgroundSend() {
 func (oq *destinationQueue) nextTransaction(
 	pdus []*queuedPDU,
 	edus []*queuedEDU,
-) (err error, sendMethod statistics.SendMethod) {
+) (err error) {
 	// Create the transaction.
 	t, pduReceipts, eduReceipts := oq.createTransaction(pdus, edus)
 	logrus.WithField("server_name", oq.destination).Debugf("Sending transaction %q containing %d PDUs, %d EDUs", t.TransactionID, len(t.PDUs), len(t.EDUs))
@@ -409,51 +409,9 @@ func (oq *destinationQueue) nextTransaction(
 	ctx, cancel := context.WithTimeout(oq.process.Context(), time.Minute*5)
 	defer cancel()
 
-	relayServers := oq.statistics.KnownRelayServers()
-	hasRelayServers := len(relayServers) > 0
-	shouldSendToRelays := oq.statistics.AssumedOffline() && hasRelayServers
-	if !shouldSendToRelays {
-		sendMethod = statistics.SendDirect
-		_, err = oq.client.SendTransaction(ctx, t)
-	} else {
-		// Try sending directly to the destination first in case they came back online.
-		sendMethod = statistics.SendDirect
-		_, err = oq.client.SendTransaction(ctx, t)
-		if err != nil {
-			// The destination is still offline, try sending to relays.
-			sendMethod = statistics.SendViaRelay
-			relaySuccess := false
-			logrus.Infof("Sending %q to relay servers: %v", t.TransactionID, relayServers)
-			// TODO : how to pass through actual userID here?!?!?!?!
-			userID, userErr := spec.NewUserID("@user:"+string(oq.destination), false)
-			if userErr != nil {
-				return userErr, sendMethod
-			}
+	// Try sending directly to the destination first in case they came back online.
+	_, err = oq.client.SendTransaction(ctx, t)
 
-			// Attempt sending to each known relay server.
-			for _, relayServer := range relayServers {
-				_, relayErr := oq.client.P2PSendTransactionToRelay(ctx, *userID, t, relayServer)
-				if relayErr != nil {
-					err = relayErr
-				} else {
-					// If sending to one of the relay servers succeeds, consider the send successful.
-					relaySuccess = true
-
-					// TODO : what about if the dest comes back online but can't see their relay?
-					// How do I sync with the dest in that case?
-					// Should change the database to have a "relay success" flag on events and if
-					// I see the node back online, maybe directly send through the backlog of events
-					// with "relay success"... could lead to duplicate events, but only those that
-					// I sent. And will lead to a much more consistent experience.
-				}
-			}
-
-			// Clear the error if sending to any of the relay servers succeeded.
-			if relaySuccess {
-				err = nil
-			}
-		}
-	}
 	switch errResponse := err.(type) {
 	case nil:
 		// Clean up the transaction in the database.
@@ -473,7 +431,7 @@ func (oq *destinationQueue) nextTransaction(
 		oq.transactionIDMutex.Lock()
 		oq.transactionID = ""
 		oq.transactionIDMutex.Unlock()
-		return nil, sendMethod
+		return nil
 	case gomatrix.HTTPError:
 		// Report that we failed to send the transaction and we
 		// will retry again, subject to backoff.
@@ -483,13 +441,13 @@ func (oq *destinationQueue) nextTransaction(
 		// to a 400-ish error
 		code := errResponse.Code
 		logrus.Debug("Transaction failed with HTTP", code)
-		return err, sendMethod
+		return err
 	default:
 		logrus.WithFields(logrus.Fields{
 			"destination":   oq.destination,
 			logrus.ErrorKey: err,
 		}).Debugf("Failed to send transaction %q", t.TransactionID)
-		return err, sendMethod
+		return err
 	}
 }
 
@@ -576,11 +534,11 @@ func (oq *destinationQueue) blacklistDestination() {
 
 // handleTransactionSuccess updates the cached event queues as well as the success and
 // backoff information for this server.
-func (oq *destinationQueue) handleTransactionSuccess(pduCount int, eduCount int, sendMethod statistics.SendMethod) {
+func (oq *destinationQueue) handleTransactionSuccess(pduCount int, eduCount int) {
 	// If we successfully sent the transaction then clear out
 	// the pending events and EDUs, and wipe our transaction ID.
 
-	oq.statistics.Success(sendMethod)
+	oq.statistics.Success()
 	oq.pendingMutex.Lock()
 	defer oq.pendingMutex.Unlock()
 

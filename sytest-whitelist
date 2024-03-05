@@ -78,9 +78,13 @@ Room creation reports m.room.member to myself
 Outbound federation rejects send_join responses with no m.room.create event
 Outbound federation rejects m.room.create events with an unknown room version
 Invited user can see room metadata
+
 # Blacklisted because these tests call /v3/events which we don't implement
+
 # New room members see their own join event
+
 # Existing members see new members' join events
+
 setting 'm.room.power_levels' respects room powerlevel
 Unprivileged users can set m.room.topic if it only needs level 0
 Users cannot set ban powerlevel higher than their own
@@ -97,7 +101,9 @@ Real non-joined user cannot call /events on joined room
 Real non-joined user cannot call /events on default room
 Real non-joined users can get state for world_readable rooms
 Real non-joined users can get individual state for world_readable rooms
-#Real non-joined users can get individual state for world_readable rooms after leaving
+
+# Real non-joined users can get individual state for world_readable rooms after leaving
+
 Real non-joined users cannot send messages to guest_access rooms if not joined
 Can't forget room you're still in
 Can get rooms/{roomId}/members
@@ -157,31 +163,41 @@ Checking local federation server
 Inbound federation can query profile data
 Outbound federation can send room-join requests
 Outbound federation can send events
-# SyTest currently only implements the v1 endpoints for /send_join and /send_leave,
+
+# SyTest currently only implements the v1 endpoints for /send_join and /send_leave
+
 # whereas Dendrite only supports the v2 endpoints for those, so let's ignore this
-# test for now.
-#Inbound federation can backfill events
-# SyTest currently only implements the v1 endpoints for /send_join and /send_leave,
+
+# test for now
+
+# Inbound federation can backfill events
+
+# SyTest currently only implements the v1 endpoints for /send_join and /send_leave
+
 # whereas Dendrite only supports the v2 endpoints for those, so let's ignore this
-# test for now.
-#Backfill checks the events requested belong to the room
+
+# test for now
+
+# Backfill checks the events requested belong to the room
+
 Can upload without a file name
 Can download without a file name locally
 Can upload with ASCII file name
 Can send image in room message
-AS cannot create users outside its own namespace
-Regular users cannot register within the AS namespace
-AS can't set displayname for random users
-AS user (not ghost) can join room without registering, with user_id query param
 Changing the actions of an unknown default rule fails with 404
 Changing the actions of an unknown rule fails with 404
 Enabling an unknown default rule fails with 404
 Trying to get push rules with unknown rule_id fails with 404
 Events come down the correct room
-# SyTest currently only implements the v1 endpoints for /send_join and /send_leave,
+
+# SyTest currently only implements the v1 endpoints for /send_join and /send_leave
+
 # whereas Dendrite only supports the v2 endpoints for those, so let's ignore this
-# test for now.
-#Inbound federation can receive v1 room-join requests
+
+# test for now
+
+# Inbound federation can receive v1 room-join requests
+
 Typing events appear in initial sync
 Typing events appear in incremental sync
 Typing events appear in gapped sync
@@ -215,7 +231,6 @@ GET /directory/room/:room_alias yields room ID
 PUT /directory/room/:room_alias creates alias
 Room aliases can contain Unicode
 Creators can delete alias
-Regular users cannot create room aliases within the AS namespace
 Deleting a non-existent alias should return a 404
 Users can't delete other's aliases
 Outbound federation can query room alias directory
@@ -443,7 +458,6 @@ Banned servers cannot get room state ids
 Banned servers cannot backfill
 Inbound /v1/send_leave rejects leaves from other servers
 Guest users can accept invites to private rooms over federation
-AS user (not ghost) can join room without registering
 Can search public room list
 Can get remote public room list
 Asking for a remote rooms list, but supplying the local server's name, returns the local rooms list
@@ -455,11 +469,6 @@ After changing password, a different session no longer works by default
 Read markers appear in incremental v2 /sync
 Read markers appear in initial v2 /sync
 Read markers can be updated
-We can't peek into rooms with shared history_visibility
-We can't peek into rooms with invited history_visibility
-We can't peek into rooms with joined history_visibility
-Local users can peek by room alias
-Peeked rooms only turn up in the sync for the device who peeked them
 Room state at a rejected message event is the same as its predecessor
 Room state at a rejected state event is the same as its predecessor
 Inbound federation correctly soft fails events
@@ -501,12 +510,6 @@ Can pass a JSON filter as a query parameter
 Local room members can get room messages
 Remote room members can get room messages
 Guest users can send messages to guest_access rooms if joined
-AS can create a user
-AS can create a user with an underscore
-AS can create a user with inhibit_login
-AS can set avatar for ghosted users
-AS can set displayname for ghosted users
-Ghost user must register before joining room
 Can generate a openid access_token that can be exchanged for information about a user
 Invalid openid access tokens are rejected
 Requests to userinfo without access tokens are rejected
@@ -651,7 +654,6 @@ Multiple calls to /sync should not cause 500 errors
 Canonical alias can be set
 Canonical alias can include alt_aliases
 Can delete canonical alias
-AS can make room aliases
 /context/ with lazy_load_members filter works
 /upgrade creates a new room
 /upgrade should preserve room visibility for public rooms
@@ -698,7 +700,9 @@ We do send redundant membership state across incremental syncs if asked
 Rejecting invite over federation doesn't break incremental /sync
 Gapped incremental syncs include all state changes
 Old leaves are present in gapped incremental syncs
-#Leaves are present in non-gapped incremental syncs
+
+# Leaves are present in non-gapped incremental syncs
+
 Members from the gap are included in gappy incr LL sync
 Presence can be set from sync
 /state returns M_NOT_FOUND for a rejected message event
@@ -735,7 +739,6 @@ Real users can sync from default guest_access rooms if joined
 Only see history_visibility changes on boundaries
 Current state appears in timeline in private history
 Current state appears in timeline in private history with many messages before
-Local users can peek into world_readable rooms by room ID
 Newly joined room includes presence in incremental sync
 User in private room doesn't appear in user directory
 User joining then leaving public room appears and dissappears from directory
@@ -757,8 +760,6 @@ Local device key changes appear in /keys/changes
 Can get rooms/{roomId}/members at a given point
 Can filter rooms/{roomId}/members
 Current state appears in timeline in private history with many messages after
-AS can publish rooms in their own list
-AS and main public room lists are separate
 /upgrade preserves direct room state
 local user has tags copied to the new room
 remote user has tags copied to the new room
@@ -784,8 +785,6 @@ Invited user can reject local invite after originator leaves
 Guest users can join guest_access rooms
 Forgotten room messages cannot be paginated
 Local device key changes get to remote servers with correct prev_id
-HS provides query metadata
-HS can provide query metadata on a single protocol
 Invites over federation are correctly pushed
 Invites over federation are correctly pushed with name
 User can create and send/receive messages in a room with version 11

@@ -52,7 +52,7 @@ func TestLogin(t *testing.T) {
 		userAPI := userapi.NewInternalAPI(processCtx, cfg, cm, &natsInstance, rsAPI, nil, caching.DisableMetrics, testIsBlacklistedOrBackingOff)
 
 		// We mostly need the userAPI for this test, so nil for other APIs/caches etc.
-		Setup(routers, cfg, nil, nil, userAPI, nil, nil, nil, nil, nil, nil, nil, caching.DisableMetrics)
+		Setup(routers, cfg, nil, userAPI, userAPI, nil, nil, nil, nil, nil, nil, caching.DisableMetrics)
 
 		// Create password
 		password := util.RandomString(8)
@@ -114,11 +114,6 @@ func TestLogin(t *testing.T) {
 
 		ctx := context.Background()
 
-		// Inject a dummy application service, so we have a "m.login.application_service"
-		// in the login flows
-		as := &config.ApplicationService{}
-		cfg.AppServiceAPI.Derived.ApplicationServices = []config.ApplicationService{*as}
-
 		t.Run("Supported log-in flows are returned", func(t *testing.T) {
 			req := test.NewRequest(t, http.MethodGet, "/_matrix/client/v3/login")
 			rec := httptest.NewRecorder()
@@ -133,19 +128,13 @@ func TestLogin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			appServiceFound := false
 			passwordFound := false
 			for _, flow := range resp.Flows {
 				if flow.Type == "m.login.password" {
 					passwordFound = true
-				} else if flow.Type == "m.login.application_service" {
-					appServiceFound = true
 				} else {
 					t.Fatalf("got unknown login flow: %s", flow.Type)
 				}
-			}
-			if !appServiceFound {
-				t.Fatal("m.login.application_service missing from login flows")
 			}
 			if !passwordFound {
 				t.Fatal("m.login.password missing from login flows")

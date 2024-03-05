@@ -1241,8 +1241,7 @@ func TestRoomConsumerRecreation(t *testing.T) {
 	alice := test.NewUser(t)
 	room := test.NewRoom(t, alice)
 
-	// As this is DB unrelated, just use SQLite
-	cfg, processCtx, closeDB := testrig.CreateConfig(t, test.DBTypeSQLite)
+	cfg, processCtx, closeDB := testrig.CreateConfig(t, test.DBTypePostgres)
 	defer closeDB()
 	cm := sqlutil.NewConnectionManager(processCtx, cfg.Global.DatabaseOptions)
 	natsInstance := &jetstream.NATSInstance{}

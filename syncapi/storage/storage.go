@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build !wasm
-// +build !wasm
-
 package storage
 
 import (
@@ -24,14 +21,11 @@ import (
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/setup/config"
 	"github.com/matrix-org/dendrite/syncapi/storage/postgres"
-	"github.com/matrix-org/dendrite/syncapi/storage/sqlite3"
 )
 
 // NewSyncServerDatasource opens a database connection.
 func NewSyncServerDatasource(ctx context.Context, conMan *sqlutil.Connections, dbProperties *config.DatabaseOptions) (Database, error) {
 	switch {
-	case dbProperties.ConnectionString.IsSQLite():
-		return sqlite3.NewDatabase(ctx, conMan, dbProperties)
 	case dbProperties.ConnectionString.IsPostgres():
 		return postgres.NewDatabase(ctx, conMan, dbProperties)
 	default:

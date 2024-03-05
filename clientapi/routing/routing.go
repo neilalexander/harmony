@@ -28,10 +28,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/singleflight"
 
-	"github.com/matrix-org/dendrite/setup/base"
 	userapi "github.com/matrix-org/dendrite/userapi/api"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/clientapi/api"
 	"github.com/matrix-org/dendrite/clientapi/auth"
 	clientutil "github.com/matrix-org/dendrite/clientapi/httputil"
@@ -67,7 +65,6 @@ func Setup(
 	routers httputil.Routers,
 	dendriteCfg *config.Dendrite,
 	rsAPI roomserverAPI.ClientRoomserverAPI,
-	asAPI appserviceAPI.AppServiceInternalAPI,
 	userAPI userapi.ClientUserAPI,
 	userDirectoryProvider userapi.QuerySearchProfilesAPI,
 	federation fclient.FederationClient,
@@ -78,7 +75,6 @@ func Setup(
 	natsClient *nats.Conn, enableMetrics bool,
 ) {
 	cfg := &dendriteCfg.ClientAPI
-	mscCfg := &dendriteCfg.MSCs
 	publicAPIMux := routers.Client
 	wkMux := routers.WellKnown
 	synapseAdminRouter := routers.SynapseAdmin
@@ -147,6 +143,12 @@ func Setup(
 					"v1.0",
 					"v1.1",
 					"v1.2",
+					"v1.3",
+					"v1.4",
+					"v1.5",
+					"v1.6",
+					"v1.7",
+					"v1.8",
 				}, UnstableFeatures: unstableFeatures},
 			}
 		}),
@@ -272,7 +274,7 @@ func Setup(
 				txnID := vars["txnID"]
 				return SendServerNotice(
 					req, &cfg.Matrix.ServerNotices,
-					cfg, userAPI, rsAPI, asAPI,
+					cfg, userAPI, rsAPI,
 					device, serverNotificationSender,
 					&txnID, transactionsCache,
 				)
@@ -287,7 +289,7 @@ func Setup(
 				}
 				return SendServerNotice(
 					req, &cfg.Matrix.ServerNotices,
-					cfg, userAPI, rsAPI, asAPI,
+					cfg, userAPI, rsAPI,
 					device, serverNotificationSender,
 					nil, transactionsCache,
 				)
@@ -309,7 +311,7 @@ func Setup(
 
 	v3mux.Handle("/createRoom",
 		httputil.MakeAuthAPI("createRoom", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return CreateRoom(req, device, cfg, userAPI, rsAPI, asAPI)
+			return CreateRoom(req, device, cfg, userAPI, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/join/{roomIDOrAlias}",
@@ -335,22 +337,6 @@ func Setup(
 		}, httputil.WithAllowGuests()),
 	).Methods(http.MethodPost, http.MethodOptions)
 
-	if mscCfg.Enabled("msc2753") {
-		v3mux.Handle("/peek/{roomIDOrAlias}",
-			httputil.MakeAuthAPI(spec.Peek, userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-				if r := rateLimits.Limit(req, device); r != nil {
-					return *r
-				}
-				vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-				if err != nil {
-					return util.ErrorResponse(err)
-				}
-				return PeekRoomByIDOrAlias(
-					req, device, rsAPI, vars["roomIDOrAlias"],
-				)
-			}),
-		).Methods(http.MethodPost, http.MethodOptions)
-	}
 	v3mux.Handle("/joined_rooms",
 		httputil.MakeAuthAPI("joined_rooms", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
 			return GetJoinedRooms(req, device, rsAPI)
@@ -392,24 +378,13 @@ func Setup(
 			)
 		}, httputil.WithAllowGuests()),
 	).Methods(http.MethodPost, http.MethodOptions)
-	v3mux.Handle("/rooms/{roomID}/unpeek",
-		httputil.MakeAuthAPI("unpeek", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-			if err != nil {
-				return util.ErrorResponse(err)
-			}
-			return UnpeekRoomByID(
-				req, device, rsAPI, vars["roomID"],
-			)
-		}),
-	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/rooms/{roomID}/ban",
 		httputil.MakeAuthAPI("membership", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
 			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return SendBan(req, userAPI, device, vars["roomID"], cfg, rsAPI, asAPI)
+			return SendBan(req, userAPI, device, vars["roomID"], cfg, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/rooms/{roomID}/invite",
@@ -421,7 +396,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return SendInvite(req, userAPI, device, vars["roomID"], cfg, rsAPI, asAPI)
+			return SendInvite(req, userAPI, device, vars["roomID"], cfg, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/rooms/{roomID}/kick",
@@ -430,7 +405,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return SendKick(req, userAPI, device, vars["roomID"], cfg, rsAPI, asAPI)
+			return SendKick(req, userAPI, device, vars["roomID"], cfg, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/rooms/{roomID}/unban",
@@ -439,7 +414,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return SendUnban(req, userAPI, device, vars["roomID"], cfg, rsAPI, asAPI)
+			return SendUnban(req, userAPI, device, vars["roomID"], cfg, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 	v3mux.Handle("/rooms/{roomID}/send/{eventType}",
@@ -882,7 +857,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return GetProfile(req, userAPI, cfg, vars["userID"], asAPI, federation)
+			return GetProfile(req, userAPI, cfg, vars["userID"], federation)
 		}),
 	).Methods(http.MethodGet, http.MethodOptions)
 
@@ -892,7 +867,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return GetAvatarURL(req, userAPI, cfg, vars["userID"], asAPI, federation)
+			return GetAvatarURL(req, userAPI, cfg, vars["userID"], federation)
 		}),
 	).Methods(http.MethodGet, http.MethodOptions)
 
@@ -917,7 +892,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return GetDisplayName(req, userAPI, cfg, vars["userID"], asAPI, federation)
+			return GetDisplayName(req, userAPI, cfg, vars["userID"], federation)
 		}),
 	).Methods(http.MethodGet, http.MethodOptions)
 
@@ -936,32 +911,6 @@ func Setup(
 	// Browsers use the OPTIONS HTTP method to check if the CORS policy allows
 	// PUT requests, so we need to allow this method
 
-	threePIDClient := base.CreateClient(dendriteCfg, nil) // TODO: Move this somewhere else, e.g. pass in as parameter
-
-	v3mux.Handle("/account/3pid",
-		httputil.MakeAuthAPI("account_3pid", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return GetAssociated3PIDs(req, userAPI, device)
-		}),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/account/3pid",
-		httputil.MakeAuthAPI("account_3pid", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return CheckAndSave3PIDAssociation(req, userAPI, device, cfg, threePIDClient)
-		}),
-	).Methods(http.MethodPost, http.MethodOptions)
-
-	v3mux.Handle("/account/3pid/delete",
-		httputil.MakeAuthAPI("account_3pid", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return Forget3PID(req, userAPI)
-		}),
-	).Methods(http.MethodPost, http.MethodOptions)
-
-	v3mux.Handle("/{path:(?:account/3pid|register)}/email/requestToken",
-		httputil.MakeExternalAPI("account_3pid_request_token", func(req *http.Request) util.JSONResponse {
-			return RequestEmailToken(req, userAPI, cfg, threePIDClient)
-		}),
-	).Methods(http.MethodPost, http.MethodOptions)
-
 	v3mux.Handle("/voip/turnServer",
 		httputil.MakeAuthAPI("turn_server", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
 			if r := rateLimits.Limit(req, device); r != nil {
@@ -969,54 +918,6 @@ func Setup(
 			}
 			return RequestTurnServer(req, device, cfg)
 		}),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/protocols",
-		httputil.MakeAuthAPI("thirdparty_protocols", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return Protocols(req, asAPI, device, "")
-		}, httputil.WithAllowGuests()),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/protocol/{protocolID}",
-		httputil.MakeAuthAPI("thirdparty_protocols", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-			if err != nil {
-				return util.ErrorResponse(err)
-			}
-			return Protocols(req, asAPI, device, vars["protocolID"])
-		}, httputil.WithAllowGuests()),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/user/{protocolID}",
-		httputil.MakeAuthAPI("thirdparty_user", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-			if err != nil {
-				return util.ErrorResponse(err)
-			}
-			return User(req, asAPI, device, vars["protocolID"], req.URL.Query())
-		}, httputil.WithAllowGuests()),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/user",
-		httputil.MakeAuthAPI("thirdparty_user", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return User(req, asAPI, device, "", req.URL.Query())
-		}, httputil.WithAllowGuests()),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/location/{protocolID}",
-		httputil.MakeAuthAPI("thirdparty_location", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-			if err != nil {
-				return util.ErrorResponse(err)
-			}
-			return Location(req, asAPI, device, vars["protocolID"], req.URL.Query())
-		}, httputil.WithAllowGuests()),
-	).Methods(http.MethodGet, http.MethodOptions)
-
-	v3mux.Handle("/thirdparty/location",
-		httputil.MakeAuthAPI("thirdparty_location", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			return Location(req, asAPI, device, "", req.URL.Query())
-		}, httputil.WithAllowGuests()),
 	).Methods(http.MethodGet, http.MethodOptions)
 
 	v3mux.Handle("/rooms/{roomID}/initialSync",
@@ -1150,7 +1051,7 @@ func Setup(
 			if err != nil {
 				return util.ErrorResponse(err)
 			}
-			return UpgradeRoom(req, device, cfg, vars["roomID"], userAPI, rsAPI, asAPI)
+			return UpgradeRoom(req, device, cfg, vars["roomID"], userAPI, rsAPI)
 		}),
 	).Methods(http.MethodPost, http.MethodOptions)
 

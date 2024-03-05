@@ -4,8 +4,6 @@ type MSCs struct {
 	Matrix *Global `yaml:"-"`
 
 	// The MSCs to enable. Supported MSCs include:
-	// 'msc2444': Peeking over federation - https://github.com/matrix-org/matrix-doc/pull/2444
-	// 'msc2753': Peeking via /sync - https://github.com/matrix-org/matrix-doc/pull/2753
 	// 'msc2836': Threading - https://github.com/matrix-org/matrix-doc/pull/2836
 	MSCs []string `yaml:"mscs"`
 

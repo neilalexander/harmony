@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/dendrite/federationapi/producers"
 	"github.com/matrix-org/dendrite/federationapi/types"
 	"github.com/matrix-org/dendrite/roomserver/api"
@@ -252,7 +251,6 @@ func (t *TxnReq) processEDUs(ctx context.Context) {
 				for deviceID, message := range byUser {
 					// TODO: check that the user and the device actually exist here
 					if err := t.producer.SendToDevice(ctx, directPayload.Sender, userID, deviceID, directPayload.Type, message); err != nil {
-						sentry.CaptureException(err)
 						util.GetLogger(ctx).WithError(err).WithFields(logrus.Fields{
 							"sender":    directPayload.Sender,
 							"user_id":   userID,
@@ -263,7 +261,6 @@ func (t *TxnReq) processEDUs(ctx context.Context) {
 			}
 		case spec.MDeviceListUpdate:
 			if err := t.producer.SendDeviceListUpdate(ctx, e.Content, t.Origin); err != nil {
-				sentry.CaptureException(err)
 				util.GetLogger(ctx).WithError(err).Error("failed to InputDeviceListUpdate")
 			}
 		case spec.MReceipt:
@@ -299,7 +296,6 @@ func (t *TxnReq) processEDUs(ctx context.Context) {
 			}
 		case types.MSigningKeyUpdate:
 			if err := t.producer.SendSigningKeyUpdate(ctx, e.Content, t.Origin); err != nil {
-				sentry.CaptureException(err)
 				logrus.WithError(err).Errorf("Failed to process signing key update")
 			}
 		case spec.MPresence:

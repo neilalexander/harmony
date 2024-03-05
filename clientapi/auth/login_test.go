@@ -19,7 +19,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -65,30 +64,6 @@ func TestLoginFromJSONReader(t *testing.T) {
 			WantDeviceID:      "adevice",
 			WantDeletedTokens: []string{"atoken"},
 		},
-		{
-			Name: "appServiceWorksUserID",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "@alice:example.com" },
-				"device_id": "adevice"
-			}`,
-			Token: "astoken",
-
-			WantUsername: "@alice:example.com",
-			WantDeviceID: "adevice",
-		},
-		{
-			Name: "appServiceWorksLocalpart",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "alice" },
-				"device_id": "adevice"
-			}`,
-			Token: "astoken",
-
-			WantUsername: "alice",
-			WantDeviceID: "adevice",
-		},
 	}
 	for _, tst := range tsts {
 		t.Run(tst.Name, func(t *testing.T) {
@@ -97,23 +72,6 @@ func TestLoginFromJSONReader(t *testing.T) {
 				Matrix: &config.Global{
 					SigningIdentity: fclient.SigningIdentity{
 						ServerName: serverName,
-					},
-				},
-				Derived: &config.Derived{
-					ApplicationServices: []config.ApplicationService{
-						{
-							ID:      "anapplicationservice",
-							ASToken: "astoken",
-							NamespaceMap: map[string][]config.ApplicationServiceNamespace{
-								"users": {
-									{
-										Exclusive:    true,
-										Regex:        "@alice:example.com",
-										RegexpObject: regexp.MustCompile("@alice:example.com"),
-									},
-								},
-							},
-						},
 					},
 				},
 			}
@@ -194,45 +152,6 @@ func TestBadLoginFromJSONReader(t *testing.T) {
             }`,
 			WantErrCode: spec.ErrorInvalidParam,
 		},
-		{
-			Name: "noASToken",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "@alice:example.com" },
-				"device_id": "adevice"
-			}`,
-			WantErrCode: "M_MISSING_TOKEN",
-		},
-		{
-			Name:  "badASToken",
-			Token: "badastoken",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "@alice:example.com" },
-				"device_id": "adevice"
-			}`,
-			WantErrCode: "M_UNKNOWN_TOKEN",
-		},
-		{
-			Name:  "badASNamespace",
-			Token: "astoken",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "@bob:example.com" },
-				"device_id": "adevice"
-			}`,
-			WantErrCode: "M_EXCLUSIVE",
-		},
-		{
-			Name:  "badASUserID",
-			Token: "astoken",
-			Body: `{
-				"type": "m.login.application_service",
-				"identifier": { "type": "m.id.user", "user": "@alice:wrong.example.com" },
-				"device_id": "adevice"
-			}`,
-			WantErrCode: "M_INVALID_USERNAME",
-		},
 	}
 	for _, tst := range tsts {
 		t.Run(tst.Name, func(t *testing.T) {
@@ -241,23 +160,6 @@ func TestBadLoginFromJSONReader(t *testing.T) {
 				Matrix: &config.Global{
 					SigningIdentity: fclient.SigningIdentity{
 						ServerName: serverName,
-					},
-				},
-				Derived: &config.Derived{
-					ApplicationServices: []config.ApplicationService{
-						{
-							ID:      "anapplicationservice",
-							ASToken: "astoken",
-							NamespaceMap: map[string][]config.ApplicationServiceNamespace{
-								"users": {
-									{
-										Exclusive:    true,
-										Regex:        "@alice:example.com",
-										RegexpObject: regexp.MustCompile("@alice:example.com"),
-									},
-								},
-							},
-						},
 					},
 				},
 			}

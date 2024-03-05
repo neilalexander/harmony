@@ -51,12 +51,6 @@ const (
 	// - Replace the event in the database.
 	OutputTypeRedactedEvent OutputType = "redacted_event"
 
-	// OutputTypeNewPeek indicates that the kafka event is an OutputNewPeek
-	OutputTypeNewPeek OutputType = "new_peek"
-	// OutputTypeNewInboundPeek indicates that the kafka event is an OutputNewInboundPeek
-	OutputTypeNewInboundPeek OutputType = "new_inbound_peek"
-	// OutputTypeRetirePeek indicates that the kafka event is an OutputRetirePeek
-	OutputTypeRetirePeek OutputType = "retire_peek"
 	// OutputTypePurgeRoom indicates the event is an OutputPurgeRoom
 	OutputTypePurgeRoom OutputType = "purge_room"
 )
@@ -76,12 +70,6 @@ type OutputEvent struct {
 	RetireInviteEvent *OutputRetireInviteEvent `json:"retire_invite_event,omitempty"`
 	// The content of event with type OutputTypeRedactedEvent
 	RedactedEvent *OutputRedactedEvent `json:"redacted_event,omitempty"`
-	// The content of event with type OutputTypeNewPeek
-	NewPeek *OutputNewPeek `json:"new_peek,omitempty"`
-	// The content of event with type OutputTypeNewInboundPeek
-	NewInboundPeek *OutputNewInboundPeek `json:"new_inbound_peek,omitempty"`
-	// The content of event with type OutputTypeRetirePeek
-	RetirePeek *OutputRetirePeek `json:"retire_peek,omitempty"`
 	// The content of the event with type OutputPurgeRoom
 	PurgeRoom *OutputPurgeRoom `json:"purge_room,omitempty"`
 }
@@ -236,34 +224,6 @@ type OutputRedactedEvent struct {
 	RedactedEventID string
 	// The value of `unsigned.redacted_because` - the redaction event itself
 	RedactedBecause *types.HeaderedEvent
-}
-
-// An OutputNewPeek is written whenever a user starts peeking into a room
-// using a given device.
-type OutputNewPeek struct {
-	RoomID   string
-	UserID   string
-	DeviceID string
-}
-
-// An OutputNewInboundPeek is written whenever a server starts peeking into a room
-type OutputNewInboundPeek struct {
-	RoomID string
-	PeekID string
-	// the event ID at which the peek begins (so we can avoid
-	// a race between tracking the state returned by /peek and emitting subsequent
-	// peeked events)
-	LatestEventID string
-	ServerName    spec.ServerName
-	// how often we told the peeking server to renew the peek
-	RenewalInterval int64
-}
-
-// An OutputRetirePeek is written whenever a user stops peeking into a room.
-type OutputRetirePeek struct {
-	RoomID   string
-	UserID   string
-	DeviceID string
 }
 
 type OutputPurgeRoom struct {

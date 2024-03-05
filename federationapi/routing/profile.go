@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"net/http"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/internal/eventutil"
 	"github.com/matrix-org/dendrite/setup/config"
 	userapi "github.com/matrix-org/dendrite/userapi/api"
+	usertypes "github.com/matrix-org/dendrite/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 )
@@ -54,7 +54,7 @@ func GetProfile(
 
 	profile, err := userAPI.QueryProfile(httpReq.Context(), userID)
 	if err != nil {
-		if errors.Is(err, appserviceAPI.ErrProfileNotExists) {
+		if errors.Is(err, usertypes.ErrProfileNotExists) {
 			return util.JSONResponse{
 				Code: http.StatusNotFound,
 				JSON: spec.NotFound("The user does not exist or does not have a profile."),

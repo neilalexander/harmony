@@ -18,19 +18,6 @@ type FederationAPI struct {
 	// The default value is 16 if not specified, which is circa 18 hours.
 	FederationMaxRetries uint32 `yaml:"send_max_retries"`
 
-	// P2P Feature: Whether relaying to specific nodes should be enabled.
-	// Defaults to false.
-	// Note: Enabling relays introduces a huge startup delay, if you are not using
-	// relays and have many servers to re-hydrate on start. Only enable this
-	// if you are using relays!
-	EnableRelays bool `yaml:"enable_relays"`
-
-	// P2P Feature: How many consecutive failures that we should tolerate when
-	// sending federation requests to a specific server until we should assume they
-	// are offline. If we assume they are offline then we will attempt to send
-	// messages to their relay server if we know of one that is appropriate.
-	P2PFederationRetriesUntilAssumedOffline uint32 `yaml:"p2p_retries_until_assumed_offline"`
-
 	// FederationDisableTLSValidation disables the validation of X.509 TLS certs
 	// on remote federation endpoints. This is not recommended in production!
 	DisableTLSValidation bool `yaml:"disable_tls_validation"`
@@ -50,7 +37,6 @@ type FederationAPI struct {
 
 func (c *FederationAPI) Defaults(opts DefaultOpts) {
 	c.FederationMaxRetries = 16
-	c.P2PFederationRetriesUntilAssumedOffline = 1
 	c.DisableTLSValidation = false
 	c.DisableHTTPKeepalives = false
 	if opts.Generate {

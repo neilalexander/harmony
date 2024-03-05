@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"crypto/ed25519"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -17,10 +16,8 @@ import (
 
 	"github.com/matrix-org/dendrite/federationapi/api"
 	"github.com/matrix-org/dendrite/federationapi/consumers"
-	"github.com/matrix-org/dendrite/federationapi/statistics"
 	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
 	"github.com/matrix-org/dendrite/roomserver/types"
-	"github.com/matrix-org/dendrite/roomserver/version"
 )
 
 // PerformLeaveRequest implements api.FederationInternalAPI
@@ -29,10 +26,6 @@ func (r *FederationInternalAPI) PerformDirectoryLookup(
 	request *api.PerformDirectoryLookupRequest,
 	response *api.PerformDirectoryLookupResponse,
 ) (err error) {
-	if !r.shouldAttemptDirectFederation(request.ServerName) {
-		return fmt.Errorf("relay servers have no meaningful response for directory lookup.")
-	}
-
 	dir, err := r.federation.LookupRoomAlias(
 		ctx,
 		r.cfg.Matrix.ServerName,
@@ -45,7 +38,7 @@ func (r *FederationInternalAPI) PerformDirectoryLookup(
 	}
 	response.RoomID = dir.RoomID
 	response.ServerNames = dir.Servers
-	r.statistics.ForServer(request.ServerName).Success(statistics.SendDirect)
+	r.statistics.ForServer(request.ServerName).Success()
 	return nil
 }
 
@@ -143,10 +136,6 @@ func (r *FederationInternalAPI) performJoinUsingServer(
 	serverName spec.ServerName,
 	unsigned map[string]interface{},
 ) error {
-	if !r.shouldAttemptDirectFederation(serverName) {
-		return fmt.Errorf("relay servers have no meaningful response for join.")
-	}
-
 	user, err := spec.NewUserID(userID, true)
 	if err != nil {
 		return err
@@ -197,11 +186,11 @@ func (r *FederationInternalAPI) performJoinUsingServer(
 		if !joinErr.Reachable {
 			r.statistics.ForServer(joinErr.ServerName).Failure()
 		} else {
-			r.statistics.ForServer(joinErr.ServerName).Success(statistics.SendDirect)
+			r.statistics.ForServer(joinErr.ServerName).Success()
 		}
 		return joinErr.Err
 	}
-	r.statistics.ForServer(serverName).Success(statistics.SendDirect)
+	r.statistics.ForServer(serverName).Success()
 	if response == nil {
 		return fmt.Errorf("Received nil response from gomatrixserverlib.PerformJoin")
 	}
@@ -239,195 +228,6 @@ func (r *FederationInternalAPI) performJoinUsingServer(
 	return nil
 }
 
-// PerformOutboundPeekRequest implements api.FederationInternalAPI
-func (r *FederationInternalAPI) PerformOutboundPeek(
-	ctx context.Context,
-	request *api.PerformOutboundPeekRequest,
-	response *api.PerformOutboundPeekResponse,
-) error {
-	// Look up the supported room versions.
-	var supportedVersions []gomatrixserverlib.RoomVersion
-	for version := range version.SupportedRoomVersions() {
-		supportedVersions = append(supportedVersions, version)
-	}
-
-	// Deduplicate the server names we were provided but keep the ordering
-	// as this encodes useful information about which servers are most likely
-	// to respond.
-	seenSet := make(map[spec.ServerName]bool)
-	var uniqueList []spec.ServerName
-	for _, srv := range request.ServerNames {
-		if seenSet[srv] {
-			continue
-		}
-		seenSet[srv] = true
-		uniqueList = append(uniqueList, srv)
-	}
-	request.ServerNames = uniqueList
-
-	// See if there's an existing outbound peek for this room ID with
-	// one of the specified servers.
-	if peeks, err := r.db.GetOutboundPeeks(ctx, request.RoomID); err == nil {
-		for _, peek := range peeks {
-			if _, ok := seenSet[peek.ServerName]; ok {
-				return nil
-			}
-		}
-	}
-
-	// Try each server that we were provided until we land on one that
-	// successfully completes the peek
-	var lastErr error
-	for _, serverName := range request.ServerNames {
-		if err := r.performOutboundPeekUsingServer(
-			ctx,
-			request.RoomID,
-			serverName,
-			supportedVersions,
-		); err != nil {
-			logrus.WithError(err).WithFields(logrus.Fields{
-				"server_name": serverName,
-				"room_id":     request.RoomID,
-			}).Warnf("Failed to peek room through server")
-			lastErr = err
-			continue
-		}
-
-		// We're all good.
-		return nil
-	}
-
-	// If we reach here then we didn't complete a peek for some reason.
-	var httpErr gomatrix.HTTPError
-	if ok := errors.As(lastErr, &httpErr); ok {
-		httpErr.Message = string(httpErr.Contents)
-		response.LastError = &httpErr
-	} else {
-		response.LastError = &gomatrix.HTTPError{
-			Code:         0,
-			WrappedError: nil,
-			Message:      lastErr.Error(),
-		}
-	}
-
-	logrus.Errorf(
-		"failed to peek room %q through %d server(s): last error %s",
-		request.RoomID, len(request.ServerNames), lastErr,
-	)
-
-	return lastErr
-}
-
-func (r *FederationInternalAPI) performOutboundPeekUsingServer(
-	ctx context.Context,
-	roomID string,
-	serverName spec.ServerName,
-	supportedVersions []gomatrixserverlib.RoomVersion,
-) error {
-	if !r.shouldAttemptDirectFederation(serverName) {
-		return fmt.Errorf("relay servers have no meaningful response for outbound peek.")
-	}
-
-	// create a unique ID for this peek.
-	// for now we just use the room ID again. In future, if we ever
-	// support concurrent peeks to the same room with different filters
-	// then we would need to disambiguate further.
-	peekID := roomID
-
-	// check whether we're peeking already to try to avoid needlessly
-	// re-peeking on the server. we don't need a transaction for this,
-	// given this is a nice-to-have.
-	outboundPeek, err := r.db.GetOutboundPeek(ctx, serverName, roomID, peekID)
-	if err != nil {
-		return err
-	}
-	renewing := false
-	if outboundPeek != nil {
-		nowMilli := time.Now().UnixNano() / int64(time.Millisecond)
-		if nowMilli > outboundPeek.RenewedTimestamp+outboundPeek.RenewalInterval {
-			logrus.Infof("stale outbound peek to %s for %s already exists; renewing", serverName, roomID)
-			renewing = true
-		} else {
-			logrus.Infof("live outbound peek to %s for %s already exists", serverName, roomID)
-			return nil
-		}
-	}
-
-	// Try to perform an outbound /peek using the information supplied in the
-	// request.
-	respPeek, err := r.federation.Peek(
-		ctx,
-		r.cfg.Matrix.ServerName,
-		serverName,
-		roomID,
-		peekID,
-		supportedVersions,
-	)
-	if err != nil {
-		r.statistics.ForServer(serverName).Failure()
-		return fmt.Errorf("r.federation.Peek: %w", err)
-	}
-	r.statistics.ForServer(serverName).Success(statistics.SendDirect)
-
-	// Work out if we support the room version that has been supplied in
-	// the peek response.
-	if respPeek.RoomVersion == "" {
-		respPeek.RoomVersion = gomatrixserverlib.RoomVersionV1
-	}
-	if !gomatrixserverlib.KnownRoomVersion(respPeek.RoomVersion) {
-		return fmt.Errorf("unknown room version: %s", respPeek.RoomVersion)
-	}
-
-	// we have the peek state now so let's process regardless of whether upstream gives up
-	ctx = context.Background()
-
-	// authenticate the state returned (check its auth events etc)
-	// the equivalent of CheckSendJoinResponse()
-	userIDProvider := func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return r.rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	}
-	authEvents, stateEvents, err := gomatrixserverlib.CheckStateResponse(
-		ctx, &respPeek, respPeek.RoomVersion, r.keyRing, federatedEventProvider(ctx, r.federation, r.keyRing, r.cfg.Matrix.ServerName, serverName, userIDProvider), userIDProvider,
-	)
-	if err != nil {
-		return fmt.Errorf("error checking state returned from peeking: %w", err)
-	}
-	if err = checkEventsContainCreateEvent(authEvents); err != nil {
-		return fmt.Errorf("sanityCheckAuthChain: %w", err)
-	}
-
-	// If we've got this far, the remote server is peeking.
-	if renewing {
-		if err = r.db.RenewOutboundPeek(ctx, serverName, roomID, peekID, respPeek.RenewalInterval); err != nil {
-			return err
-		}
-	} else {
-		if err = r.db.AddOutboundPeek(ctx, serverName, roomID, peekID, respPeek.RenewalInterval); err != nil {
-			return err
-		}
-	}
-
-	// logrus.Warnf("got respPeek %#v", respPeek)
-	// Send the newly returned state to the roomserver to update our local view.
-	if err = roomserverAPI.SendEventWithState(
-		ctx, r.rsAPI, r.cfg.Matrix.ServerName,
-		roomserverAPI.KindNew,
-		// use the authorized state from CheckStateResponse
-		&fclient.RespState{
-			StateEvents: gomatrixserverlib.NewEventJSONsFromEvents(stateEvents),
-			AuthEvents:  gomatrixserverlib.NewEventJSONsFromEvents(authEvents),
-		},
-		&types.HeaderedEvent{PDU: respPeek.LatestEvent},
-		serverName,
-		nil,
-		false,
-	); err != nil {
-		return fmt.Errorf("r.producer.SendEventWithState: %w", err)
-	}
-
-	return nil
-}
-
 // PerformLeaveRequest implements api.FederationInternalAPI
 func (r *FederationInternalAPI) PerformLeave(
 	ctx context.Context,
@@ -445,10 +245,6 @@ func (r *FederationInternalAPI) PerformLeave(
 	// Try each server that we were provided until we land on one that
 	// successfully completes the make-leave send-leave dance.
 	for _, serverName := range request.ServerNames {
-		if !r.shouldAttemptDirectFederation(serverName) {
-			continue
-		}
-
 		// Try to perform a make_leave using the information supplied in the
 		// request.
 		respMakeLeave, err := r.federation.MakeLeave(
@@ -531,7 +327,7 @@ func (r *FederationInternalAPI) PerformLeave(
 			continue
 		}
 
-		r.statistics.ForServer(serverName).Success(statistics.SendDirect)
+		r.statistics.ForServer(serverName).Success()
 		return nil
 	}
 
@@ -560,12 +356,6 @@ func (r *FederationInternalAPI) SendInvite(
 	_, destination, err := gomatrixserverlib.SplitID('@', *event.StateKey())
 	if err != nil {
 		return nil, fmt.Errorf("gomatrixserverlib.SplitID: %w", err)
-	}
-
-	// TODO (devon): This should be allowed via a relay. Currently only transactions
-	// can be sent to relays. Would need to extend relays to handle invites.
-	if !r.shouldAttemptDirectFederation(destination) {
-		return nil, fmt.Errorf("relay servers have no meaningful response for invite.")
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -617,12 +407,6 @@ func (r *FederationInternalAPI) SendInviteV3(
 	inviter, err := r.rsAPI.QueryUserIDForSender(ctx, *validRoomID, spec.SenderID(event.SenderID))
 	if err != nil {
 		return nil, err
-	}
-
-	// TODO (devon): This should be allowed via a relay. Currently only transactions
-	// can be sent to relays. Would need to extend relays to handle invites.
-	if !r.shouldAttemptDirectFederation(invitee.Domain()) {
-		return nil, fmt.Errorf("relay servers have no meaningful response for invite.")
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -694,34 +478,6 @@ func (r *FederationInternalAPI) MarkServersAlive(destinations []spec.ServerName)
 	}
 }
 
-func checkEventsContainCreateEvent(events []gomatrixserverlib.PDU) error {
-	// sanity check we have a create event and it has a known room version
-	for _, ev := range events {
-		if ev.Type() == spec.MRoomCreate && ev.StateKeyEquals("") {
-			// make sure the room version is known
-			content := ev.Content()
-			verBody := struct {
-				Version string `json:"room_version"`
-			}{}
-			err := json.Unmarshal(content, &verBody)
-			if err != nil {
-				return err
-			}
-			if verBody.Version == "" {
-				// https://matrix.org/docs/spec/client_server/r0.6.0#m-room-create
-				// The version of the room. Defaults to "1" if the key does not exist.
-				verBody.Version = "1"
-			}
-			knownVersions := gomatrixserverlib.RoomVersions()
-			if _, ok := knownVersions[gomatrixserverlib.RoomVersion(verBody.Version)]; !ok {
-				return fmt.Errorf("m.room.create event has an unknown room version: %s", verBody.Version)
-			}
-			return nil
-		}
-	}
-	return fmt.Errorf("response is missing m.room.create event")
-}
-
 // federatedEventProvider is an event provider which fetches events from the server provided
 func federatedEventProvider(
 	ctx context.Context, federation fclient.FederationClient,
@@ -787,62 +543,4 @@ func federatedEventProvider(
 		}
 		return returning, nil
 	}
-}
-
-// P2PQueryRelayServers implements api.FederationInternalAPI
-func (r *FederationInternalAPI) P2PQueryRelayServers(
-	ctx context.Context,
-	request *api.P2PQueryRelayServersRequest,
-	response *api.P2PQueryRelayServersResponse,
-) error {
-	logrus.Infof("Getting relay servers for: %s", request.Server)
-	relayServers, err := r.db.P2PGetRelayServersForServer(ctx, request.Server)
-	if err != nil {
-		return err
-	}
-
-	response.RelayServers = relayServers
-	return nil
-}
-
-// P2PAddRelayServers implements api.FederationInternalAPI
-func (r *FederationInternalAPI) P2PAddRelayServers(
-	ctx context.Context,
-	request *api.P2PAddRelayServersRequest,
-	response *api.P2PAddRelayServersResponse,
-) error {
-	logrus.Infof("Adding relay servers for: %s", request.Server)
-	err := r.db.P2PAddRelayServersForServer(ctx, request.Server, request.RelayServers)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// P2PRemoveRelayServers implements api.FederationInternalAPI
-func (r *FederationInternalAPI) P2PRemoveRelayServers(
-	ctx context.Context,
-	request *api.P2PRemoveRelayServersRequest,
-	response *api.P2PRemoveRelayServersResponse,
-) error {
-	logrus.Infof("Adding relay servers for: %s", request.Server)
-	err := r.db.P2PRemoveRelayServersForServer(ctx, request.Server, request.RelayServers)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *FederationInternalAPI) shouldAttemptDirectFederation(
-	destination spec.ServerName,
-) bool {
-	var shouldRelay bool
-	stats := r.statistics.ForServer(destination)
-	if stats.AssumedOffline() && len(stats.KnownRelayServers()) > 0 {
-		shouldRelay = true
-	}
-
-	return !shouldRelay
 }

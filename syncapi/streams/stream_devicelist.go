@@ -21,6 +21,10 @@ func (p *DeviceListStreamProvider) CompleteSync(
 	snapshot storage.DatabaseTransaction,
 	req *types.SyncRequest,
 ) types.StreamPosition {
+	err := internal.DeviceOTKCounts(req.Context, p.userAPI, req.Device.UserID, req.Device.ID, req.Response)
+	if err != nil {
+		req.Log.WithError(err).Error("internal.DeviceListCatchup failed")
+	}
 	return p.LatestPosition(ctx)
 }
 

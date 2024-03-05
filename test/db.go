@@ -22,7 +22,6 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
-	"path/filepath"
 	"testing"
 
 	"github.com/lib/pq"
@@ -30,8 +29,7 @@ import (
 
 type DBType int
 
-var DBTypeSQLite DBType = 1
-var DBTypePostgres DBType = 2
+var DBTypePostgres DBType = 1
 
 var Quiet = false
 var Required = os.Getenv("DENDRITE_TEST_SKIP_NODB") == ""
@@ -97,19 +95,11 @@ func currentUser() string {
 	return user.Username
 }
 
-// Prepare a sqlite or postgres connection string for testing.
+// Prepare a postgres connection string for testing.
 // Returns the connection string to use and a close function which must be called when the test finishes.
 // Calling this function twice will return the same database, which will have data from previous tests
 // unless close() is called.
 func PrepareDBConnectionString(t *testing.T, dbType DBType) (connStr string, close func()) {
-	if dbType == DBTypeSQLite {
-		// this will be made in the t.TempDir, which is unique per test
-		dbname := filepath.Join(t.TempDir(), "dendrite_test.db")
-		return fmt.Sprintf("file:%s", dbname), func() {
-			t.Cleanup(func() {}) // removes the t.TempDir
-		}
-	}
-
 	// Required vars: user and db
 	// We'll try to infer from the local env if they are missing
 	user := os.Getenv("POSTGRES_USER")
@@ -168,7 +158,6 @@ func PrepareDBConnectionString(t *testing.T, dbType DBType) (connStr string, clo
 func WithAllDatabases(t *testing.T, testFn func(t *testing.T, db DBType)) {
 	dbs := map[string]DBType{
 		"postgres": DBTypePostgres,
-		"sqlite":   DBTypeSQLite,
 	}
 	for dbName, dbType := range dbs {
 		dbt := dbType

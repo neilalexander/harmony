@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 
@@ -85,14 +84,12 @@ func (s *OutputNotificationDataConsumer) onMessage(ctx context.Context, msgs []*
 	// Parse out the event JSON
 	var data eventutil.NotificationData
 	if err := json.Unmarshal(msg.Data, &data); err != nil {
-		sentry.CaptureException(err)
 		log.WithField("user_id", userID).WithError(err).Error("user API consumer: message parse failure")
 		return true
 	}
 
 	streamPos, err := s.db.UpsertRoomUnreadNotificationCounts(ctx, userID, data.RoomID, data.UnreadNotificationCount, data.UnreadHighlightCount)
 	if err != nil {
-		sentry.CaptureException(err)
 		log.WithFields(log.Fields{
 			"user_id": userID,
 			"room_id": data.RoomID,

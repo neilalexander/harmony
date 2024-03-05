@@ -22,7 +22,6 @@ type FederationInternalAPI interface {
 	gomatrixserverlib.KeyDatabase
 	ClientFederationAPI
 	RoomserverFederationAPI
-	P2PFederationAPI
 
 	QueryServerKeys(ctx context.Context, request *QueryServerKeysRequest, response *QueryServerKeysResponse) error
 	LookupServerKeys(ctx context.Context, s spec.ServerName, keyRequests map[gomatrixserverlib.PublicKeyLookupRequest]spec.Timestamp) ([]gomatrixserverlib.ServerKeys, error)
@@ -64,8 +63,6 @@ type RoomserverFederationAPI interface {
 	SendInvite(ctx context.Context, event gomatrixserverlib.PDU, strippedState []gomatrixserverlib.InviteStrippedState) (gomatrixserverlib.PDU, error)
 	// Handle sending an invite to a remote server.
 	SendInviteV3(ctx context.Context, event gomatrixserverlib.ProtoEvent, invitee spec.UserID, version gomatrixserverlib.RoomVersion, strippedState []gomatrixserverlib.InviteStrippedState) (gomatrixserverlib.PDU, error)
-	// Handle an instruction to peek a room on a remote server.
-	PerformOutboundPeek(ctx context.Context, request *PerformOutboundPeekRequest, response *PerformOutboundPeekResponse) error
 	// Query the server names of the joined hosts in a room.
 	// Unlike QueryJoinedHostsInRoom, this function returns a de-duplicated slice
 	// containing only the server names (without information for membership events).
@@ -76,29 +73,6 @@ type RoomserverFederationAPI interface {
 	LookupMissingEvents(ctx context.Context, origin, s spec.ServerName, roomID string, missing fclient.MissingEvents, roomVersion gomatrixserverlib.RoomVersion) (res fclient.RespMissingEvents, err error)
 
 	RoomHierarchies(ctx context.Context, origin, dst spec.ServerName, roomID string, suggestedOnly bool) (res fclient.RoomHierarchyResponse, err error)
-}
-
-type P2PFederationAPI interface {
-	// Get the relay servers associated for the given server.
-	P2PQueryRelayServers(
-		ctx context.Context,
-		request *P2PQueryRelayServersRequest,
-		response *P2PQueryRelayServersResponse,
-	) error
-
-	// Add relay server associations to the given server.
-	P2PAddRelayServers(
-		ctx context.Context,
-		request *P2PAddRelayServersRequest,
-		response *P2PAddRelayServersResponse,
-	) error
-
-	// Remove relay server associations from the given server.
-	P2PRemoveRelayServers(
-		ctx context.Context,
-		request *P2PRemoveRelayServersRequest,
-		response *P2PRemoveRelayServersResponse,
-	) error
 }
 
 // KeyserverFederationAPI is a subset of gomatrixserverlib.FederationClient functions which the keyserver
@@ -173,16 +147,6 @@ type PerformJoinResponse struct {
 	LastError *gomatrix.HTTPError
 }
 
-type PerformOutboundPeekRequest struct {
-	RoomID string `json:"room_id"`
-	// The sorted list of servers to try. Servers will be tried sequentially, after de-duplication.
-	ServerNames types.ServerNames `json:"server_names"`
-}
-
-type PerformOutboundPeekResponse struct {
-	LastError *gomatrix.HTTPError
-}
-
 type PerformLeaveRequest struct {
 	RoomID      string            `json:"room_id"`
 	UserID      string            `json:"user_id"`
@@ -232,28 +196,4 @@ type InputPublicKeysRequest struct {
 }
 
 type InputPublicKeysResponse struct {
-}
-
-type P2PQueryRelayServersRequest struct {
-	Server spec.ServerName
-}
-
-type P2PQueryRelayServersResponse struct {
-	RelayServers []spec.ServerName
-}
-
-type P2PAddRelayServersRequest struct {
-	Server       spec.ServerName
-	RelayServers []spec.ServerName
-}
-
-type P2PAddRelayServersResponse struct {
-}
-
-type P2PRemoveRelayServersRequest struct {
-	Server       spec.ServerName
-	RelayServers []spec.ServerName
-}
-
-type P2PRemoveRelayServersResponse struct {
 }

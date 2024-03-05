@@ -39,8 +39,6 @@ func (r *SyncRequest) IsRoomPresent(roomID string) bool {
 		return true
 	case spec.Invite:
 		return true
-	case spec.Peek:
-		return true
 	default:
 		return false
 	}

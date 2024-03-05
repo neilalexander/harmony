@@ -37,13 +37,10 @@ import (
 	"github.com/matrix-org/dendrite/syncapi/types"
 )
 
-// Database is a temporary struct until we have made syncserver.go the same for both pq/sqlite
-// For now this contains the shared functions
 type Database struct {
 	DB                  *sql.DB
 	Writer              sqlutil.Writer
 	Invites             tables.Invites
-	Peeks               tables.Peeks
 	AccountData         tables.AccountData
 	OutputEvents        tables.Events
 	Topology            tables.Topology
@@ -158,53 +155,6 @@ func (d *Database) RetireInviteEvent(
 		sp, err = d.Invites.DeleteInviteEvent(ctx, txn, inviteEventID)
 		return err
 	})
-	return
-}
-
-// AddPeek tracks the fact that a user has started peeking.
-// If the peek was successfully stored this returns the stream ID it was stored at.
-// Returns an error if there was a problem communicating with the database.
-func (d *Database) AddPeek(
-	ctx context.Context, roomID, userID, deviceID string,
-) (sp types.StreamPosition, err error) {
-	err = d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		sp, err = d.Peeks.InsertPeek(ctx, txn, roomID, userID, deviceID)
-		return err
-	})
-	return
-}
-
-// DeletePeek tracks the fact that a user has stopped peeking from the specified
-// device. If the peeks was successfully deleted this returns the stream ID it was
-// stored at. Returns an error if there was a problem communicating with the database.
-func (d *Database) DeletePeek(
-	ctx context.Context, roomID, userID, deviceID string,
-) (sp types.StreamPosition, err error) {
-	err = d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		sp, err = d.Peeks.DeletePeek(ctx, txn, roomID, userID, deviceID)
-		return err
-	})
-	if err == sql.ErrNoRows {
-		sp = 0
-		err = nil
-	}
-	return
-}
-
-// DeletePeeks tracks the fact that a user has stopped peeking from all devices
-// If the peeks was successfully deleted this returns the stream ID it was stored at.
-// Returns an error if there was a problem communicating with the database.
-func (d *Database) DeletePeeks(
-	ctx context.Context, roomID, userID string,
-) (sp types.StreamPosition, err error) {
-	err = d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		sp, err = d.Peeks.DeletePeeks(ctx, txn, roomID, userID)
-		return err
-	})
-	if err == sql.ErrNoRows {
-		sp = 0
-		err = nil
-	}
 	return
 }
 

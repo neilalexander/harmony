@@ -15,7 +15,6 @@
 package httputil
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +22,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -31,7 +29,6 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/matrix-org/dendrite/clientapi/auth"
-	"github.com/matrix-org/dendrite/internal"
 	userapi "github.com/matrix-org/dendrite/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 )
@@ -73,22 +70,8 @@ func MakeAuthAPI(
 		// add the user ID to the logger
 		logger = logger.WithField("user_id", device.UserID)
 		req = req.WithContext(util.ContextWithLogger(req.Context(), logger))
-		// add the user to Sentry, if enabled
-		hub := sentry.GetHubFromContext(req.Context())
-		if hub != nil {
-			// clone the hub, so we don't send garbage events with e.g. mismatching rooms/event_ids
-			hub = hub.Clone()
-			hub.Scope().SetUser(sentry.User{
-				Username: device.UserID,
-			})
-			hub.Scope().SetTag("user_id", device.UserID)
-			hub.Scope().SetTag("device_id", device.ID)
-		}
 		defer func() {
 			if r := recover(); r != nil {
-				if hub != nil {
-					hub.CaptureException(fmt.Errorf("%s panicked", req.URL.Path))
-				}
 				// re-panic to return the 500
 				panic(r)
 			}
@@ -107,13 +90,7 @@ func MakeAuthAPI(
 			}
 		}
 
-		jsonRes := f(req, device)
-		// do not log 4xx as errors as they are client fails, not server fails
-		if hub != nil && jsonRes.Code >= 500 {
-			hub.Scope().SetExtra("response", jsonRes)
-			hub.CaptureException(fmt.Errorf("%s returned HTTP %d", req.URL.Path, jsonRes.Code))
-		}
-		return jsonRes
+		return f(req, device)
 	}
 	return MakeExternalAPI(metricsName, h)
 }
@@ -187,11 +164,7 @@ func MakeExternalAPI(metricsName string, f func(*http.Request) util.JSONResponse
 			}
 		}
 
-		trace, ctx := internal.StartTask(req.Context(), metricsName)
-		defer trace.EndTask()
-		req = req.WithContext(ctx)
 		h.ServeHTTP(nextWriter, req)
-
 	}
 
 	return http.HandlerFunc(withSpan)
@@ -201,9 +174,6 @@ func MakeExternalAPI(metricsName string, f func(*http.Request) util.JSONResponse
 // This is used to serve HTML alongside JSON error messages
 func MakeHTMLAPI(metricsName string, enableMetrics bool, f func(http.ResponseWriter, *http.Request)) http.Handler {
 	withSpan := func(w http.ResponseWriter, req *http.Request) {
-		trace, ctx := internal.StartTask(req.Context(), metricsName)
-		defer trace.EndTask()
-		req = req.WithContext(ctx)
 		f(w, req)
 	}
 

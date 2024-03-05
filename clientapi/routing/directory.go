@@ -145,35 +145,6 @@ func SetLocalAlias(
 		}
 	}
 
-	// Check that the alias does not fall within an exclusive namespace of an
-	// application service
-	// TODO: This code should eventually be refactored with:
-	// 1. The new method for checking for things matching an AS's namespace
-	// 2. Using an overall Regex object for all AS's just like we did for usernames
-	reqUserID, _, err := gomatrixserverlib.SplitID('@', device.UserID)
-	if err != nil {
-		return util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.BadJSON("User ID must be in the form '@localpart:domain'"),
-		}
-	}
-	for _, appservice := range cfg.Derived.ApplicationServices {
-		// Don't prevent AS from creating aliases in its own namespace
-		// Note that Dendrite uses SenderLocalpart as UserID for AS users
-		if reqUserID != appservice.SenderLocalpart {
-			if aliasNamespaces, ok := appservice.NamespaceMap["aliases"]; ok {
-				for _, namespace := range aliasNamespaces {
-					if namespace.Exclusive && namespace.RegexpObject.MatchString(alias) {
-						return util.JSONResponse{
-							Code: http.StatusBadRequest,
-							JSON: spec.ASExclusive("Alias is reserved by an application service"),
-						}
-					}
-				}
-			}
-		}
-	}
-
 	var r struct {
 		RoomID string `json:"room_id"`
 	}

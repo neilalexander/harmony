@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"encoding/pem"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -27,12 +26,8 @@ import (
 	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ed25519"
 	"gopkg.in/yaml.v2"
-
-	jaegerconfig "github.com/uber/jaeger-client-go/config"
-	jaegermetrics "github.com/uber/jaeger-lib/metrics"
 )
 
 // keyIDRegexp defines allowable characters in Key IDs.
@@ -54,7 +49,6 @@ type Dendrite struct {
 	Version int `yaml:"version"`
 
 	Global        Global        `yaml:"global"`
-	AppServiceAPI AppServiceAPI `yaml:"app_service_api"`
 	ClientAPI     ClientAPI     `yaml:"client_api"`
 	FederationAPI FederationAPI `yaml:"federation_api"`
 	KeyServer     KeyServer     `yaml:"key_server"`
@@ -62,17 +56,8 @@ type Dendrite struct {
 	RoomServer    RoomServer    `yaml:"room_server"`
 	SyncAPI       SyncAPI       `yaml:"sync_api"`
 	UserAPI       UserAPI       `yaml:"user_api"`
-	RelayAPI      RelayAPI      `yaml:"relay_api"`
 
 	MSCs MSCs `yaml:"mscs"`
-
-	// The config for tracing the dendrite servers.
-	Tracing struct {
-		// Set to true to enable tracer hooks. If false, no tracing is set up.
-		Enabled bool `yaml:"enabled"`
-		// The config for the jaeger opentracing reporter.
-		Jaeger jaegerconfig.Configuration `yaml:"jaeger"`
-	} `yaml:"tracing"`
 
 	// The config for logging informations. Each hook will be added to logrus.
 	Logging []LogrusHook `yaml:"logging"`
@@ -94,22 +79,6 @@ type Derived struct {
 		// registration in order to complete registration stages.
 		Params map[string]interface{} `json:"params"`
 	}
-
-	// Application services parsed from their config files
-	// The paths of which were given above in the main config file
-	ApplicationServices []ApplicationService
-
-	// Meta-regexes compiled from all exclusive application service
-	// Regexes.
-	//
-	// When a user registers, we check that their username does not match any
-	// exclusive application service namespaces
-	ExclusiveApplicationServicesUsernameRegexp *regexp.Regexp
-	// When a user creates a room alias, we check that it isn't already
-	// reserved by an application service
-	ExclusiveApplicationServicesAliasRegexp *regexp.Regexp
-	// Note: An Exclusive Regex for room ID isn't necessary as we aren't blocking
-	// servers from creating RoomIDs in exclusive application service namespaces
 }
 
 // A Path on the filesystem.
@@ -118,14 +87,10 @@ type Path string
 // A DataSource for opening a postgresql database using lib/pq.
 type DataSource string
 
-func (d DataSource) IsSQLite() bool {
-	return strings.HasPrefix(string(d), "file:")
-}
-
 func (d DataSource) IsPostgres() bool {
 	// commented line may not always be true?
 	// return strings.HasPrefix(string(d), "postgres:")
-	return !d.IsSQLite()
+	return true
 }
 
 // A Topic in kafka.
@@ -297,11 +262,6 @@ func (config *Dendrite) Derive() error {
 		}
 	}
 
-	// Load application service configuration files
-	if err := loadAppServices(&config.AppServiceAPI, &config.Derived); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -322,8 +282,6 @@ func (c *Dendrite) Defaults(opts DefaultOpts) {
 	c.RoomServer.Defaults(opts)
 	c.SyncAPI.Defaults(opts)
 	c.UserAPI.Defaults(opts)
-	c.AppServiceAPI.Defaults(opts)
-	c.RelayAPI.Defaults(opts)
 	c.MSCs.Defaults(opts)
 	c.Wiring()
 }
@@ -335,8 +293,7 @@ func (c *Dendrite) Verify(configErrs *ConfigErrors) {
 	for _, c := range []verifiable{
 		&c.Global, &c.ClientAPI, &c.FederationAPI,
 		&c.KeyServer, &c.MediaAPI, &c.RoomServer,
-		&c.SyncAPI, &c.UserAPI,
-		&c.AppServiceAPI, &c.RelayAPI, &c.MSCs,
+		&c.SyncAPI, &c.UserAPI, &c.MSCs,
 	} {
 		c.Verify(configErrs)
 	}
@@ -351,12 +308,9 @@ func (c *Dendrite) Wiring() {
 	c.RoomServer.Matrix = &c.Global
 	c.SyncAPI.Matrix = &c.Global
 	c.UserAPI.Matrix = &c.Global
-	c.AppServiceAPI.Matrix = &c.Global
-	c.RelayAPI.Matrix = &c.Global
 	c.MSCs.Matrix = &c.Global
 
 	c.ClientAPI.Derived = &c.Derived
-	c.AppServiceAPI.Derived = &c.Derived
 	c.ClientAPI.MSCs = &c.MSCs
 }
 
@@ -471,29 +425,4 @@ func readKeyPEM(path string, data []byte, enforceKeyIDFormat bool) (gomatrixserv
 			return gomatrixserverlib.KeyID(keyID), privKey, nil
 		}
 	}
-}
-
-// SetupTracing configures the opentracing using the supplied configuration.
-func (config *Dendrite) SetupTracing() (closer io.Closer, err error) {
-	if !config.Tracing.Enabled {
-		return io.NopCloser(bytes.NewReader([]byte{})), nil
-	}
-	return config.Tracing.Jaeger.InitGlobalTracer(
-		"Dendrite",
-		jaegerconfig.Logger(logrusLogger{logrus.StandardLogger()}),
-		jaegerconfig.Metrics(jaegermetrics.NullFactory),
-	)
-}
-
-// logrusLogger is a small wrapper that implements jaeger.Logger using logrus.
-type logrusLogger struct {
-	l *logrus.Logger
-}
-
-func (l logrusLogger) Error(msg string) {
-	l.l.Error(msg)
-}
-
-func (l logrusLogger) Infof(msg string, args ...interface{}) {
-	l.l.Infof(msg, args...)
 }

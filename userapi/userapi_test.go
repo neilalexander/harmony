@@ -22,7 +22,6 @@ import (
 	"testing"
 	"time"
 
-	api2 "github.com/matrix-org/dendrite/appservice/api"
 	"github.com/matrix-org/dendrite/clientapi/auth/authtypes"
 	"github.com/matrix-org/dendrite/internal/sqlutil"
 	"github.com/matrix-org/dendrite/userapi/producers"
@@ -39,6 +38,7 @@ import (
 	"github.com/matrix-org/dendrite/userapi/api"
 	"github.com/matrix-org/dendrite/userapi/internal"
 	"github.com/matrix-org/dendrite/userapi/storage"
+	usertypes "github.com/matrix-org/dendrite/userapi/types"
 )
 
 const (
@@ -130,11 +130,11 @@ func TestQueryProfile(t *testing.T) {
 		},
 		{
 			userID:  fmt.Sprintf("@bob:%s", serverName),
-			wantErr: api2.ErrProfileNotExists,
+			wantErr: usertypes.ErrProfileNotExists,
 		},
 		{
 			userID:  "@alice:wrongdomain.com",
-			wantErr: api2.ErrProfileNotExists,
+			wantErr: usertypes.ErrProfileNotExists,
 		},
 	}
 

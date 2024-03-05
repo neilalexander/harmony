@@ -22,7 +22,6 @@ import (
 	"strings"
 	"time"
 
-	appserviceAPI "github.com/matrix-org/dendrite/appservice/api"
 	roomserverAPI "github.com/matrix-org/dendrite/roomserver/api"
 	roomserverVersion "github.com/matrix-org/dendrite/roomserver/version"
 	"github.com/matrix-org/dendrite/userapi/api"
@@ -112,7 +111,6 @@ func CreateRoom(
 	req *http.Request, device *api.Device,
 	cfg *config.ClientAPI,
 	profileAPI api.ClientUserAPI, rsAPI roomserverAPI.ClientRoomserverAPI,
-	asAPI appserviceAPI.AppServiceInternalAPI,
 ) util.JSONResponse {
 	var createRequest createRoomRequest
 	resErr := httputil.UnmarshalJSONRequest(req, &createRequest)
@@ -129,7 +127,7 @@ func CreateRoom(
 			JSON: spec.InvalidParam(err.Error()),
 		}
 	}
-	return createRoom(req.Context(), createRequest, device, cfg, profileAPI, rsAPI, asAPI, evTime)
+	return createRoom(req.Context(), createRequest, device, cfg, profileAPI, rsAPI, evTime)
 }
 
 // createRoom implements /createRoom
@@ -138,7 +136,6 @@ func createRoom(
 	createRequest createRoomRequest, device *api.Device,
 	cfg *config.ClientAPI,
 	profileAPI api.ClientUserAPI, rsAPI roomserverAPI.ClientRoomserverAPI,
-	asAPI appserviceAPI.AppServiceInternalAPI,
 	evTime time.Time,
 ) util.JSONResponse {
 	userID, err := spec.NewUserID(device.UserID, true)
@@ -190,7 +187,7 @@ func createRoom(
 		"roomVersion": roomVersion,
 	}).Info("Creating new room")
 
-	profile, err := appserviceAPI.RetrieveUserProfile(ctx, userID.String(), asAPI, profileAPI)
+	profile, err := profileAPI.QueryProfile(ctx, userID.String())
 	if err != nil {
 		util.GetLogger(ctx).WithError(err).Error("appserviceAPI.RetrieveUserProfile failed")
 		return util.JSONResponse{

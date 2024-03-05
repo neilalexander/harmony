@@ -23,7 +23,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
@@ -67,7 +66,6 @@ func (r *Joiner) PerformJoin(
 	roomID, joinedVia, err = r.performJoin(context.Background(), req)
 	if err != nil {
 		logger.WithError(err).Error("Failed to join room")
-		sentry.CaptureException(err)
 		return "", "", err
 	}
 	logger.Info("User joined room successfully")

@@ -347,7 +347,6 @@ type DeviceLists struct {
 
 type RoomsResponse struct {
 	Join   map[string]*JoinResponse   `json:"join,omitempty"`
-	Peek   map[string]*JoinResponse   `json:"peek,omitempty"`
 	Invite map[string]*InviteResponse `json:"invite,omitempty"`
 	Leave  map[string]*LeaveResponse  `json:"leave,omitempty"`
 }
@@ -358,13 +357,14 @@ type ToDeviceResponse struct {
 
 // Response represents a /sync API response. See https://matrix.org/docs/spec/client_server/r0.2.0.html#get-matrix-client-r0-sync
 type Response struct {
-	NextBatch           StreamingToken    `json:"next_batch"`
-	AccountData         *ClientEvents     `json:"account_data,omitempty"`
-	Presence            *ClientEvents     `json:"presence,omitempty"`
-	Rooms               *RoomsResponse    `json:"rooms,omitempty"`
-	ToDevice            *ToDeviceResponse `json:"to_device,omitempty"`
-	DeviceLists         *DeviceLists      `json:"device_lists,omitempty"`
-	DeviceListsOTKCount map[string]int    `json:"device_one_time_keys_count,omitempty"`
+	NextBatch                           StreamingToken    `json:"next_batch"`
+	AccountData                         *ClientEvents     `json:"account_data,omitempty"`
+	Presence                            *ClientEvents     `json:"presence,omitempty"`
+	Rooms                               *RoomsResponse    `json:"rooms,omitempty"`
+	ToDevice                            *ToDeviceResponse `json:"to_device,omitempty"`
+	DeviceLists                         *DeviceLists      `json:"device_lists,omitempty"`
+	DeviceListsOTKCount                 map[string]int    `json:"device_one_time_keys_count,omitempty"`
+	DeviceListsUnusedFallbackAlgorithms []string          `json:"device_unused_fallback_key_types"`
 }
 
 func (r Response) MarshalJSON() ([]byte, error) {
@@ -382,7 +382,7 @@ func (r Response) MarshalJSON() ([]byte, error) {
 		}
 	}
 	if r.Rooms != nil {
-		if len(r.Rooms.Join) == 0 && len(r.Rooms.Peek) == 0 &&
+		if len(r.Rooms.Join) == 0 &&
 			len(r.Rooms.Invite) == 0 && len(r.Rooms.Leave) == 0 {
 			a.Rooms = nil
 		}
@@ -400,7 +400,6 @@ func (r *Response) HasUpdates() bool {
 		len(r.Rooms.Invite) > 0 ||
 		len(r.Rooms.Join) > 0 ||
 		len(r.Rooms.Leave) > 0 ||
-		len(r.Rooms.Peek) > 0 ||
 		len(r.ToDevice.Events) > 0 ||
 		len(r.DeviceLists.Changed) > 0 ||
 		len(r.DeviceLists.Left) > 0)
@@ -413,7 +412,6 @@ func NewResponse() *Response {
 	// so let's do the same thing. Bonus: this means we can't get dreaded 'assignment to entry in nil map' errors.
 	res.Rooms = &RoomsResponse{
 		Join:   map[string]*JoinResponse{},
-		Peek:   map[string]*JoinResponse{},
 		Invite: map[string]*InviteResponse{},
 		Leave:  map[string]*LeaveResponse{},
 	}
@@ -427,6 +425,7 @@ func NewResponse() *Response {
 	res.DeviceLists = &DeviceLists{}
 	res.ToDevice = &ToDeviceResponse{}
 	res.DeviceListsOTKCount = map[string]int{}
+	res.DeviceListsUnusedFallbackAlgorithms = []string{}
 
 	return &res
 }
@@ -463,7 +462,7 @@ type Summary struct {
 	InvitedMemberCount *int     `json:"m.invited_member_count,omitempty"`
 }
 
-// JoinResponse represents a /sync response for a room which is under the 'join' or 'peek' key.
+// JoinResponse represents a /sync response for a room which is under the 'join' key.
 type JoinResponse struct {
 	Summary              *Summary      `json:"summary,omitempty"`
 	State                *ClientEvents `json:"state,omitempty"`
@@ -611,17 +610,6 @@ type SendToDeviceEvent struct {
 	ID       StreamPosition
 	UserID   string
 	DeviceID string
-}
-
-type PeekingDevice struct {
-	UserID   string
-	DeviceID string
-}
-
-type Peek struct {
-	RoomID  string
-	New     bool
-	Deleted bool
 }
 
 // OutputReceiptEvent is an entry in the receipt output kafka log

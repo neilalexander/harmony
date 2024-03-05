@@ -38,7 +38,6 @@ var (
 	flagHead             = flag.String("head", "", "Location to a dendrite repository to treat as HEAD instead of Github")
 	flagDockerHost       = flag.String("docker-host", "localhost", "The hostname of the docker client. 'localhost' if running locally, 'host.docker.internal' if running in Docker.")
 	flagDirect           = flag.Bool("direct", false, "If a direct upgrade from the defined FROM version to TO should be done")
-	flagSqlite           = flag.Bool("sqlite", false, "Test SQLite instead of PostgreSQL")
 	alphaNumerics        = regexp.MustCompile("[^a-zA-Z0-9]+")
 )
 
@@ -133,9 +132,6 @@ EXPOSE 8008 8448
 CMD /build/run_dendrite.sh `
 
 func dockerfile() []byte {
-	if *flagSqlite {
-		return []byte(DockerfileSQLite)
-	}
 	return []byte(DockerfilePostgreSQL)
 }
 

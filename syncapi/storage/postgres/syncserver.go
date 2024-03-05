@@ -58,10 +58,6 @@ func NewDatabase(ctx context.Context, cm *sqlutil.Connections, dbProperties *con
 	if err != nil {
 		return nil, err
 	}
-	peeks, err := NewPostgresPeeksTable(d.db)
-	if err != nil {
-		return nil, err
-	}
 	topology, err := NewPostgresTopologyTable(d.db)
 	if err != nil {
 		return nil, err
@@ -120,7 +116,6 @@ func NewDatabase(ctx context.Context, cm *sqlutil.Connections, dbProperties *con
 		DB:                  d.db,
 		Writer:              d.writer,
 		Invites:             invites,
-		Peeks:               peeks,
 		AccountData:         accountData,
 		OutputEvents:        events,
 		Topology:            topology,
