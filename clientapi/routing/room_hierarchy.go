@@ -20,12 +20,12 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/roomserver/types"
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	log "github.com/sirupsen/logrus"
 )
 

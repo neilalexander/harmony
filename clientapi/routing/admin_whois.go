@@ -17,8 +17,8 @@ package routing
 import (
 	"net/http"
 
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/userapi/api"
 
 	"github.com/matrix-org/util"
 )

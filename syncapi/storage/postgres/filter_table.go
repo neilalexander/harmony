@@ -19,10 +19,10 @@ import (
 	"database/sql"
 	"encoding/json"
 
+	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/syncapi/storage/tables"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
-	"github.com/matrix-org/gomatrixserverlib"
 )
 
 const filterSchema = `

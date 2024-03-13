@@ -24,6 +24,8 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 
+	"github.com/matrix-org/gomatrix"
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
@@ -32,8 +34,6 @@ import (
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 	usertypes "github.com/neilalexander/harmony/userapi/types"
-	"github.com/matrix-org/gomatrix"
-	"github.com/matrix-org/util"
 )
 
 // GetProfile implements GET /profile/{userID}

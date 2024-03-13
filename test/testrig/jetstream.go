@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/setup/config"
 
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/jetstream"

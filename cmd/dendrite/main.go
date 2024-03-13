@@ -17,13 +17,13 @@ package main
 import (
 	"flag"
 
+	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/setup/process"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 

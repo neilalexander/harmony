@@ -21,11 +21,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/matrix-org/gomatrix"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/sirupsen/logrus"
 
 	fsAPI "github.com/neilalexander/harmony/federationapi/api"

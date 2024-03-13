@@ -17,14 +17,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/eventutil"
-	"github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/roomserver/types"
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/sirupsen/logrus"
 )
 

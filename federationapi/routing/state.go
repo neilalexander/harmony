@@ -17,11 +17,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // GetState returns state events & auth events for the roomID, eventID

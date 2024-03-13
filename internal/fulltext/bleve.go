@@ -19,8 +19,8 @@ import (
 	"strings"
 
 	"github.com/blevesearch/bleve/v2"
-	"github.com/neilalexander/harmony/setup/process"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/process"
 
 	// side effect imports to allow all possible languages
 	_ "github.com/blevesearch/bleve/v2/analysis/lang/ar"

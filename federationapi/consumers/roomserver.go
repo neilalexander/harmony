@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"time"
 
-	syncAPITypes "github.com/neilalexander/harmony/syncapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	syncAPITypes "github.com/neilalexander/harmony/syncapi/types"
 
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/nats-io/nats.go"

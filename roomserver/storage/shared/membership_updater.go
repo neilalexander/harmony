@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/neilalexander/harmony/roomserver/types"
-	"github.com/matrix-org/gomatrixserverlib"
 )
 
 type MembershipUpdater struct {

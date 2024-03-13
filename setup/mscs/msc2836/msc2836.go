@@ -27,6 +27,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
 	fs "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/hooks"
 	"github.com/neilalexander/harmony/internal/httputil"
@@ -36,10 +40,6 @@ import (
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
 )
 
 const (

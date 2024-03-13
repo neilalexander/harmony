@@ -18,10 +18,10 @@ import (
 	"context"
 	"strings"
 
-	keytypes "github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	keytypes "github.com/neilalexander/harmony/userapi/types"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 

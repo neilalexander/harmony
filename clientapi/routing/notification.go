@@ -18,10 +18,10 @@ import (
 	"net/http"
 	"strconv"
 
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 // GetNotifications handles /_matrix/client/r0/notifications

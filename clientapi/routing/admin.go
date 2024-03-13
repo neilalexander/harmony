@@ -11,12 +11,12 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/internal"
-	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/constraints"
 

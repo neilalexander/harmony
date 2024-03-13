@@ -20,15 +20,15 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/clientapi/producers"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
-	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 )
 

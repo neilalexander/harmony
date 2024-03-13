@@ -20,11 +20,11 @@ import (
 	"database/sql"
 
 	"github.com/lib/pq"
+	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/neilalexander/harmony/roomserver/types"
-	"github.com/matrix-org/gomatrixserverlib"
 )
 
 const roomsSchema = `

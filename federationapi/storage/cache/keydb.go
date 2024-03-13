@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/caching"
 )
 
 // A Database implements gomatrixserverlib.KeyDatabase and is used to store

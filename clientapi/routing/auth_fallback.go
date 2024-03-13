@@ -19,9 +19,9 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/setup/config"
-	"github.com/matrix-org/util"
 )
 
 // recaptchaTemplate is an HTML webpage template for recaptcha auth

@@ -18,11 +18,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/neilalexander/harmony/clientapi/httputil"
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 // GetPushers handles /_matrix/client/r0/pushers

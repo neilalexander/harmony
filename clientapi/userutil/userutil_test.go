@@ -15,9 +15,9 @@ package userutil
 import (
 	"testing"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 var (

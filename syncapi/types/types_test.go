@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/neilalexander/harmony/roomserver/types"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 )
 
 type FakeRoomserverAPI struct{}

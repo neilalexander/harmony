@@ -17,8 +17,8 @@ package types
 import (
 	"sync"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 // FileSizeBytes is a file size in bytes

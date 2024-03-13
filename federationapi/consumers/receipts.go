@@ -19,6 +19,9 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/federationapi/queue"
 	"github.com/neilalexander/harmony/federationapi/storage"
 	fedTypes "github.com/neilalexander/harmony/federationapi/types"
@@ -26,9 +29,6 @@ import (
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/setup/process"
 	syncTypes "github.com/neilalexander/harmony/syncapi/types"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 )
 

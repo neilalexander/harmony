@@ -19,14 +19,14 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/federationapi/queue"
 	"github.com/neilalexander/harmony/federationapi/storage"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/setup/process"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 )
 

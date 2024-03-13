@@ -18,9 +18,9 @@ import (
 	"context"
 	"crypto/ed25519"
 
-	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/api"
 
 	"github.com/neilalexander/harmony/roomserver/state"
 	"github.com/neilalexander/harmony/roomserver/storage/shared"

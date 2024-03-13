@@ -25,9 +25,9 @@ import (
 	"sync"
 	"time"
 
-	rsapi "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	rsapi "github.com/neilalexander/harmony/roomserver/api"
 
 	"github.com/matrix-org/gomatrix"
 	"github.com/matrix-org/gomatrixserverlib"

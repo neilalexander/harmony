@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"sort"
 
-	fs "github.com/neilalexander/harmony/federationapi/api"
-	roomserver "github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/roomserver/types"
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	fs "github.com/neilalexander/harmony/federationapi/api"
+	roomserver "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/types"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/tidwall/gjson"
 )
 

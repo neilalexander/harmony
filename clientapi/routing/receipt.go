@@ -20,11 +20,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/neilalexander/harmony/clientapi/producers"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/clientapi/producers"
 
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/util"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/sirupsen/logrus"
 )
 

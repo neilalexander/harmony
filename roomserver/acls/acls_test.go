@@ -19,9 +19,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/stretchr/testify/assert"
 )
 

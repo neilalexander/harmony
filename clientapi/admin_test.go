@@ -9,6 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/federationapi"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/httputil"
@@ -19,9 +22,6 @@ import (
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/syncapi"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
 	"github.com/tidwall/gjson"
 
 	capi "github.com/neilalexander/harmony/clientapi/api"

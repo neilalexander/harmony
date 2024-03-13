@@ -20,8 +20,8 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/neilalexander/harmony/internal"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal"
 )
 
 func UpDropEventReferenceSHAEvents(ctx context.Context, tx *sql.Tx) error {

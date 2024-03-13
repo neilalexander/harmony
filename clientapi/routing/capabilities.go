@@ -17,10 +17,10 @@ package routing
 import (
 	"net/http"
 
-	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/roomserver/version"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/version"
 )
 
 // GetCapabilities returns information about the server's supported feature set

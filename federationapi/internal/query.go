@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/neilalexander/harmony/federationapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/federationapi/api"
 )
 
 // QueryJoinedHostServerNamesInRoom implements api.FederationInternalAPI

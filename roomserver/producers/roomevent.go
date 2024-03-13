@@ -17,8 +17,8 @@ package producers
 import (
 	"encoding/json"
 
-	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 

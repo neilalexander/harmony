@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 // ParseUsernameParam extracts localpart from usernameParam.

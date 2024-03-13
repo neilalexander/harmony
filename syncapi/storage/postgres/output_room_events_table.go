@@ -23,6 +23,7 @@ import (
 	"sort"
 
 	"github.com/lib/pq"
+	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/api"
@@ -31,7 +32,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/storage/tables"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
-	"github.com/matrix-org/gomatrixserverlib"
 )
 
 const outputRoomEventsSchema = `

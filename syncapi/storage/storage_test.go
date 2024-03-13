@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
@@ -17,8 +19,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/neilalexander/harmony/test"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
 )

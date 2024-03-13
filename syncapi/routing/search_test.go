@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/fulltext"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	rsapi "github.com/neilalexander/harmony/roomserver/api"
@@ -18,8 +20,6 @@ import (
 	"github.com/neilalexander/harmony/test"
 	"github.com/neilalexander/harmony/test/testrig"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -15,8 +15,8 @@ package routing
 import (
 	"net/http"
 
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 // whoamiResponse represents an response for a `whoami` request

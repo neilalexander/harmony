@@ -19,9 +19,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 // PerformLoginTokenCreation creates a new login token and associates it with the provided data.

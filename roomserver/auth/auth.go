@@ -15,9 +15,9 @@ package auth
 import (
 	"context"
 
-	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/api"
 )
 
 // TODO: This logic should live in gomatrixserverlib

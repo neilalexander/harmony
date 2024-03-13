@@ -18,6 +18,8 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/setup/process"
@@ -26,8 +28,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/streams"
 	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 )
 

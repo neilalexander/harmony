@@ -6,13 +6,13 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/storage/postgres"
 	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/test"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 	ed255192 "golang.org/x/crypto/ed25519"
 )

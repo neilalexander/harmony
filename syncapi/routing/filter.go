@@ -23,11 +23,11 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/tidwall/gjson"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/neilalexander/harmony/syncapi/sync"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 // GetFilter implements GET /_matrix/client/r0/user/{userId}/filter/{filterId}

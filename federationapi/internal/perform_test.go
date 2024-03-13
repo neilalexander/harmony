@@ -19,14 +19,14 @@ import (
 	"crypto/ed25519"
 	"testing"
 
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/federationapi/queue"
 	"github.com/neilalexander/harmony/federationapi/statistics"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/process"
 	"github.com/neilalexander/harmony/test"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 )
 

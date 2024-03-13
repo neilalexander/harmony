@@ -15,10 +15,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/setup/process"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/process"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 
 	"github.com/neilalexander/harmony/internal/hooks"
 	"github.com/neilalexander/harmony/internal/httputil"

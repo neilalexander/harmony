@@ -18,8 +18,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 )
 
 const blacklistSchema = `

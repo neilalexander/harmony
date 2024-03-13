@@ -8,8 +8,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v2"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/setup/config"
 )
 
 func main() {

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver"
@@ -14,7 +15,6 @@ import (
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/test"
 	"github.com/neilalexander/harmony/test/testrig"
-	"github.com/matrix-org/gomatrixserverlib"
 )
 
 func TestSingleTransactionOnInput(t *testing.T) {

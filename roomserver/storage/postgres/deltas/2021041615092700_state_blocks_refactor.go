@@ -20,8 +20,8 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/sirupsen/logrus"
 )
 

@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/test"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/test"
 )
 
 type FakeQuerier struct {

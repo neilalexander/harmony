@@ -23,9 +23,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"golang.org/x/crypto/ed25519"
 	"gopkg.in/yaml.v2"
 )

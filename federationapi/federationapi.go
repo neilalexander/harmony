@@ -17,11 +17,11 @@ package federationapi
 import (
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/process"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/sirupsen/logrus"
 
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"

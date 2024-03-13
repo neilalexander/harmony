@@ -23,6 +23,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/neilalexander/harmony/internal/transactions"
@@ -31,9 +34,6 @@ import (
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )

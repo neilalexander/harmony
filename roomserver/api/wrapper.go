@@ -17,11 +17,11 @@ package api
 import (
 	"context"
 
-	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/sirupsen/logrus"
 )
 

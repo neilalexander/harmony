@@ -22,12 +22,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/neilalexander/harmony/clientapi/userutil"
-	"github.com/neilalexander/harmony/setup/config"
-	uapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/userutil"
+	"github.com/neilalexander/harmony/setup/config"
+	uapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 func TestLoginFromJSONReader(t *testing.T) {

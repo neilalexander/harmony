@@ -3,11 +3,11 @@ package streams
 import (
 	"context"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 type AccountDataStreamProvider struct {

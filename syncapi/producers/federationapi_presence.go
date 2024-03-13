@@ -18,10 +18,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/setup/jetstream"
-	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/setup/jetstream"
+	"github.com/neilalexander/harmony/syncapi/types"
 )
 
 // FederationAPIPresenceProducer produces events for the federation API server to consume

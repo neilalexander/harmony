@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/nats-io/nats.go"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
@@ -27,7 +28,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/streams"
 	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 )
 

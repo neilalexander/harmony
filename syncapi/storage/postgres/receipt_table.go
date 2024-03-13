@@ -21,12 +21,12 @@ import (
 
 	"github.com/lib/pq"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/syncapi/storage/postgres/deltas"
 	"github.com/neilalexander/harmony/syncapi/storage/tables"
 	"github.com/neilalexander/harmony/syncapi/types"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 const receiptsSchema = `

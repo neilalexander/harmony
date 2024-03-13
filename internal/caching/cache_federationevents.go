@@ -1,8 +1,8 @@
 package caching
 
 import (
-	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // FederationCache contains the subset of functions needed for

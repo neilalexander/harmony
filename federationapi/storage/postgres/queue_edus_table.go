@@ -20,10 +20,10 @@ import (
 
 	"github.com/lib/pq"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/storage/postgres/deltas"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 const queueEDUsSchema = `

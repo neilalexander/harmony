@@ -21,11 +21,11 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage/tables"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 // See https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-pushers

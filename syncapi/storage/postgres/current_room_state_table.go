@@ -22,6 +22,8 @@ import (
 	"errors"
 
 	"github.com/lib/pq"
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
@@ -29,8 +31,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/storage/tables"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 const currentRoomStateSchema = `

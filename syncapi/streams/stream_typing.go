@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 type TypingStreamProvider struct {

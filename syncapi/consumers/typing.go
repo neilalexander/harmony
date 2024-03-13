@@ -19,6 +19,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
@@ -26,7 +27,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/notifier"
 	"github.com/neilalexander/harmony/syncapi/streams"
 	"github.com/neilalexander/harmony/syncapi/types"
-	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 )
 

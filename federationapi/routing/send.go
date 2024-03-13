@@ -25,12 +25,12 @@ import (
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/util"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"
 	userAPI "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 const (

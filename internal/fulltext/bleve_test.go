@@ -18,9 +18,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/neilalexander/harmony/setup/process"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/setup/process"
 
 	"github.com/neilalexander/harmony/internal/fulltext"
 	"github.com/neilalexander/harmony/setup/config"

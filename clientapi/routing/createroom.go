@@ -22,15 +22,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	roomserverVersion "github.com/neilalexander/harmony/roomserver/version"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 
-	"github.com/neilalexander/harmony/clientapi/httputil"
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/setup/config"
 	log "github.com/sirupsen/logrus"
 )
 

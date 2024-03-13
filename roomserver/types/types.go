@@ -22,10 +22,10 @@ import (
 	"strings"
 	"sync"
 
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 	"golang.org/x/crypto/blake2b"
 )
 

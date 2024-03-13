@@ -15,6 +15,8 @@
 package setup
 
 import (
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/clientapi"
 	"github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/federationapi"
@@ -30,8 +32,6 @@ import (
 	"github.com/neilalexander/harmony/setup/process"
 	"github.com/neilalexander/harmony/syncapi"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 )
 
 // Monolith represents an instantiation of all dependencies required to build

@@ -19,10 +19,10 @@ import (
 	"database/sql"
 	"encoding/json"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/userapi/storage/tables"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 const accountDataSchema = `

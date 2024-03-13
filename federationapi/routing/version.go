@@ -17,8 +17,8 @@ package routing
 import (
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal"
 )
 
 type version struct {

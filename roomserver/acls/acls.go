@@ -23,9 +23,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/sirupsen/logrus"
 )
 

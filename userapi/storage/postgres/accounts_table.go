@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/clientapi/userutil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage/postgres/deltas"
 	"github.com/neilalexander/harmony/userapi/storage/tables"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	log "github.com/sirupsen/logrus"
 )

@@ -3,15 +3,15 @@ package routing
 import (
 	"net/http"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/clientapi/auth"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 )
 

@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/neilalexander/harmony/setup/config"
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 var (

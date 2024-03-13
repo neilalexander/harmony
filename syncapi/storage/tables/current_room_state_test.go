@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/syncapi/storage/postgres"
@@ -13,7 +14,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
 	"github.com/neilalexander/harmony/test"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 func newCurrentRoomStateTable(t *testing.T, dbType test.DBType) (tables.CurrentRoomState, *sql.DB, func()) {

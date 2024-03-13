@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/neilalexander/harmony/clientapi/httputil"
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 
 type keyBackupVersion struct {

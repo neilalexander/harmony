@@ -29,13 +29,13 @@ import (
 
 	"github.com/neilalexander/harmony/roomserver/types"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/neilalexander/harmony/internal/transactions"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 // Unspecced server notice request

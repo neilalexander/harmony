@@ -6,9 +6,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 type SyncRequest struct {

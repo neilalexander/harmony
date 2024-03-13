@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	log "github.com/sirupsen/logrus"
 )
 

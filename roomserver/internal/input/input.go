@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	userapi "github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	userapi "github.com/neilalexander/harmony/userapi/api"
 
 	"github.com/Arceliar/phony"
 	"github.com/matrix-org/gomatrixserverlib"

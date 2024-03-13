@@ -18,8 +18,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/mediaapi/types"
 )
 
 type Thumbnails interface {

@@ -15,11 +15,11 @@
 package clientapi
 
 import (
+	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/process"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 
 	"github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/clientapi/producers"

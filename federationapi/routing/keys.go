@@ -19,14 +19,14 @@ import (
 	"net/http"
 	"time"
 
-	clienthttputil "github.com/neilalexander/harmony/clientapi/httputil"
-	federationAPI "github.com/neilalexander/harmony/federationapi/api"
-	"github.com/neilalexander/harmony/setup/config"
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	clienthttputil "github.com/neilalexander/harmony/clientapi/httputil"
+	federationAPI "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ed25519"
 )

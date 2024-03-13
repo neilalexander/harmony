@@ -15,9 +15,9 @@
 package caching
 
 import (
-	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/roomserver/types"
 )
 
 // Caches contains a set of references to caches. They may be

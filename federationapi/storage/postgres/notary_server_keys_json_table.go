@@ -18,10 +18,10 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/neilalexander/harmony/federationapi/storage/tables"
-	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/federationapi/storage/tables"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 )
 
 const notaryServerKeysJSONSchema = `

@@ -21,6 +21,7 @@ import (
 	"github.com/matrix-org/util"
 	"github.com/sirupsen/logrus"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
@@ -29,7 +30,6 @@ import (
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/syncapi/types"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 type RelationsResponse struct {

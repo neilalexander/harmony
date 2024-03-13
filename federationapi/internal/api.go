@@ -7,6 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/matrix-org/gomatrix"
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/federationapi/queue"
 	"github.com/neilalexander/harmony/federationapi/statistics"
@@ -15,10 +19,6 @@ import (
 	"github.com/neilalexander/harmony/internal/caching"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"
-	"github.com/matrix-org/gomatrix"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/sirupsen/logrus"
 )
 

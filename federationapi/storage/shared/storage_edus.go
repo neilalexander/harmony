@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
 )
 
 // defaultExpiry for EDUs if not listed below

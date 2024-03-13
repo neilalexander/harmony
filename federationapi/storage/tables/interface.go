@@ -18,9 +18,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/neilalexander/harmony/federationapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/federationapi/types"
 )
 
 type NotaryID int64

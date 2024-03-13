@@ -17,8 +17,8 @@ package storage
 import (
 	"context"
 
-	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/mediaapi/types"
 )
 
 type Database interface {

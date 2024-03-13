@@ -18,12 +18,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/neilalexander/harmony/clientapi/httputil"
-	"github.com/neilalexander/harmony/clientapi/producers"
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrix"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/clientapi/producers"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 // GetTags implements GET /_matrix/client/r0/user/{userID}/rooms/{roomID}/tags

@@ -17,11 +17,11 @@ import (
 
 	"github.com/matrix-org/util"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/clientapi/producers"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 type typingContentJSON struct {

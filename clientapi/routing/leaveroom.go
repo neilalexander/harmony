@@ -17,10 +17,10 @@ package routing
 import (
 	"net/http"
 
-	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/userapi/api"
 )
 
 func LeaveRoomByID(

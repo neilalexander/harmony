@@ -20,12 +20,12 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/storage/postgres/deltas"
 	"github.com/neilalexander/harmony/federationapi/storage/shared"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 // Database stores information needed by the federation sender

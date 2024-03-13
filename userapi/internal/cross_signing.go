@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/neilalexander/harmony/userapi/api"
-	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/userapi/api"
+	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/curve25519"
 )

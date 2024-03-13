@@ -18,10 +18,10 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage"
-	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 )
 

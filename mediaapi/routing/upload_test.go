@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/mediaapi/fileutils"
 	"github.com/neilalexander/harmony/mediaapi/storage"
 	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/neilalexander/harmony/setup/config"
-	"github.com/matrix-org/util"
 	log "github.com/sirupsen/logrus"
 )
 

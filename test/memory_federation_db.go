@@ -21,11 +21,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
 	"github.com/neilalexander/harmony/federationapi/types"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 )
 
 var nidMutex sync.Mutex
