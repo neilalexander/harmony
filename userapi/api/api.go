@@ -61,7 +61,6 @@ type MediaUserAPI interface {
 // api functions required by the federation api
 type FederationUserAPI interface {
 	UploadDeviceKeysAPI
-	QueryOpenIDToken(ctx context.Context, req *QueryOpenIDTokenRequest, res *QueryOpenIDTokenResponse) error
 	QueryProfile(ctx context.Context, userID string) (*authtypes.Profile, error)
 	QueryDevices(ctx context.Context, req *QueryDevicesRequest, res *QueryDevicesResponse) error
 	QueryKeys(ctx context.Context, req *QueryKeysRequest, res *QueryKeysResponse)
@@ -109,7 +108,6 @@ type ClientUserAPI interface {
 	PerformPusherSet(ctx context.Context, req *PerformPusherSetRequest, res *struct{}) error
 	PerformPushRulesPut(ctx context.Context, userID string, ruleSets *pushrules.AccountRuleSets) error
 	PerformAccountDeactivation(ctx context.Context, req *PerformAccountDeactivationRequest, res *PerformAccountDeactivationResponse) error
-	PerformOpenIDTokenCreation(ctx context.Context, req *PerformOpenIDTokenCreationRequest, res *PerformOpenIDTokenCreationResponse) error
 	QueryNotifications(ctx context.Context, req *QueryNotificationsRequest, res *QueryNotificationsResponse) error
 	InputAccountData(ctx context.Context, req *InputAccountDataRequest, res *InputAccountDataResponse) error
 }
@@ -397,27 +395,6 @@ type PerformAccountDeactivationResponse struct {
 	AccountDeactivated bool
 }
 
-// PerformOpenIDTokenCreationRequest is the request for PerformOpenIDTokenCreation
-type PerformOpenIDTokenCreationRequest struct {
-	UserID string
-}
-
-// PerformOpenIDTokenCreationResponse is the response for PerformOpenIDTokenCreation
-type PerformOpenIDTokenCreationResponse struct {
-	Token OpenIDToken
-}
-
-// QueryOpenIDTokenRequest is the request for QueryOpenIDToken
-type QueryOpenIDTokenRequest struct {
-	Token string
-}
-
-// QueryOpenIDTokenResponse is the response for QueryOpenIDToken
-type QueryOpenIDTokenResponse struct {
-	Sub         string // The Matrix User ID that generated the token
-	ExpiresAtMS int64
-}
-
 // Device represents a client's device (mobile, web, etc)
 type Device struct {
 	ID     string
@@ -459,24 +436,6 @@ type Account struct {
 	AppServiceID string
 	AccountType  AccountType
 	// TODO: Associations (e.g. with application services)
-}
-
-// OpenIDToken represents an OpenID token
-type OpenIDToken struct {
-	Token       string
-	UserID      string
-	ExpiresAtMS int64
-}
-
-// OpenIDTokenInfo represents the attributes associated with an issued OpenID token
-type OpenIDTokenAttributes struct {
-	UserID      string
-	ExpiresAtMS int64
-}
-
-// UserInfo is for returning information about the user an OpenID token was issued for
-type UserInfo struct {
-	Sub string // The Matrix user's ID who generated the token
 }
 
 // ErrorForbidden is an error indicating that the supplied access token is forbidden

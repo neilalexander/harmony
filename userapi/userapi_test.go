@@ -22,17 +22,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
-	"github.com/neilalexander/harmony/internal/sqlutil"
-	"github.com/neilalexander/harmony/userapi/producers"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/userapi/producers"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/test"
 	"github.com/neilalexander/harmony/test/testrig"
 	"github.com/neilalexander/harmony/userapi/api"
@@ -79,7 +78,7 @@ func MustMakeInternalAPI(t *testing.T, opts apiTestOpts, dbType test.DBType, pub
 	}
 	cm := sqlutil.NewConnectionManager(ctx, cfg.Global.DatabaseOptions)
 
-	accountDB, err := storage.NewUserDatabase(ctx.Context(), cm, &cfg.UserAPI.AccountDatabase, sName, bcrypt.MinCost, config.DefaultOpenIDTokenLifetimeMS, opts.loginTokenLifetime, "")
+	accountDB, err := storage.NewUserDatabase(ctx.Context(), cm, &cfg.UserAPI.AccountDatabase, sName, bcrypt.MinCost, opts.loginTokenLifetime, "")
 	if err != nil {
 		t.Fatalf("failed to create account DB: %s", err)
 	}

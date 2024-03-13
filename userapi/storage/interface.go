@@ -113,11 +113,6 @@ type LoginToken interface {
 	GetLoginTokenDataByToken(ctx context.Context, token string) (*api.LoginTokenData, error)
 }
 
-type OpenID interface {
-	CreateOpenIDToken(ctx context.Context, token, userID string) (exp int64, err error)
-	GetOpenIDTokenAttributes(ctx context.Context, token string) (*api.OpenIDTokenAttributes, error)
-}
-
 type Pusher interface {
 	UpsertPusher(ctx context.Context, p api.Pusher, localpart string, serverName spec.ServerName) error
 	GetPushers(ctx context.Context, localpart string, serverName spec.ServerName) ([]api.Pusher, error)
@@ -142,7 +137,6 @@ type UserDatabase interface {
 	KeyBackup
 	LoginToken
 	Notification
-	OpenID
 	Profile
 	Pusher
 	RegistrationTokens

@@ -507,8 +507,6 @@ Can pass a JSON filter as a query parameter
 Local room members can get room messages
 Remote room members can get room messages
 Guest users can send messages to guest_access rooms if joined
-Can generate a openid access_token that can be exchanged for information about a user
-Invalid openid access tokens are rejected
 Requests to userinfo without access tokens are rejected
 'ban' event respects room powerlevel
 Non-present room members cannot ban others

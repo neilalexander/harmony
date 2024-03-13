@@ -31,7 +31,7 @@ import (
 )
 
 // NewDatabase creates a new accounts and profiles database
-func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties *config.DatabaseOptions, serverName spec.ServerName, bcryptCost int, openIDTokenLifetimeMS int64, loginTokenLifetime time.Duration, serverNoticesLocalpart string) (*shared.Database, error) {
+func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties *config.DatabaseOptions, serverName spec.ServerName, bcryptCost int, loginTokenLifetime time.Duration, serverNoticesLocalpart string) (*shared.Database, error) {
 	db, writer, err := conMan.Connection(dbProperties)
 	if err != nil {
 		return nil, err
@@ -81,10 +81,6 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 	if err != nil {
 		return nil, fmt.Errorf("NewPostgresLoginTokenTable: %w", err)
 	}
-	openIDTable, err := NewPostgresOpenIDTable(db, serverName)
-	if err != nil {
-		return nil, fmt.Errorf("NewPostgresOpenIDTable: %w", err)
-	}
 	profilesTable, err := NewPostgresProfilesTable(db, serverNoticesLocalpart)
 	if err != nil {
 		return nil, fmt.Errorf("NewPostgresProfilesTable: %w", err)
@@ -110,23 +106,21 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 	}
 
 	return &shared.Database{
-		AccountDatas:          accountDataTable,
-		Accounts:              accountsTable,
-		Devices:               devicesTable,
-		KeyBackups:            keyBackupTable,
-		KeyBackupVersions:     keyBackupVersionTable,
-		LoginTokens:           loginTokenTable,
-		OpenIDTokens:          openIDTable,
-		Profiles:              profilesTable,
-		Pushers:               pusherTable,
-		Notifications:         notificationsTable,
-		RegistrationTokens:    registationTokensTable,
-		ServerName:            serverName,
-		DB:                    db,
-		Writer:                writer,
-		LoginTokenLifetime:    loginTokenLifetime,
-		BcryptCost:            bcryptCost,
-		OpenIDTokenLifetimeMS: openIDTokenLifetimeMS,
+		AccountDatas:       accountDataTable,
+		Accounts:           accountsTable,
+		Devices:            devicesTable,
+		KeyBackups:         keyBackupTable,
+		KeyBackupVersions:  keyBackupVersionTable,
+		LoginTokens:        loginTokenTable,
+		Profiles:           profilesTable,
+		Pushers:            pusherTable,
+		Notifications:      notificationsTable,
+		RegistrationTokens: registationTokensTable,
+		ServerName:         serverName,
+		DB:                 db,
+		Writer:             writer,
+		LoginTokenLifetime: loginTokenLifetime,
+		BcryptCost:         bcryptCost,
 	}, nil
 }
 

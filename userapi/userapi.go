@@ -17,13 +17,13 @@ package userapi
 import (
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/federationapi/statistics"
 	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/process"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/sirupsen/logrus"
 
 	rsapi "github.com/neilalexander/harmony/roomserver/api"
@@ -60,7 +60,6 @@ func NewInternalAPI(
 		&dendriteCfg.UserAPI.AccountDatabase,
 		dendriteCfg.Global.ServerName,
 		dendriteCfg.UserAPI.BCryptCost,
-		dendriteCfg.UserAPI.OpenIDTokenLifetimeMS,
 		api.DefaultLoginTokenLifetime,
 		dendriteCfg.UserAPI.Matrix.ServerNotices.LocalPart,
 	)

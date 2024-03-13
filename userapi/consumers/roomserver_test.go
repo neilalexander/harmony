@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/test/testrig"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 
@@ -30,7 +30,7 @@ func mustCreateDatabase(t *testing.T, dbType test.DBType) (storage.UserDatabase,
 	cm := sqlutil.NewConnectionManager(nil, config.DatabaseOptions{})
 	db, err := storage.NewUserDatabase(context.Background(), cm, &config.DatabaseOptions{
 		ConnectionString: config.DataSource(connStr),
-	}, "", 4, 0, 0, "")
+	}, "", 4, 0, "")
 	if err != nil {
 		t.Fatalf("failed to create new user db: %v", err)
 	}
@@ -158,7 +158,7 @@ func TestLocalRoomMembers(t *testing.T) {
 		caches := caching.NewRistrettoCache(8*1024*1024, time.Hour, caching.DisableMetrics)
 		rsAPI := roomserver.NewInternalAPI(processCtx, cfg, cm, natsInstance, caches, caching.DisableMetrics)
 		rsAPI.SetFederationAPI(nil, nil)
-		db, err := storage.NewUserDatabase(processCtx.Context(), cm, &cfg.UserAPI.AccountDatabase, cfg.Global.ServerName, bcrypt.MinCost, 1000, 1000, "")
+		db, err := storage.NewUserDatabase(processCtx.Context(), cm, &cfg.UserAPI.AccountDatabase, cfg.Global.ServerName, bcrypt.MinCost, 1000, "")
 		assert.NoError(t, err)
 
 		err = rsapi.SendEvents(processCtx.Context(), rsAPI, rsapi.KindNew, room.Events(), "", "test", "test", nil, false)
@@ -184,7 +184,7 @@ func BenchmarkLocalRoomMembers(b *testing.B) {
 	caches := caching.NewRistrettoCache(8*1024*1024, time.Hour, caching.DisableMetrics)
 	rsAPI := roomserver.NewInternalAPI(processCtx, cfg, cm, natsInstance, caches, caching.DisableMetrics)
 	rsAPI.SetFederationAPI(nil, nil)
-	db, err := storage.NewUserDatabase(processCtx.Context(), cm, &cfg.UserAPI.AccountDatabase, cfg.Global.ServerName, bcrypt.MinCost, 1000, 1000, "")
+	db, err := storage.NewUserDatabase(processCtx.Context(), cm, &cfg.UserAPI.AccountDatabase, cfg.Global.ServerName, bcrypt.MinCost, 1000, "")
 	assert.NoError(b, err)
 
 	consumer := OutputRoomEventConsumer{db: db, rsAPI: rsAPI, serverName: "test", cfg: &cfg.UserAPI}

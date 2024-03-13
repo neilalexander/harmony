@@ -22,7 +22,7 @@ As with Dendrite, supported features include:
 * Presence
 * Fulltext search
 
-The primary goal of this fork is to make things simpler and easier to maintain. With that in mind, **a number of features have been removed**, including SQLite database support, the appservice API, support for 3PIDs, all P2P and relay-related work, support for the WebAssembly target, phone-home stats and others.
+The primary goal of this fork is to make things simpler and easier to maintain. With that in mind, **a number of features have been removed**, including SQLite database support, the appservice API, support for 3PIDs, support for OpenID, all P2P and relay-related work, support for the WebAssembly target, phone-home stats and others.
 
 Aside from that, Harmony can largely operate as a drop-in replacement for Dendrite.
 

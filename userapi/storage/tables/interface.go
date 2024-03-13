@@ -90,11 +90,6 @@ type LoginTokenTable interface {
 	SelectLoginToken(ctx context.Context, token string) (*api.LoginTokenData, error)
 }
 
-type OpenIDTable interface {
-	InsertOpenIDToken(ctx context.Context, txn *sql.Tx, token, localpart string, serverName spec.ServerName, expiresAtMS int64) (err error)
-	SelectOpenIDTokenAtrributes(ctx context.Context, token string) (*api.OpenIDTokenAttributes, error)
-}
-
 type ProfileTable interface {
 	InsertProfile(ctx context.Context, txn *sql.Tx, localpart string, serverName spec.ServerName) error
 	SelectProfileByLocalpart(ctx context.Context, localpart string, serverName spec.ServerName) (*authtypes.Profile, error)

@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/sqlutil"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/neilalexander/harmony/internal/pushgateway"
@@ -90,7 +90,7 @@ func TestNotifyUserCountsAsync(t *testing.T) {
 		cm := sqlutil.NewConnectionManager(nil, config.DatabaseOptions{})
 		db, err := storage.NewUserDatabase(ctx, cm, &config.DatabaseOptions{
 			ConnectionString: config.DataSource(connStr),
-		}, "test", bcrypt.MinCost, 0, 0, "")
+		}, "test", bcrypt.MinCost, 0, "")
 		if err != nil {
 			t.Error(err)
 		}

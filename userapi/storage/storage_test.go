@@ -32,8 +32,7 @@ import (
 const loginTokenLifetime = time.Minute
 
 var (
-	openIDLifetimeMS = time.Minute.Milliseconds()
-	ctx              = context.Background()
+	ctx = context.Background()
 )
 
 func mustCreateUserDatabase(t *testing.T, dbType test.DBType) (storage.UserDatabase, func()) {
@@ -41,7 +40,7 @@ func mustCreateUserDatabase(t *testing.T, dbType test.DBType) (storage.UserDatab
 	cm := sqlutil.NewConnectionManager(nil, config.DatabaseOptions{})
 	db, err := storage.NewUserDatabase(context.Background(), cm, &config.DatabaseOptions{
 		ConnectionString: config.DataSource(connStr),
-	}, "localhost", bcrypt.MinCost, openIDLifetimeMS, loginTokenLifetime, "_server")
+	}, "localhost", bcrypt.MinCost, loginTokenLifetime, "_server")
 	if err != nil {
 		t.Fatalf("NewUserDatabase returned %s", err)
 	}
@@ -345,26 +344,6 @@ func Test_LoginToken(t *testing.T) {
 		// check if the token was actually deleted
 		_, err = db.GetLoginTokenDataByToken(ctx, gotMetadata.Token)
 		assert.Error(t, err, "expected an error, but got none")
-	})
-}
-
-func Test_OpenID(t *testing.T) {
-	alice := test.NewUser(t)
-	token := util.RandomString(24)
-
-	test.WithAllDatabases(t, func(t *testing.T, dbType test.DBType) {
-		db, close := mustCreateUserDatabase(t, dbType)
-		defer close()
-
-		expiresAtMS := time.Now().UnixNano()/int64(time.Millisecond) + openIDLifetimeMS
-		expires, err := db.CreateOpenIDToken(ctx, token, alice.ID)
-		assert.NoError(t, err, "unable to create OpenID token")
-		assert.InDelta(t, expiresAtMS, expires, 2) // 2ms leeway
-
-		attributes, err := db.GetOpenIDTokenAttributes(ctx, token)
-		assert.NoError(t, err, "unable to get OpenID token attributes")
-		assert.Equal(t, alice.ID, attributes.UserID)
-		assert.InDelta(t, expiresAtMS, attributes.ExpiresAtMS, 2) // 2ms leeway
 	})
 }
 

@@ -42,23 +42,21 @@ import (
 
 // Database represents an account database
 type Database struct {
-	DB                    *sql.DB
-	Writer                sqlutil.Writer
-	RegistrationTokens    tables.RegistrationTokensTable
-	Accounts              tables.AccountsTable
-	Profiles              tables.ProfileTable
-	AccountDatas          tables.AccountDataTable
-	OpenIDTokens          tables.OpenIDTable
-	KeyBackups            tables.KeyBackupTable
-	KeyBackupVersions     tables.KeyBackupVersionTable
-	Devices               tables.DevicesTable
-	LoginTokens           tables.LoginTokenTable
-	Notifications         tables.NotificationTable
-	Pushers               tables.PusherTable
-	LoginTokenLifetime    time.Duration
-	ServerName            spec.ServerName
-	BcryptCost            int
-	OpenIDTokenLifetimeMS int64
+	DB                 *sql.DB
+	Writer             sqlutil.Writer
+	RegistrationTokens tables.RegistrationTokensTable
+	Accounts           tables.AccountsTable
+	Profiles           tables.ProfileTable
+	AccountDatas       tables.AccountDataTable
+	KeyBackups         tables.KeyBackupTable
+	KeyBackupVersions  tables.KeyBackupVersionTable
+	Devices            tables.DevicesTable
+	LoginTokens        tables.LoginTokenTable
+	Notifications      tables.NotificationTable
+	Pushers            tables.PusherTable
+	LoginTokenLifetime time.Duration
+	ServerName         spec.ServerName
+	BcryptCost         int
 }
 
 type KeyDatabase struct {
@@ -365,30 +363,6 @@ func (d *Database) DeactivateAccount(ctx context.Context, localpart string, serv
 	return d.Writer.Do(nil, nil, func(txn *sql.Tx) error {
 		return d.Accounts.DeactivateAccount(ctx, localpart, serverName)
 	})
-}
-
-// CreateOpenIDToken persists a new token that was issued for OpenID Connect
-func (d *Database) CreateOpenIDToken(
-	ctx context.Context,
-	token, userID string,
-) (int64, error) {
-	localpart, domain, err := gomatrixserverlib.SplitID('@', userID)
-	if err != nil {
-		return 0, nil
-	}
-	expiresAtMS := time.Now().UnixNano()/int64(time.Millisecond) + d.OpenIDTokenLifetimeMS
-	err = d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		return d.OpenIDTokens.InsertOpenIDToken(ctx, txn, token, localpart, domain, expiresAtMS)
-	})
-	return expiresAtMS, err
-}
-
-// GetOpenIDTokenAttributes gets the attributes of issued an OIDC auth token
-func (d *Database) GetOpenIDTokenAttributes(
-	ctx context.Context,
-	token string,
-) (*api.OpenIDTokenAttributes, error) {
-	return d.OpenIDTokens.SelectOpenIDTokenAtrributes(ctx, token)
 }
 
 func (d *Database) CreateKeyBackup(

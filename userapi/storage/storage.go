@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/sqlutil"
 
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/userapi/storage/postgres"
@@ -34,13 +34,12 @@ func NewUserDatabase(
 	dbProperties *config.DatabaseOptions,
 	serverName spec.ServerName,
 	bcryptCost int,
-	openIDTokenLifetimeMS int64,
 	loginTokenLifetime time.Duration,
 	serverNoticesLocalpart string,
 ) (UserDatabase, error) {
 	switch {
 	case dbProperties.ConnectionString.IsPostgres():
-		return postgres.NewDatabase(ctx, conMan, dbProperties, serverName, bcryptCost, openIDTokenLifetimeMS, loginTokenLifetime, serverNoticesLocalpart)
+		return postgres.NewDatabase(ctx, conMan, dbProperties, serverName, bcryptCost, loginTokenLifetime, serverNoticesLocalpart)
 	default:
 		return nil, fmt.Errorf("unexpected database type")
 	}

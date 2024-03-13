@@ -623,34 +623,6 @@ func (a *UserInternalAPI) PerformAccountDeactivation(ctx context.Context, req *a
 	return err
 }
 
-// PerformOpenIDTokenCreation creates a new token that a relying party uses to authenticate a user
-func (a *UserInternalAPI) PerformOpenIDTokenCreation(ctx context.Context, req *api.PerformOpenIDTokenCreationRequest, res *api.PerformOpenIDTokenCreationResponse) error {
-	token := util.RandomString(24)
-
-	exp, err := a.DB.CreateOpenIDToken(ctx, token, req.UserID)
-
-	res.Token = api.OpenIDToken{
-		Token:       token,
-		UserID:      req.UserID,
-		ExpiresAtMS: exp,
-	}
-
-	return err
-}
-
-// QueryOpenIDToken validates that the OpenID token was issued for the user, the replying party uses this for validation
-func (a *UserInternalAPI) QueryOpenIDToken(ctx context.Context, req *api.QueryOpenIDTokenRequest, res *api.QueryOpenIDTokenResponse) error {
-	openIDTokenAttrs, err := a.DB.GetOpenIDTokenAttributes(ctx, req.Token)
-	if err != nil {
-		return err
-	}
-
-	res.Sub = openIDTokenAttrs.UserID
-	res.ExpiresAtMS = openIDTokenAttrs.ExpiresAtMS
-
-	return nil
-}
-
 func (a *UserInternalAPI) DeleteKeyBackup(ctx context.Context, userID, version string) (bool, error) {
 	return a.DB.DeleteKeyBackup(ctx, userID, version)
 }

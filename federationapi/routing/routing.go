@@ -543,12 +543,6 @@ func Setup(
 		},
 	)).Methods(http.MethodPost)
 
-	v1fedmux.Handle("/openid/userinfo",
-		httputil.MakeExternalAPI("federation_openid_userinfo", func(req *http.Request) util.JSONResponse {
-			return GetOpenIDUserInfo(req, userAPI)
-		}),
-	).Methods(http.MethodGet)
-
 	v1fedmux.Handle("/hierarchy/{roomID}", MakeFedAPI(
 		"federation_room_hierarchy", cfg.Matrix.ServerName, cfg.Matrix.IsLocalServerName, keys, wakeup,
 		func(httpReq *http.Request, request *fclient.FederationRequest, vars map[string]string) util.JSONResponse {

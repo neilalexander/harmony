@@ -980,19 +980,6 @@ func Setup(
 		}),
 	).Methods(http.MethodGet)
 
-	v3mux.Handle("/user/{userID}/openid/request_token",
-		httputil.MakeAuthAPI("openid_request_token", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
-			if r := rateLimits.Limit(req, device); r != nil {
-				return *r
-			}
-			vars, err := httputil.URLDecodeMapValues(mux.Vars(req))
-			if err != nil {
-				return util.ErrorResponse(err)
-			}
-			return CreateOpenIDToken(req, userAPI, device, vars["userID"], cfg)
-		}),
-	).Methods(http.MethodPost, http.MethodOptions)
-
 	v3mux.Handle("/user_directory/search",
 		httputil.MakeAuthAPI("userdirectory_search", userAPI, func(req *http.Request, device *userapi.Device) util.JSONResponse {
 			if r := rateLimits.Limit(req, device); r != nil {
