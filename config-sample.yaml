@@ -76,12 +76,6 @@ global:
   # Requires `well_known_client_name` to also be configured.
   well_known_sliding_sync_proxy: ""
 
-  # Lists of domains that the server will trust as identity servers to verify third
-  # party identifiers such as phone numbers and email addresses.
-  trusted_third_party_id_servers:
-    - matrix.org
-    - vector.im
-
   # Disables federation. Dendrite will not be able to communicate with other servers
   # in the Matrix federation and the federation API will not be exposed.
   disable_federation: false

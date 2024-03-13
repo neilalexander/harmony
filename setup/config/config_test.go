@@ -55,9 +55,6 @@ global:
   key_validity_period: 168h0m0s
   well_known_server_name: "localhost:443"
   well_known_client_name: "https://localhost"
-  trusted_third_party_id_servers:
-  - matrix.org
-  - vector.im
   kafka:
     addresses:
     - localhost:2181

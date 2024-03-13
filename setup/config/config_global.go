@@ -59,11 +59,6 @@ type Global struct {
 	// Configures the handling of presence events.
 	Presence PresenceOptions `yaml:"presence"`
 
-	// List of domains that the server will trust as identity servers to
-	// verify third-party identifiers.
-	// Defaults to an empty array.
-	TrustedIDServers []string `yaml:"trusted_third_party_id_servers"`
-
 	// JetStream configuration
 	JetStream JetStream `yaml:"jetstream"`
 
@@ -86,10 +81,6 @@ func (c *Global) Defaults(opts DefaultOpts) {
 		c.PrivateKeyPath = "matrix_key.pem"
 		_, c.PrivateKey, _ = ed25519.GenerateKey(rand.New(rand.NewSource(0)))
 		c.KeyID = "ed25519:auto"
-		c.TrustedIDServers = []string{
-			"matrix.org",
-			"vector.im",
-		}
 	}
 	c.KeyValidityPeriod = time.Hour * 24 * 7
 	if opts.SingleDatabase {
