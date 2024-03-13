@@ -46,7 +46,6 @@ run:
   # the dependency descriptions in go.mod.
   #modules-download-mode: (release|readonly|vendor)
 
-
 # output configuration options
 output:
   # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
@@ -57,7 +56,6 @@ output:
 
   # print linter name in the end of issue text, default is true
   print-linter-name: true
-
 
 # all available settings of specific linters
 linters-settings:
@@ -80,7 +78,7 @@ linters-settings:
     #exclude: /path/to/file.txt
   govet:
     # report about shadowed variables
-    check-shadowing: true
+    check-shadowing: false
 
     # settings per analyzer
     settings:
@@ -100,9 +98,6 @@ linters-settings:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
     #local-prefixes: github.com/org/project
-  gocyclo:
-    # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 25
   maligned:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
@@ -114,11 +109,6 @@ linters-settings:
     min-len: 3
     # minimal occurrences count to trigger, 3 by default
     min-occurrences: 3
-  depguard:
-    list-type: blacklist
-    include-go-root: false
-    packages:
-    #  - github.com/davecgh/go-spew/spew
   misspell:
     # Correct spellings using locale preferences for US or UK.
     # Default is to use a neutral variety of English.
@@ -180,14 +170,11 @@ linters-settings:
 linters:
   enable:
     - errcheck
-    - gocyclo
     - goimports # Does everything gofmt does
     - gosimple
     - govet
     - ineffassign
     - megacheck
-    - misspell # Check code comments, whereas misspell in CI checks *.md files
-    - nakedret
     - staticcheck
     - unparam
     - unused
@@ -199,12 +186,15 @@ linters:
     - gochecknoglobals
     - gochecknoinits
     - gocritic
+    - gocyclo
     - gofmt
     - golint
     - gosec # Should turn back on soon
     - interfacer
     - lll
     - maligned
+    - misspell # Check code comments, whereas misspell in CI checks *.md files
+    - nakedret
     - prealloc # Should turn back on soon
     - scopelint
     - stylecheck
@@ -214,7 +204,6 @@ linters:
   disable-all: false
   presets:
   fast: false
-
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.

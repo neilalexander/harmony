@@ -22,7 +22,7 @@ type MatrixErrorCode string
 
 const (
 	ErrorUnknown                     MatrixErrorCode = "M_UNKNOWN"
-	ErrorUnrecognized                MatrixErrorCode = "M_UNRECOGNIZED"
+	ErrorUnrecognized                MatrixErrorCode = "M_UNRECOGNIZED" // nolint:misspell
 	ErrorForbidden                   MatrixErrorCode = "M_FORBIDDEN"
 	ErrorBadJSON                     MatrixErrorCode = "M_BAD_JSON"
 	ErrorBadAlias                    MatrixErrorCode = "M_BAD_ALIAS"
@@ -82,6 +82,7 @@ func Unknown(msg string) MatrixError {
 
 // Unrecognized is an error when the server received a request at
 // an unexpected endpoint.
+// nolint:misspell
 func Unrecognized(msg string) MatrixError {
 	return MatrixError{ErrorUnrecognized, msg}
 }

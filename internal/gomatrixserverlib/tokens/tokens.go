@@ -108,7 +108,7 @@ func macaroonError(err error) error {
 	return fmt.Errorf("Macaroon creation failed: %s", err.Error())
 }
 
-// serializeMacaroon takes a macaroon to be serialized.
+// serializeMacaroon takes a macaroon to be serialised.
 // returns its base64 encoded string, URL safe, which can be sent via web, email, etc.
 func serializeMacaroon(m macaroon.Macaroon) (string, error) {
 	bin, err := m.MarshalBinary()
@@ -120,7 +120,7 @@ func serializeMacaroon(m macaroon.Macaroon) (string, error) {
 	return urlSafeEncode, nil
 }
 
-// deSerializeMacaroon takes a base64 encoded string of a macaroon to be de-serialized.
+// deSerializeMacaroon takes a base64 encoded string of a macaroon to be de-serialised.
 // Returns a macaroon. On failure returns error with description.
 func deSerializeMacaroon(urlSafeEncode string) (macaroon.Macaroon, error) {
 	var mac macaroon.Macaroon
