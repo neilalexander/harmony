@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/userapi/storage/postgres/deltas"
 	"github.com/neilalexander/harmony/userapi/storage/shared"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	// Import the postgres database driver.
 	_ "github.com/lib/pq"
@@ -89,10 +89,6 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 	if err != nil {
 		return nil, fmt.Errorf("NewPostgresProfilesTable: %w", err)
 	}
-	threePIDTable, err := NewPostgresThreePIDTable(db)
-	if err != nil {
-		return nil, fmt.Errorf("NewPostgresThreePIDTable: %w", err)
-	}
 	pusherTable, err := NewPostgresPusherTable(db)
 	if err != nil {
 		return nil, fmt.Errorf("NewPostgresPusherTable: %w", err)
@@ -122,7 +118,6 @@ func NewDatabase(ctx context.Context, conMan *sqlutil.Connections, dbProperties 
 		LoginTokens:           loginTokenTable,
 		OpenIDTokens:          openIDTable,
 		Profiles:              profilesTable,
-		ThreePIDs:             threePIDTable,
 		Pushers:               pusherTable,
 		Notifications:         notificationsTable,
 		RegistrationTokens:    registationTokensTable,

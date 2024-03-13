@@ -21,11 +21,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/neilalexander/harmony/syncapi/synctypes"
-	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/userapi/types"
 
 	clientapi "github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
@@ -112,11 +112,6 @@ type ClientUserAPI interface {
 	PerformOpenIDTokenCreation(ctx context.Context, req *PerformOpenIDTokenCreationRequest, res *PerformOpenIDTokenCreationResponse) error
 	QueryNotifications(ctx context.Context, req *QueryNotificationsRequest, res *QueryNotificationsResponse) error
 	InputAccountData(ctx context.Context, req *InputAccountDataRequest, res *InputAccountDataResponse) error
-
-	QueryThreePIDsForLocalpart(ctx context.Context, req *QueryThreePIDsForLocalpartRequest, res *QueryThreePIDsForLocalpartResponse) error
-	QueryLocalpartForThreePID(ctx context.Context, req *QueryLocalpartForThreePIDRequest, res *QueryLocalpartForThreePIDResponse) error
-	PerformForgetThreePID(ctx context.Context, req *PerformForgetThreePIDRequest, res *struct{}) error
-	PerformSaveThreePIDAssociation(ctx context.Context, req *PerformSaveThreePIDAssociationRequest, res *struct{}) error
 }
 
 type KeyBackupAPI interface {
@@ -615,33 +610,6 @@ type QueryAccountByPasswordRequest struct {
 type QueryAccountByPasswordResponse struct {
 	Account *Account
 	Exists  bool
-}
-
-type QueryLocalpartForThreePIDRequest struct {
-	ThreePID, Medium string
-}
-
-type QueryLocalpartForThreePIDResponse struct {
-	Localpart  string
-	ServerName spec.ServerName
-}
-
-type QueryThreePIDsForLocalpartRequest struct {
-	Localpart  string
-	ServerName spec.ServerName
-}
-
-type QueryThreePIDsForLocalpartResponse struct {
-	ThreePIDs []authtypes.ThreePID
-}
-
-type PerformForgetThreePIDRequest QueryLocalpartForThreePIDRequest
-
-type PerformSaveThreePIDAssociationRequest struct {
-	ThreePID   string
-	Localpart  string
-	ServerName spec.ServerName
-	Medium     string
 }
 
 type QueryAccountByLocalpartRequest struct {

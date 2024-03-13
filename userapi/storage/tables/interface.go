@@ -19,10 +19,10 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/userapi/api"
 
 	clientapi "github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
@@ -101,13 +101,6 @@ type ProfileTable interface {
 	SetAvatarURL(ctx context.Context, txn *sql.Tx, localpart string, serverName spec.ServerName, avatarURL string) (*authtypes.Profile, bool, error)
 	SetDisplayName(ctx context.Context, txn *sql.Tx, localpart string, serverName spec.ServerName, displayName string) (*authtypes.Profile, bool, error)
 	SelectProfilesBySearch(ctx context.Context, searchString string, limit int) ([]authtypes.Profile, error)
-}
-
-type ThreePIDTable interface {
-	SelectLocalpartForThreePID(ctx context.Context, txn *sql.Tx, threepid string, medium string) (localpart string, serverName spec.ServerName, err error)
-	SelectThreePIDsForLocalpart(ctx context.Context, localpart string, serverName spec.ServerName) (threepids []authtypes.ThreePID, err error)
-	InsertThreePID(ctx context.Context, txn *sql.Tx, threepid, medium, localpart string, serverName spec.ServerName) (err error)
-	DeleteThreePID(ctx context.Context, txn *sql.Tx, threepid string, medium string) (err error)
 }
 
 type PusherTable interface {

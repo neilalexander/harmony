@@ -21,6 +21,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/clientapi/threepid"
@@ -30,9 +33,6 @@ import (
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 
 	"github.com/matrix-org/util"
 )
@@ -284,23 +284,6 @@ func SendInvite(
 		return *reqErr
 	}
 
-	inviteStored, jsonErrResp := checkAndProcessThreepid(
-		req, device, body, cfg, rsAPI, profileAPI, roomID, evTime,
-	)
-	if jsonErrResp != nil {
-		return *jsonErrResp
-	}
-
-	// If an invite has been stored on an identity server, it means that a
-	// m.room.third_party_invite event has been emitted and that we shouldn't
-	// emit a m.room.member one.
-	if inviteStored {
-		return util.JSONResponse{
-			Code: http.StatusOK,
-			JSON: struct{}{},
-		}
-	}
-
 	if body.UserID == "" {
 		return util.JSONResponse{
 			Code: http.StatusBadRequest,
@@ -528,57 +511,6 @@ func extractRequestData(req *http.Request) (body *threepid.MembershipRequest, ev
 			JSON: spec.InvalidParam(err.Error()),
 		}
 		return
-	}
-	return
-}
-
-func checkAndProcessThreepid(
-	req *http.Request,
-	device *userapi.Device,
-	body *threepid.MembershipRequest,
-	cfg *config.ClientAPI,
-	rsAPI roomserverAPI.ClientRoomserverAPI,
-	profileAPI userapi.ClientUserAPI,
-	roomID string,
-	evTime time.Time,
-) (inviteStored bool, errRes *util.JSONResponse) {
-
-	inviteStored, err := threepid.CheckAndProcessInvite(
-		req.Context(), device, body, cfg, rsAPI, profileAPI,
-		roomID, evTime,
-	)
-	switch e := err.(type) {
-	case nil:
-	case threepid.ErrMissingParameter:
-		util.GetLogger(req.Context()).WithError(err).Error("threepid.CheckAndProcessInvite failed")
-		return inviteStored, &util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.BadJSON(err.Error()),
-		}
-	case threepid.ErrNotTrusted:
-		util.GetLogger(req.Context()).WithError(err).Error("threepid.CheckAndProcessInvite failed")
-		return inviteStored, &util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.NotTrusted(body.IDServer),
-		}
-	case eventutil.ErrRoomNoExists:
-		util.GetLogger(req.Context()).WithError(err).Error("threepid.CheckAndProcessInvite failed")
-		return inviteStored, &util.JSONResponse{
-			Code: http.StatusNotFound,
-			JSON: spec.NotFound(err.Error()),
-		}
-	case gomatrixserverlib.BadJSONError:
-		util.GetLogger(req.Context()).WithError(err).Error("threepid.CheckAndProcessInvite failed")
-		return inviteStored, &util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.BadJSON(e.Error()),
-		}
-	default:
-		util.GetLogger(req.Context()).WithError(err).Error("threepid.CheckAndProcessInvite failed")
-		return inviteStored, &util.JSONResponse{
-			Code: http.StatusInternalServerError,
-			JSON: spec.InternalServerError{},
-		}
 	}
 	return
 }

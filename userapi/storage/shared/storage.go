@@ -48,7 +48,6 @@ type Database struct {
 	Accounts              tables.AccountsTable
 	Profiles              tables.ProfileTable
 	AccountDatas          tables.AccountDataTable
-	ThreePIDs             tables.ThreePIDTable
 	OpenIDTokens          tables.OpenIDTable
 	KeyBackups            tables.KeyBackupTable
 	KeyBackupVersions     tables.KeyBackupVersionTable
@@ -328,69 +327,6 @@ func (d *Database) GetNewNumericLocalpart(
 func (d *Database) hashPassword(plaintext string) (hash string, err error) {
 	hashBytes, err := bcrypt.GenerateFromPassword([]byte(plaintext), d.BcryptCost)
 	return string(hashBytes), err
-}
-
-// Err3PIDInUse is the error returned when trying to save an association involving
-// a third-party identifier which is already associated to a local user.
-var Err3PIDInUse = errors.New("this third-party identifier is already in use")
-
-// SaveThreePIDAssociation saves the association between a third party identifier
-// and a local Matrix user (identified by the user's ID's local part).
-// If the third-party identifier is already part of an association, returns Err3PIDInUse.
-// Returns an error if there was a problem talking to the database.
-func (d *Database) SaveThreePIDAssociation(
-	ctx context.Context, threepid string,
-	localpart string, serverName spec.ServerName,
-	medium string,
-) (err error) {
-	return d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		user, _, err := d.ThreePIDs.SelectLocalpartForThreePID(
-			ctx, txn, threepid, medium,
-		)
-		if err != nil {
-			return err
-		}
-
-		if len(user) > 0 {
-			return Err3PIDInUse
-		}
-
-		return d.ThreePIDs.InsertThreePID(ctx, txn, threepid, medium, localpart, serverName)
-	})
-}
-
-// RemoveThreePIDAssociation removes the association involving a given third-party
-// identifier.
-// If no association exists involving this third-party identifier, returns nothing.
-// If there was a problem talking to the database, returns an error.
-func (d *Database) RemoveThreePIDAssociation(
-	ctx context.Context, threepid string, medium string,
-) (err error) {
-	return d.Writer.Do(d.DB, nil, func(txn *sql.Tx) error {
-		return d.ThreePIDs.DeleteThreePID(ctx, txn, threepid, medium)
-	})
-}
-
-// GetLocalpartForThreePID looks up the localpart associated with a given third-party
-// identifier.
-// If no association involves the given third-party idenfitier, returns an empty
-// string.
-// Returns an error if there was a problem talking to the database.
-func (d *Database) GetLocalpartForThreePID(
-	ctx context.Context, threepid string, medium string,
-) (localpart string, serverName spec.ServerName, err error) {
-	return d.ThreePIDs.SelectLocalpartForThreePID(ctx, nil, threepid, medium)
-}
-
-// GetThreePIDsForLocalpart looks up the third-party identifiers associated with
-// a given local user.
-// If no association is known for this user, returns an empty slice.
-// Returns an error if there was an issue talking to the database.
-func (d *Database) GetThreePIDsForLocalpart(
-	ctx context.Context,
-	localpart string, serverName spec.ServerName,
-) (threepids []authtypes.ThreePID, err error) {
-	return d.ThreePIDs.SelectThreePIDsForLocalpart(ctx, localpart, serverName)
 }
 
 // CheckAccountAvailability checks if the username/localpart is already present

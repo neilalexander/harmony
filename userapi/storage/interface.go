@@ -125,13 +125,6 @@ type Pusher interface {
 	RemovePushers(ctx context.Context, appid, pushkey string) error
 }
 
-type ThreePID interface {
-	SaveThreePIDAssociation(ctx context.Context, threepid, localpart string, serverName spec.ServerName, medium string) (err error)
-	RemoveThreePIDAssociation(ctx context.Context, threepid string, medium string) (err error)
-	GetLocalpartForThreePID(ctx context.Context, threepid string, medium string) (localpart string, serverName spec.ServerName, err error)
-	GetThreePIDsForLocalpart(ctx context.Context, localpart string, serverName spec.ServerName) (threepids []authtypes.ThreePID, err error)
-}
-
 type Notification interface {
 	InsertNotification(ctx context.Context, localpart string, serverName spec.ServerName, eventID string, pos uint64, tweaks map[string]interface{}, n *api.Notification) error
 	DeleteNotificationsUpTo(ctx context.Context, localpart string, serverName spec.ServerName, roomID string, pos uint64) (affected bool, err error)
@@ -152,7 +145,6 @@ type UserDatabase interface {
 	OpenID
 	Profile
 	Pusher
-	ThreePID
 	RegistrationTokens
 }
 

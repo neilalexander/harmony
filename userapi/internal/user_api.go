@@ -23,12 +23,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
-	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
-	"github.com/neilalexander/harmony/internal/pushrules"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
+	"github.com/neilalexander/harmony/internal/pushrules"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 
@@ -885,33 +885,6 @@ func (a *UserInternalAPI) QueryAccountByPassword(ctx context.Context, req *api.Q
 
 func (a *UserInternalAPI) SetDisplayName(ctx context.Context, localpart string, serverName spec.ServerName, displayName string) (*authtypes.Profile, bool, error) {
 	return a.DB.SetDisplayName(ctx, localpart, serverName, displayName)
-}
-
-func (a *UserInternalAPI) QueryLocalpartForThreePID(ctx context.Context, req *api.QueryLocalpartForThreePIDRequest, res *api.QueryLocalpartForThreePIDResponse) error {
-	localpart, domain, err := a.DB.GetLocalpartForThreePID(ctx, req.ThreePID, req.Medium)
-	if err != nil {
-		return err
-	}
-	res.Localpart = localpart
-	res.ServerName = domain
-	return nil
-}
-
-func (a *UserInternalAPI) QueryThreePIDsForLocalpart(ctx context.Context, req *api.QueryThreePIDsForLocalpartRequest, res *api.QueryThreePIDsForLocalpartResponse) error {
-	r, err := a.DB.GetThreePIDsForLocalpart(ctx, req.Localpart, req.ServerName)
-	if err != nil {
-		return err
-	}
-	res.ThreePIDs = r
-	return nil
-}
-
-func (a *UserInternalAPI) PerformForgetThreePID(ctx context.Context, req *api.PerformForgetThreePIDRequest, res *struct{}) error {
-	return a.DB.RemoveThreePIDAssociation(ctx, req.ThreePID, req.Medium)
-}
-
-func (a *UserInternalAPI) PerformSaveThreePIDAssociation(ctx context.Context, req *api.PerformSaveThreePIDAssociationRequest, res *struct{}) error {
-	return a.DB.SaveThreePIDAssociation(ctx, req.ThreePID, req.Localpart, req.ServerName, req.Medium)
 }
 
 const pushRulesAccountDataType = "m.push_rules"

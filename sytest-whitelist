@@ -91,9 +91,6 @@ Users cannot set ban powerlevel higher than their own
 Users cannot set kick powerlevel higher than their own
 Users cannot set redact powerlevel higher than their own
 Can get rooms/{roomId}/members for a departed room (SPEC-216)
-3pid invite join with wrong but valid signature are rejected
-3pid invite join valid signature but revoked keys are rejected
-3pid invite join valid signature but unreachable ID server are rejected
 Room members can join a room with an overridden displayname
 Real non-joined user cannot call /events on shared room
 Real non-joined user cannot call /events on invited room

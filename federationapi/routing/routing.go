@@ -22,6 +22,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/matrix-org/util"
 	fedInternal "github.com/neilalexander/harmony/federationapi/internal"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/internal"
@@ -30,10 +34,6 @@ import (
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
-	"github.com/matrix-org/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )
@@ -218,21 +218,6 @@ func Setup(
 			return InviteV3(
 				httpReq, request, *roomID, *userID,
 				cfg, rsAPI, keys,
-			)
-		},
-	)).Methods(http.MethodPut, http.MethodOptions)
-
-	v1fedmux.Handle("/3pid/onbind", httputil.MakeExternalAPI("3pid_onbind",
-		func(req *http.Request) util.JSONResponse {
-			return CreateInvitesFrom3PIDInvites(req, rsAPI, cfg, federation, userAPI)
-		},
-	)).Methods(http.MethodPost, http.MethodOptions)
-
-	v1fedmux.Handle("/exchange_third_party_invite/{roomID}", MakeFedAPI(
-		"exchange_third_party_invite", cfg.Matrix.ServerName, cfg.Matrix.IsLocalServerName, keys, wakeup,
-		func(httpReq *http.Request, request *fclient.FederationRequest, vars map[string]string) util.JSONResponse {
-			return ExchangeThirdPartyInvite(
-				httpReq, request, vars["roomID"], rsAPI, cfg, federation,
 			)
 		},
 	)).Methods(http.MethodPut, http.MethodOptions)

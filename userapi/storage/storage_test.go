@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/sqlutil"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
-	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
+	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 
@@ -465,44 +465,6 @@ func Test_Pusher(t *testing.T) {
 		gotPushers, err = db.GetPushers(ctx, aliceLocalpart, aliceDomain)
 		assert.NoError(t, err, "unable to get pushers")
 		assert.Equal(t, 0, len(gotPushers))
-	})
-}
-
-func Test_ThreePID(t *testing.T) {
-	alice := test.NewUser(t)
-	aliceLocalpart, aliceDomain, err := gomatrixserverlib.SplitID('@', alice.ID)
-	assert.NoError(t, err)
-
-	test.WithAllDatabases(t, func(t *testing.T, dbType test.DBType) {
-		db, close := mustCreateUserDatabase(t, dbType)
-		defer close()
-		threePID := util.RandomString(8)
-		medium := util.RandomString(8)
-		err = db.SaveThreePIDAssociation(ctx, threePID, aliceLocalpart, aliceDomain, medium)
-		assert.NoError(t, err, "unable to save threepid association")
-
-		// get the stored threepid
-		gotLocalpart, gotDomain, err := db.GetLocalpartForThreePID(ctx, threePID, medium)
-		assert.NoError(t, err, "unable to get localpart for threepid")
-		assert.Equal(t, aliceLocalpart, gotLocalpart)
-		assert.Equal(t, aliceDomain, gotDomain)
-
-		threepids, err := db.GetThreePIDsForLocalpart(ctx, aliceLocalpart, aliceDomain)
-		assert.NoError(t, err, "unable to get threepids for localpart")
-		assert.Equal(t, 1, len(threepids))
-		assert.Equal(t, authtypes.ThreePID{
-			Address: threePID,
-			Medium:  medium,
-		}, threepids[0])
-
-		// remove threepid association
-		err = db.RemoveThreePIDAssociation(ctx, threePID, medium)
-		assert.NoError(t, err, "unexpected error")
-
-		// verify it was deleted
-		threepids, err = db.GetThreePIDsForLocalpart(ctx, aliceLocalpart, aliceDomain)
-		assert.NoError(t, err, "unable to get threepids for localpart")
-		assert.Equal(t, 0, len(threepids))
 	})
 }
 

@@ -20,10 +20,10 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/neilalexander/harmony/setup/config"
-	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -80,18 +80,6 @@ func (r *Login) Username() string {
 	}
 	// deprecated but without it Element iOS won't log in
 	return r.User
-}
-
-// ThirdPartyID returns the 3PID medium and address for this login, if it exists.
-func (r *Login) ThirdPartyID() (medium, address string) {
-	if r.Identifier.Type == "m.id.thirdparty" {
-		return r.Identifier.Medium, r.Identifier.Address
-	}
-	// deprecated
-	if r.Medium == "email" {
-		return "email", r.Address
-	}
-	return "", ""
 }
 
 type userInteractiveFlow struct {
