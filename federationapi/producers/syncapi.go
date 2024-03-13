@@ -21,9 +21,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/setup/config"

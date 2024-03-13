@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"unicode/utf8"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 // UnmarshalJSONRequest into the given interface pointer. Returns an error JSON response if

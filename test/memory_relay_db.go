@@ -20,8 +20,8 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 type InMemoryRelayDatabase struct {

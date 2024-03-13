@@ -22,7 +22,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/syncapi/notifier"
 	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/neilalexander/harmony/syncapi/synctypes"

@@ -20,8 +20,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/mediaapi/storage/tables"
 	"github.com/neilalexander/harmony/mediaapi/types"

@@ -17,8 +17,8 @@ package types
 import (
 	"unsafe"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 // HeaderedEvent is an Event which serialises to the headered form, which includes

@@ -1,7 +1,7 @@
 package caching
 
 import (
-	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/roomserver/types"
 )
 

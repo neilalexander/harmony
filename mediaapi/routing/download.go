@@ -31,9 +31,9 @@ import (
 	"sync"
 	"unicode"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/mediaapi/fileutils"
 	"github.com/neilalexander/harmony/mediaapi/storage"
 	"github.com/neilalexander/harmony/mediaapi/thumbnailer"

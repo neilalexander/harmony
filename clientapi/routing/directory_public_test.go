@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 )
 
 func pubRoom(name string) fclient.PublicRoom {

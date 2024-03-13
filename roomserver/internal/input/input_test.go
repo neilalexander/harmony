@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver"
 	"github.com/neilalexander/harmony/roomserver/api"

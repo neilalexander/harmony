@@ -31,7 +31,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/atomic"
 

@@ -9,8 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.uber.org/atomic"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/storage"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 // Statistics contains information about all of the remote federated

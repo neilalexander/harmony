@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/internal/sqlutil"

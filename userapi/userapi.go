@@ -17,9 +17,9 @@ package userapi
 import (
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/federationapi/statistics"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"

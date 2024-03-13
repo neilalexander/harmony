@@ -1,6 +1,6 @@
 package caching
 
-import "github.com/matrix-org/gomatrixserverlib/fclient"
+import "github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 
 // RoomHierarchy cache caches responses to federated room hierarchy requests (A.K.A. 'space summaries')
 type RoomHierarchyCache interface {

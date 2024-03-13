@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 func UpAddexpiresat(ctx context.Context, tx *sql.Tx) error {

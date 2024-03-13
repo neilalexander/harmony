@@ -23,8 +23,8 @@ import (
 	"sort"
 
 	"github.com/lib/pq"
-	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"

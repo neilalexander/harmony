@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/federationapi/storage/shared/receipt"
 	"github.com/neilalexander/harmony/federationapi/storage/tables"
 	"github.com/neilalexander/harmony/federationapi/types"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 )
 

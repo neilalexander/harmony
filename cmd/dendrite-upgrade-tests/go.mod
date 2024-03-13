@@ -8,7 +8,7 @@ require (
 	github.com/docker/docker v25.0.4+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/matrix-org/gomatrix v0.0.0-20220926102614-ceba4d9f7530
-	github.com/matrix-org/gomatrixserverlib v0.0.0-20240116122202-14ee7615d604
+	github.com/neilalexander/harmony/internal/gomatrixserverlib v0.0.0-20240116122202-14ee7615d604
 )
 
 require (

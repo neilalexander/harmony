@@ -23,11 +23,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	syncAPITypes "github.com/neilalexander/harmony/syncapi/types"
 
-	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 

@@ -19,7 +19,7 @@ import (
 
 	"github.com/matrix-org/util"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/roomserver/api"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )

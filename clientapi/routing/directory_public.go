@@ -23,9 +23,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 
 	"github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/clientapi/httputil"

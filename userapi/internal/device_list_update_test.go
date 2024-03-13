@@ -27,12 +27,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	api2 "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/federationapi/statistics"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 
 	roomserver "github.com/neilalexander/harmony/roomserver/api"

@@ -21,15 +21,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/test/testrig"
 	"go.uber.org/atomic"
 	"gotest.tools/v3/poll"
 
-	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/neilalexander/harmony/federationapi/statistics"

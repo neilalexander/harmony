@@ -8,8 +8,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/matrix-org/gomatrix"
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
 const userPassword = "this_is_a_long_password"

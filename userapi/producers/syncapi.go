@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/nats-io/nats.go"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/internal/eventutil"

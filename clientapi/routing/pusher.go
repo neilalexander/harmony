@@ -18,10 +18,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 

@@ -17,7 +17,7 @@ package federationapi
 import (
 	"time"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/config"
@@ -36,7 +36,7 @@ import (
 	"github.com/neilalexander/harmony/setup/jetstream"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 
-	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 
 	"github.com/neilalexander/harmony/federationapi/routing"
 )

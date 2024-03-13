@@ -15,13 +15,13 @@
 package setup
 
 import (
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/clientapi"
 	"github.com/neilalexander/harmony/clientapi/api"
 	"github.com/neilalexander/harmony/federationapi"
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/internal/transactions"

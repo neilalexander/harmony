@@ -17,7 +17,7 @@ package version
 import (
 	"fmt"
 
-	"github.com/matrix-org/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 )
 
 // RoomVersions returns a map of all known room versions to this

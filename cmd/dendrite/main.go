@@ -17,9 +17,9 @@ package main
 import (
 	"flag"
 
-	"github.com/matrix-org/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/caching"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/setup/jetstream"

@@ -26,9 +26,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/matrix-org/gomatrixserverlib"
-	"github.com/matrix-org/gomatrixserverlib/spec"
 	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/mediaapi/fileutils"
 	"github.com/neilalexander/harmony/mediaapi/storage"
 	"github.com/neilalexander/harmony/mediaapi/thumbnailer"
@@ -263,7 +263,7 @@ func (r *uploadRequest) Validate(maxFileSizeBytes config.FileSizeBytes) *util.JS
 	// TODO: Validate filename - what are the valid characters?
 	if r.MediaMetadata.UserID != "" {
 		// TODO: We should put user ID parsing code into gomatrixserverlib and use that instead
-		//       (see https://github.com/matrix-org/gomatrixserverlib/blob/3394e7c7003312043208aa73727d2256eea3d1f6/eventcontent.go#L347 )
+		//       (see https://github.com/neilalexander/harmony/internal/gomatrixserverlib/blob/3394e7c7003312043208aa73727d2256eea3d1f6/eventcontent.go#L347 )
 		//       It should be a struct (with pointers into a single string to avoid copying) and
 		//       we should update all refs to use UserID types rather than strings.
 		// https://github.com/matrix-org/synapse/blob/v0.19.2/synapse/types.py#L92

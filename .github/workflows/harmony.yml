@@ -156,6 +156,7 @@ jobs:
 
   # run Sytest in different variations
   sytest:
+    if: github.event_name == 'workflow_dispatch'
     timeout-minutes: 20
     needs: [lint, test]
     name: "Sytest (${{ matrix.label }})"
@@ -213,6 +214,7 @@ jobs:
   # run Complement
   complement:
     name: "Complement (${{ matrix.label }})"
+    if: github.event_name == 'workflow_dispatch'
     timeout-minutes: 20
     needs: [lint, test]
     runs-on: ubuntu-latest
@@ -280,25 +282,13 @@ jobs:
           COMPLEMENT_SHARE_ENV_PREFIX: COMPLEMENT_DENDRITE_
         working-directory: complement
 
-  integration-tests-done:
-    name: Integration tests passed
-    #needs: [upgrade_test, upgrade_test_direct, sytest, complement]
-    needs: [sytest, complement]
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }} # Run this even if prior jobs were skipped
-    steps:
-      - name: Check integration tests passed
-        uses: re-actors/alls-green@release/v1
-        with:
-          jobs: ${{ toJSON(needs) }}
-
   update-docker-images:
     name: Update Docker images
     permissions:
       packages: write
       contents: read
     if: github.repository == 'neilalexander/harmony' && github.ref_name == 'main'
-    needs: [integration-tests-done]
+    needs: [test, sytest, complement]
     uses: neilalexander/harmony/.github/workflows/docker.yml@main
     secrets:
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/matrix-org/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/tidwall/gjson"
 
 	"github.com/neilalexander/harmony/internal/eventutil"
