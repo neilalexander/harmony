@@ -15,9 +15,7 @@ var renameTableMappings = map[string]string{
 	"account_e2e_room_keys":          "userapi_key_backups",
 	"account_e2e_room_keys_versions": "userapi_key_backup_versions",
 	"login_tokens":                   "userapi_login_tokens",
-	"open_id_tokens":                 "userapi_openid_tokens",
 	"account_profiles":               "userapi_profiles",
-	"account_threepid":               "userapi_threepids",
 }
 
 var renameSequenceMappings = map[string]string{
@@ -31,7 +29,6 @@ var renameIndicesMappings = map[string]string{
 	"e2e_room_keys_versions_idx":         "userapi_key_backups_versions_idx",
 	"account_e2e_room_keys_versions_idx": "userapi_key_backup_versions_idx",
 	"login_tokens_expiration_idx":        "userapi_login_tokens_expiration_idx",
-	"account_threepid_localpart":         "userapi_threepid_idx",
 }
 
 // I know what you're thinking: you're wondering "why doesn't this use $1

@@ -14,10 +14,8 @@ var serverNamesTables = []string{
 	"userapi_account_datas",
 	"userapi_devices",
 	"userapi_notifications",
-	"userapi_openid_tokens",
 	"userapi_profiles",
 	"userapi_pushers",
-	"userapi_threepids",
 }
 
 // These tables have a PRIMARY KEY constraint which we need to drop so
