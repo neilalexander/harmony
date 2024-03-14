@@ -23,6 +23,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/roomserver/api"
+	"github.com/neilalexander/harmony/roomserver/external"
 	"github.com/neilalexander/harmony/roomserver/internal"
 	"github.com/neilalexander/harmony/roomserver/storage"
 )
@@ -44,9 +45,15 @@ func NewInternalAPI(
 		logrus.WithError(err).Panicf("failed to connect to room server db")
 	}
 
-	js, nc := natsInstance.Prepare(processContext, &cfg.Global.JetStream)
-
-	return internal.NewRoomserverAPI(
+	js, nc := natsInstance.JetStream, natsInstance.Conn
+	intapi := internal.NewRoomserverAPI(
 		processContext, cfg, roomserverDB, js, nc, caches, enableMetrics,
 	)
+
+	if _, err := external.NewRoomserverAPIServer(intapi, natsInstance); err != nil {
+		logrus.WithError(err).Warn("Setting up roomserver NATS responder failed")
+		return external.NewRoomserverAPIClient(intapi, natsInstance)
+	}
+
+	return intapi
 }
