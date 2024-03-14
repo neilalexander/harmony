@@ -2,6 +2,7 @@ package jetstream
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -19,9 +20,9 @@ import (
 )
 
 type NATSInstance struct {
-	*natsserver.Server
-	nc *natsclient.Conn
-	js natsclient.JetStreamContext
+	srv       *natsserver.Server
+	Conn      *natsclient.Conn
+	JetStream natsclient.JetStreamContext
 }
 
 var natsLock sync.Mutex
@@ -40,7 +41,7 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 	if len(cfg.Addresses) != 0 {
 		return setupNATS(process, cfg, nil)
 	}
-	if s.Server == nil {
+	if s.srv == nil {
 		var err error
 		opts := &natsserver.Options{
 			ServerName:      "monolith",
@@ -52,38 +53,38 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 			NoSigs:          true,
 			NoLog:           cfg.NoLog,
 		}
-		s.Server, err = natsserver.NewServer(opts)
+		s.srv, err = natsserver.NewServer(opts)
 		if err != nil {
 			panic(err)
 		}
 		if !cfg.NoLog {
-			s.SetLogger(NewLogAdapter(), opts.Debug, opts.Trace)
+			s.srv.SetLogger(NewLogAdapter(), opts.Debug, opts.Trace)
 		}
 		go func() {
 			process.ComponentStarted()
-			s.Start()
+			s.srv.Start()
 		}()
+		if !s.srv.ReadyForConnections(time.Second * 60) {
+			logrus.Fatalln("NATS did not start in time")
+		}
 		go func() {
 			<-process.WaitForShutdown()
-			s.Shutdown()
-			s.WaitForShutdown()
+			s.srv.Shutdown()
+			s.srv.WaitForShutdown()
 			process.ComponentFinished()
 		}()
 	}
-	if !s.ReadyForConnections(time.Second * 60) {
-		logrus.Fatalln("NATS did not start in time")
-	}
 	// reuse existing connections
-	if s.nc != nil {
-		return s.js, s.nc
+	if s.Conn != nil {
+		return s.JetStream, s.Conn
 	}
-	nc, err := natsclient.Connect("", natsclient.InProcessServer(s))
+	nc, err := natsclient.Connect("", natsclient.InProcessServer(s.srv))
 	if err != nil {
 		logrus.Fatalln("Failed to create NATS client")
 	}
 	js, _ := setupNATS(process, cfg, nc)
-	s.js = js
-	s.nc = nc
+	s.JetStream = js
+	s.Conn = nc
 	return js, nc
 }
 
@@ -235,4 +236,39 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 	}
 
 	return s, nc
+}
+
+func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq req, rs res) error {
+	subj := fmt.Sprintf("API.%s.%s", component, endpoint)
+	j, err := json.Marshal(rq)
+	if err != nil {
+		return err
+	}
+	resp, err := s.Conn.Request(subj, j, time.Second*5)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(resp.Data, rs)
+}
+
+func ListenAPI[req, res any](s *NATSInstance, component, endpoint string, fn func(req req, res res) error) error {
+	subj := fmt.Sprintf("API.%s.%s", component, endpoint)
+	_, err := s.Conn.Subscribe(subj, func(msg *natsclient.Msg) {
+		var req req
+		var res res
+		if err := json.Unmarshal(msg.Data, &req); err != nil {
+			return
+		}
+		if err := fn(req, res); err != nil {
+			return
+		}
+		j, err := json.Marshal(res)
+		if err != nil {
+			return
+		}
+		if err := msg.Respond(j); err != nil {
+			return
+		}
+	})
+	return err
 }
