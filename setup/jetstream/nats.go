@@ -39,7 +39,8 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 	defer natsLock.Unlock()
 	// check if we need an in-process NATS Server
 	if len(cfg.Addresses) != 0 {
-		return setupNATS(process, cfg, nil)
+		s.JetStream, s.Conn = setupNATS(process, cfg, nil)
+		return s.JetStream, s.Conn
 	}
 	if s.srv == nil {
 		var err error
