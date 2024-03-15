@@ -239,7 +239,7 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 	return s, nc
 }
 
-func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq req, rs res) error {
+func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq *req, rs *res) error {
 	subj := fmt.Sprintf("API.%s.%s", component, endpoint)
 	j, err := json.Marshal(rq)
 	if err != nil {
@@ -252,15 +252,16 @@ func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq req, 
 	return json.Unmarshal(resp.Data, rs)
 }
 
-func ListenAPI[req, res any](s *NATSInstance, component, endpoint string, fn func(req req, res res) error) error {
+func ListenAPI[req, res any](s *NATSInstance, component, endpoint string, fn func(*req, *res) error) error {
 	subj := fmt.Sprintf("API.%s.%s", component, endpoint)
+	logrus.Infof("Listening on %s", subj)
 	_, err := s.nc.Subscribe(subj, func(msg *natsclient.Msg) {
 		var req req
 		var res res
 		if err := json.Unmarshal(msg.Data, &req); err != nil {
 			return
 		}
-		if err := fn(req, res); err != nil {
+		if err := fn(&req, &res); err != nil {
 			return
 		}
 		j, err := json.Marshal(res)
