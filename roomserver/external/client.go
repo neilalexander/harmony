@@ -20,7 +20,7 @@ func NewRoomserverAPIClient(intapi api.RoomserverInternalAPI, nats *jetstream.NA
 	return c
 }
 
-func (c *RoomserverAPIClient) PPerformBackfill(
+func (c *RoomserverAPIClient) PerformBackfill(
 	ctx context.Context,
 	req *api.PerformBackfillRequest,
 	res *api.PerformBackfillResponse,
