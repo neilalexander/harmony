@@ -52,8 +52,8 @@ func NewInternalAPI(
 
 	if _, err := external.NewRoomserverAPIServer(intapi, natsInstance); err != nil {
 		logrus.WithError(err).Warn("Setting up roomserver NATS responder failed")
-		return external.NewRoomserverAPIClient(intapi, natsInstance)
+		return intapi
 	}
 
-	return intapi
+	return external.NewRoomserverAPIClient(intapi, natsInstance)
 }
