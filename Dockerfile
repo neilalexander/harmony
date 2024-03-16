@@ -13,9 +13,9 @@ FROM --platform=${BUILDPLATFORM} base AS build
 WORKDIR /src
 ARG TARGETOS
 ARG TARGETARCH
-RUN --mount=target=. \
-    --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg/mod \
+RUN --mount=target=.,z \
+    --mount=type=cache,target=/root/.cache/go-build,z \
+    --mount=type=cache,target=/go/pkg/mod,z \
     USERARCH=`go env GOARCH` \
     GOARCH="$TARGETARCH" \
     GOOS="linux" \
