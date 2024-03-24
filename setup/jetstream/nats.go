@@ -14,7 +14,6 @@ import (
 	"github.com/neilalexander/harmony/setup/process"
 
 	natsserver "github.com/nats-io/nats-server/v2/server"
-	"github.com/nats-io/nats.go"
 	natsclient "github.com/nats-io/nats.go"
 )
 
@@ -36,17 +35,20 @@ func DeleteAllStreams(js natsclient.JetStreamContext, cfg *config.JetStream) {
 func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetStream) (natsclient.JetStreamContext, *natsclient.Conn) {
 	natsLock.Lock()
 	defer natsLock.Unlock()
-	// check if we need an in-process NATS Server
-	if len(cfg.Addresses) != 0 {
-		// reuse existing connections
-		if s.nc != nil {
-			return s.js, s.nc
-		}
+	var err error
+
+	// If an existing connection exists, return it.
+	if s.nc != nil && s.js != nil {
+		return s.js, s.nc
+	}
+
+	// For connecting to an external NATS server.
+	if len(cfg.Addresses) > 0 {
 		s.js, s.nc = setupNATS(process, cfg, nil)
 		return s.js, s.nc
 	}
-	if s.Server == nil {
-		var err error
+
+	if len(cfg.Addresses) == 0 && s.Server == nil {
 		opts := &natsserver.Options{
 			ServerName:      "monolith",
 			DontListen:      true,
@@ -57,8 +59,7 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 			NoSigs:          true,
 			NoLog:           cfg.NoLog,
 		}
-		s.Server, err = natsserver.NewServer(opts)
-		if err != nil {
+		if s.Server, err = natsserver.NewServer(opts); err != nil {
 			panic(err)
 		}
 		if !cfg.NoLog {
@@ -74,22 +75,17 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 			s.WaitForShutdown()
 			process.ComponentFinished()
 		}()
+		if !s.ReadyForConnections(time.Second * 60) {
+			logrus.Fatalln("NATS did not start in time")
+		}
 	}
-	if !s.ReadyForConnections(time.Second * 60) {
-		logrus.Fatalln("NATS did not start in time")
-	}
-	// reuse existing connections
-	if s.nc != nil {
-		return s.js, s.nc
-	}
-	nc, err := natsclient.Connect("", natsclient.InProcessServer(s))
-	if err != nil {
+
+	// No existing process connection, create a new one.
+	if s.nc, err = natsclient.Connect("", natsclient.InProcessServer(s.Server)); err != nil {
 		logrus.Fatalln("Failed to create NATS client")
 	}
-	js, _ := setupNATS(process, cfg, nc)
-	s.js = js
-	s.nc = nc
-	return js, nc
+	s.js, s.nc = setupNATS(process, cfg, s.nc)
+	return s.js, s.nc
 }
 
 // nolint:gocyclo
@@ -97,7 +93,7 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 	if nc == nil {
 		var err error
 		opts := []natsclient.Option{
-			nats.Name("Harmony"),
+			natsclient.Name("Harmony"),
 		}
 		if cfg.DisableTLSValidation {
 			opts = append(opts, natsclient.Secure(&tls.Config{
