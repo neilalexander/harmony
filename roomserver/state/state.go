@@ -99,12 +99,7 @@ func (p *StateResolution) Resolve(ctx context.Context, eventID string) (*gomatri
 	if len(events) == 0 {
 		return nil, fmt.Errorf("unable to find power level event")
 	}
-	powerlevels, err := events[0].PowerLevels()
-	if err != nil {
-		return nil, err
-	}
-
-	return powerlevels, nil
+	return events[0].PowerLevels()
 }
 
 // LoadStateAtSnapshot loads the full state of a room at a particular snapshot.
@@ -159,12 +154,7 @@ func (v *StateResolution) LoadStateAtEvent(
 		return nil, fmt.Errorf("LoadStateAtEvent.SnapshotNIDFromEventID(%s) returned 0 NID, was this event stored?", eventID)
 	}
 
-	stateEntries, err := v.LoadStateAtSnapshot(ctx, snapshotNID)
-	if err != nil {
-		return nil, err
-	}
-
-	return stateEntries, nil
+	return v.LoadStateAtSnapshot(ctx, snapshotNID)
 }
 
 func (v *StateResolution) LoadMembershipAtEvent(
