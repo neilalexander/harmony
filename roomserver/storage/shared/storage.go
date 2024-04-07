@@ -388,19 +388,21 @@ func (d *EventDatabase) EventsFromIDs(ctx context.Context, roomInfo *types.RoomI
 }
 
 func (d *EventDatabase) eventsFromIDs(ctx context.Context, txn *sql.Tx, roomInfo *types.RoomInfo, eventIDs []string, filter UnsentFilter) ([]types.Event, error) {
+	// TODO: why would we hit this here?
+	if roomInfo == nil {
+		return nil, types.ErrorInvalidRoomInfo
+	}
+
 	nidMap, err := d.eventNIDs(ctx, txn, eventIDs, filter)
 	if err != nil {
 		return nil, err
 	}
 
-	var nids []types.EventNID
+	nids := make([]types.EventNID, 0, len(nidMap))
 	for _, nid := range nidMap {
 		nids = append(nids, nid.EventNID)
 	}
 
-	if roomInfo == nil {
-		return nil, types.ErrorInvalidRoomInfo
-	}
 	return d.events(ctx, txn, roomInfo.RoomVersion, nids)
 }
 
