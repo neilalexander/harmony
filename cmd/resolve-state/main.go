@@ -98,7 +98,7 @@ func main() {
 			panic("need exactly two state snapshot NIDs to calculate difference")
 		}
 		var removed, added []types.StateEntry
-		removed, added, err = stateres.DifferenceBetweeenStateSnapshots(ctx, snapshotNIDs[0], snapshotNIDs[1])
+		removed, added, err = stateres.DifferenceBetweenStateSnapshots(ctx, snapshotNIDs[0], snapshotNIDs[1])
 		if err != nil {
 			panic(err)
 		}

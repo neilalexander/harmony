@@ -326,8 +326,8 @@ func (v *StateResolution) LoadCombinedStateAfterEvents(
 	return combined, nil
 }
 
-// DifferenceBetweeenStateSnapshots works out which state entries have been added and removed between two snapshots.
-func (v *StateResolution) DifferenceBetweeenStateSnapshots(
+// DifferenceBetweenStateSnapshots works out which state entries have been added and removed between two snapshots.
+func (v *StateResolution) DifferenceBetweenStateSnapshots(
 	ctx context.Context, oldStateNID, newStateNID types.StateSnapshotNID,
 ) (removed, added []types.StateEntry, err error) {
 	if oldStateNID == newStateNID {
@@ -679,6 +679,10 @@ func (v *StateResolution) CalculateAndStoreStateBeforeEvent(
 	event gomatrixserverlib.PDU,
 	isRejected bool,
 ) (types.StateSnapshotNID, error) {
+	if event.Type() != spec.MRoomCreate && len(event.PrevEventIDs()) == 0 {
+		return 0, fmt.Errorf("non-create events must have prev events")
+	}
+
 	// Load the state at the prev events.
 	prevStates, err := v.db.StateAtEventIDs(ctx, event.PrevEventIDs())
 	if err != nil {
@@ -699,7 +703,8 @@ func (v *StateResolution) CalculateAndStoreStateAfterEvents(
 
 	if len(prevStates) == 0 {
 		// 2) There weren't any prev_events for this event so the state is
-		// empty.
+		// empty. There's only one way this is valid and that's for create
+		// events.
 		metrics.algorithm = "empty_state"
 		stateNID, err := v.db.AddState(ctx, v.roomInfo.RoomNID, nil, nil)
 		if err != nil {

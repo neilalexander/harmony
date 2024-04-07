@@ -208,37 +208,6 @@ func (u *latestEventsUpdater) latestState() error {
 	var err error
 	roomState := state.NewStateResolution(u.updater, u.roomInfo, u.api.Queryer)
 
-	// Work out if the state at the extremities has actually changed
-	// or not. If they haven't then we won't bother doing all of the
-	// hard work.
-	if !u.stateAtEvent.IsStateEvent() {
-		stateChanged := false
-		oldStateNIDs := make([]types.StateSnapshotNID, 0, len(u.oldLatest))
-		newStateNIDs := make([]types.StateSnapshotNID, 0, len(u.latest))
-		for _, old := range u.oldLatest {
-			oldStateNIDs = append(oldStateNIDs, old.BeforeStateSnapshotNID)
-		}
-		for _, new := range u.latest {
-			newStateNIDs = append(newStateNIDs, new.BeforeStateSnapshotNID)
-		}
-		oldStateNIDs = state.UniqueStateSnapshotNIDs(oldStateNIDs)
-		newStateNIDs = state.UniqueStateSnapshotNIDs(newStateNIDs)
-		if len(oldStateNIDs) != len(newStateNIDs) {
-			stateChanged = true
-		} else {
-			for i := range oldStateNIDs {
-				if oldStateNIDs[i] != newStateNIDs[i] {
-					stateChanged = true
-					break
-				}
-			}
-		}
-		if !stateChanged {
-			u.newStateNID = u.oldStateNID
-			return nil
-		}
-	}
-
 	// Get a list of the current latest events. This may or may not
 	// include the new event from the input path, depending on whether
 	// it is a forward extremity or not.
@@ -272,7 +241,7 @@ func (u *latestEventsUpdater) latestState() error {
 			return fmt.Errorf("roomState.LoadStateAtSnapshot: %w", err)
 		}
 	} else {
-		u.removed, u.added, err = roomState.DifferenceBetweeenStateSnapshots(
+		u.removed, u.added, err = roomState.DifferenceBetweenStateSnapshots(
 			ctx, u.oldStateNID, u.newStateNID,
 		)
 		if err != nil {
@@ -293,7 +262,7 @@ func (u *latestEventsUpdater) latestState() error {
 
 	// Also work out the state before the event removes and the event
 	// adds.
-	u.stateBeforeEventRemoves, u.stateBeforeEventAdds, err = roomState.DifferenceBetweeenStateSnapshots(
+	u.stateBeforeEventRemoves, u.stateBeforeEventAdds, err = roomState.DifferenceBetweenStateSnapshots(
 		ctx, u.newStateNID, u.stateAtEvent.BeforeStateSnapshotNID,
 	)
 	if err != nil {
