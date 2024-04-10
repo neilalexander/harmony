@@ -18,6 +18,7 @@ import (
 	"container/heap"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"sort"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
@@ -603,7 +604,8 @@ func (r *stateResolverV2) reverseTopologicalOrdering(events []PDU, order Topolog
 func (r *stateResolverV2) mainlineOrdering(events []PDU) []PDU {
 	block := r.wrapOtherEventsForSort(events)
 	result := make([]PDU, 0, len(block))
-	sort.Sort(stateResV2ConflictedOtherHeap(block))
+	slices.SortStableFunc(block, sortStateResV2ConflictedOtherHeap)
+	//sort.Sort(stateResV2ConflictedOtherHeap(block))
 	for _, s := range block {
 		result = append(result, s.event)
 	}
@@ -769,19 +771,18 @@ func kahnsAlgorithmUsingPrevEvents(events []*stateResV2ConflictedOther) []*state
 	// dependencies. These will be placed into the graph first. Remove the event
 	// from the event map as this prevents us from processing it a second time.
 	noIncoming := make(stateResV2ConflictedOtherHeap, 0, len(events))
-	heap.Init(&noIncoming)
 	for eventID, count := range inDegree {
 		if count == 0 {
-			heap.Push(&noIncoming, eventMap[eventID])
+			noIncoming.Push(eventMap[eventID])
 			delete(eventMap, eventID)
 		}
 	}
+	slices.SortStableFunc(noIncoming, sortStateResV2ConflictedOtherHeap)
 
-	var event *stateResV2ConflictedOther
-	for noIncoming.Len() > 0 {
+	for len(noIncoming) > 0 {
 		// Pop the first event ID off the list of events which have no incoming
 		// prev event dependencies.
-		event = heap.Pop(&noIncoming).(*stateResV2ConflictedOther)
+		event := noIncoming.Pop()
 
 		// Since there are no incoming dependencies to resolve, we can now add this
 		// event into the graph.
@@ -802,20 +803,23 @@ func kahnsAlgorithmUsingPrevEvents(events []*stateResV2ConflictedOther) []*state
 			// process the outgoing dependencies of this prev event.
 			if inDegree[prev] == 0 {
 				if _, ok := eventMap[prev]; ok {
-					heap.Push(&noIncoming, eventMap[prev])
+					noIncoming.Push(eventMap[prev])
 					delete(eventMap, prev)
 				}
 			}
 		}
+		slices.SortStableFunc(noIncoming, sortStateResV2ConflictedOtherHeap)
 	}
 
 	// If we have stray events left over then add them into the result.
 	if len(eventMap) > 0 {
 		remaining := make(stateResV2ConflictedOtherHeap, 0, len(events))
 		for _, event := range eventMap {
-			heap.Push(&remaining, event)
+			// heap.Push(&remaining, event)
+			remaining = append(remaining, event)
 		}
-		sort.Sort(sort.Reverse(remaining))
+		slices.SortStableFunc(remaining, sortStateResV2ConflictedOtherHeap)
+		slices.Reverse(remaining)
 		graph = append(remaining, graph...)
 	}
 	return graph
