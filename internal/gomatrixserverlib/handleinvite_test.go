@@ -38,10 +38,9 @@ func (r *TestStateQuerier) GetAuthEvents(ctx context.Context, event PDU) (AuthEv
 		return nil, fmt.Errorf("failed getting auth provider")
 	}
 
-	var eventProvider *AuthEvents
+	eventProvider, _ := NewAuthEvents(nil)
 	if r.createEvent != nil {
-		var err error
-		if eventProvider, err = NewAuthEvents([]PDU{r.createEvent}); err != nil {
+		if err := eventProvider.AddEvent(r.createEvent); err != nil {
 			return nil, err
 		}
 		if r.inviterMemberEvent != nil {
