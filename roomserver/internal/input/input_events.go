@@ -184,7 +184,7 @@ func (r *Inputer) processRoomEvent(
 		// Sort all of the servers into a map so that we can randomise
 		// their order. Then make sure that the input origin and the
 		// event origin are first on the list.
-		servers := map[spec.ServerName]struct{}{}
+		servers := make(map[spec.ServerName]struct{}, len(serverRes.ServerNames))
 		for _, server := range serverRes.ServerNames {
 			servers[server] = struct{}{}
 		}
@@ -210,9 +210,9 @@ func (r *Inputer) processRoomEvent(
 
 	// Check that the auth events of the event are known.
 	// If they aren't then we will ask the federation API for them.
-	authEvents := gomatrixserverlib.NewAuthEvents(nil)
+	authEvents, _ := gomatrixserverlib.NewAuthEvents(nil)
 	knownEvents := map[string]*types.Event{}
-	if err = r.fetchAuthEvents(ctx, logger, roomInfo, virtualHost, headered, &authEvents, knownEvents, serverRes.ServerNames); err != nil {
+	if err = r.fetchAuthEvents(ctx, logger, roomInfo, virtualHost, headered, authEvents, knownEvents, serverRes.ServerNames); err != nil {
 		return fmt.Errorf("r.fetchAuthEvents: %w", err)
 	}
 
@@ -221,7 +221,7 @@ func (r *Inputer) processRoomEvent(
 
 	// Check if the event is allowed by its auth events. If it isn't then
 	// we consider the event to be "rejected" — it will still be persisted.
-	if err = gomatrixserverlib.Allowed(event, &authEvents, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
+	if err = gomatrixserverlib.Allowed(event, authEvents, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
 		return r.Queryer.QueryUserIDForSender(ctx, roomID, senderID)
 	}); err != nil {
 		isRejected = true
@@ -643,10 +643,14 @@ func (r *Inputer) processStateBefore(
 	// At this point, stateBeforeEvent should be populated either by
 	// the supplied state in the input request, or from the prev events.
 	// Check whether the event is allowed or not.
-	stateBeforeAuth := gomatrixserverlib.NewAuthEvents(
+	stateBeforeAuth, err := gomatrixserverlib.NewAuthEvents(
 		gomatrixserverlib.ToPDUs(stateBeforeEvent),
 	)
-	if rejectionErr = gomatrixserverlib.Allowed(event, &stateBeforeAuth, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
+	if err != nil {
+		rejectionErr = fmt.Errorf("NewAuthEvents failed: %w", err)
+		return
+	}
+	if rejectionErr = gomatrixserverlib.Allowed(event, stateBeforeAuth, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
 		return r.Queryer.QueryUserIDForSender(ctx, roomID, senderID)
 	}); rejectionErr != nil {
 		rejectionErr = fmt.Errorf("Allowed() failed for stateBeforeEvent: %w", rejectionErr)

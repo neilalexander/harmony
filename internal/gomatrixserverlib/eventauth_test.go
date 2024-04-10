@@ -1035,7 +1035,7 @@ func TestAuthEvents(t *testing.T) {
 	if err != nil {
 		t.Fatalf("TestAuthEvents: failed to create power_levels event: %s", err)
 	}
-	a := NewAuthEvents([]PDU{power})
+	a, _ := NewAuthEvents([]PDU{power})
 	var e PDU
 	if e, err = a.PowerLevels(); err != nil || e != power {
 		t.Errorf("TestAuthEvents: failed to get same power_levels event")

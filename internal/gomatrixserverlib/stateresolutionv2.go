@@ -34,7 +34,7 @@ const (
 
 type stateResolverV2 struct {
 	allower                   *allowerContext               // Used to auth and apply events
-	authProvider              AuthEvents                    // Used in the allower
+	authProvider              *AuthEvents                   // Used in the allower
 	authEventMap              map[string]PDU                // Map of all provided auth events
 	conflictedEventMap        map[string]PDU                // Map of all provided conflicted events
 	powerLevelContents        map[string]*PowerLevelContent // A cache of all power level contents
@@ -64,9 +64,10 @@ func ResolveStateConflictsV2(
 	// Prepare the state resolver.
 	conflictedControlEvents := make([]PDU, 0, len(conflicted))
 	conflictedOthers := make([]PDU, 0, len(conflicted))
+	authProvider, _ := NewAuthEvents(nil)
 	r := stateResolverV2{
 		authEventMap:              eventMapFromEvents(authEvents),
-		authProvider:              NewAuthEvents(nil),
+		authProvider:              authProvider,
 		conflictedEventMap:        eventMapFromEvents(conflicted),
 		powerLevelContents:        make(map[string]*PowerLevelContent),
 		powerLevelMainlinePos:     make(map[string]int),
@@ -95,7 +96,7 @@ func ResolveStateConflictsV2(
 		return r.result
 	}
 
-	r.allower = newAllowerContext(&r.authProvider, userIDForSender, *roomID)
+	r.allower = newAllowerContext(r.authProvider, userIDForSender, *roomID)
 
 	// This is a map to help us determine if an event already belongs to the
 	// unconflicted set. If it does then we shouldn't add it back into the
@@ -481,7 +482,7 @@ func (r *stateResolverV2) authAndApplyEvents(events []PDU) {
 		}
 
 		// Check if the event is allowed based on the current partial state.
-		r.allower.update(&r.authProvider)
+		r.allower.update(r.authProvider)
 		if err := r.allower.allowed(event); err != nil {
 			// The event was not allowed by the partial state and/or relevant
 			// auth events from the event, so skip it.
