@@ -730,7 +730,6 @@ func kahnsAlgorithmUsingAuthEvents(events []*stateResV2ConflictedPowerLevel) []*
 			remaining.Push(event)
 		}
 		slices.SortStableFunc(remaining, sortStateResV2ConflictedPowerLevelHeap)
-		slices.Reverse(remaining)
 		graph = append(remaining, graph...)
 	}
 
@@ -814,11 +813,9 @@ func kahnsAlgorithmUsingPrevEvents(events []*stateResV2ConflictedOther) []*state
 	if len(eventMap) > 0 {
 		remaining := make(stateResV2ConflictedOtherHeap, 0, len(events))
 		for _, event := range eventMap {
-			// heap.Push(&remaining, event)
 			remaining = append(remaining, event)
 		}
 		slices.SortStableFunc(remaining, sortStateResV2ConflictedOtherHeap)
-		slices.Reverse(remaining)
 		graph = append(remaining, graph...)
 	}
 	return graph
