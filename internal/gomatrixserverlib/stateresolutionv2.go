@@ -15,11 +15,9 @@
 package gomatrixserverlib
 
 import (
-	"container/heap"
 	"encoding/json"
 	"fmt"
 	"slices"
-	"sort"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
@@ -685,19 +683,18 @@ func kahnsAlgorithmUsingAuthEvents(events []*stateResV2ConflictedPowerLevel) []*
 	// dependencies. These will be placed into the graph first. Remove the event
 	// from the event map as this prevents us from processing it a second time.
 	noIncoming := make(stateResV2ConflictedPowerLevelHeap, 0, len(events))
-	heap.Init(&noIncoming)
 	for eventID, count := range inDegree {
 		if count == 0 {
-			heap.Push(&noIncoming, eventMap[eventID])
+			noIncoming.Push(eventMap[eventID])
 			delete(eventMap, eventID)
 		}
 	}
+	slices.SortStableFunc(noIncoming, sortStateResV2ConflictedPowerLevelHeap)
 
-	var event *stateResV2ConflictedPowerLevel
-	for noIncoming.Len() > 0 {
+	for len(noIncoming) > 0 {
 		// Pop the first event ID off the list of events which have no incoming
 		// auth event dependencies.
-		event = heap.Pop(&noIncoming).(*stateResV2ConflictedPowerLevel)
+		event := noIncoming.Pop()
 
 		// Since there are no incoming dependencies to resolve, we can now add this
 		// event into the graph.
@@ -718,20 +715,22 @@ func kahnsAlgorithmUsingAuthEvents(events []*stateResV2ConflictedPowerLevel) []*
 			// process the outgoing dependencies of this auth event.
 			if inDegree[auth] == 0 {
 				if _, ok := eventMap[auth]; ok {
-					heap.Push(&noIncoming, eventMap[auth])
+					noIncoming.Push(eventMap[auth])
 					delete(eventMap, auth)
 				}
 			}
 		}
+		slices.SortStableFunc(noIncoming, sortStateResV2ConflictedPowerLevelHeap)
 	}
 
 	// If we have stray events left over then add them into the result.
 	if len(eventMap) > 0 {
 		remaining := make(stateResV2ConflictedPowerLevelHeap, 0, len(events))
 		for _, event := range eventMap {
-			heap.Push(&remaining, event)
+			remaining.Push(event)
 		}
-		sort.Sort(sort.Reverse(remaining))
+		slices.SortStableFunc(remaining, sortStateResV2ConflictedPowerLevelHeap)
+		slices.Reverse(remaining)
 		graph = append(remaining, graph...)
 	}
 

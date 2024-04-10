@@ -15,7 +15,7 @@
 package gomatrixserverlib
 
 import (
-	"sort"
+	"slices"
 	"testing"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
@@ -369,7 +369,7 @@ func TestLexicographicalSorting(t *testing.T) {
 	}
 	expected := []string{"g", "f", "e", "d", "c", "b", "a"}
 
-	sort.Stable(stateResV2ConflictedPowerLevelHeap(input))
+	slices.SortStableFunc(input, sortStateResV2ConflictedPowerLevelHeap)
 
 	t.Log("Results:")
 	for k, v := range input {
