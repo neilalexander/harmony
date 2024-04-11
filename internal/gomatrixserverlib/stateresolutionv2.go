@@ -46,6 +46,7 @@ type stateResolverV2 struct {
 	resolvedOthers            map[StateKeyTuple]PDU         // Resolved other events
 	result                    []PDU                         // Final list of resolved events
 	isRejectedFn              IsRejected                    // Check if the given eventID is rejected
+	isRejectedCache           map[string]bool               // Events known to be or not be rejected
 }
 
 // IsRejected should return if the given eventID is rejected or not.
@@ -75,6 +76,7 @@ func ResolveStateConflictsV2(
 		resolvedOthers:            make(map[StateKeyTuple]PDU, len(conflicted)),
 		result:                    make([]PDU, 0, len(conflicted)+len(unconflicted)),
 		isRejectedFn:              isRejectedFn,
+		isRejectedCache:           make(map[string]bool),
 	}
 	var roomID *spec.RoomID
 	if len(conflicted) > 0 {
@@ -164,13 +166,13 @@ func ResolveStateConflictsV2(
 	// state. We will then keep the successfully authed unconflicted events so that
 	// they can be reapplied later.
 	unconflicted = r.reverseTopologicalOrdering(unconflicted, TopologicalOrderByAuthEvents)
-	r.applyEvents(unconflicted)
+	r.applyEvents(unconflicted...)
 
 	// Then order the conflicted power level events topologically and then also
 	// auth those too. The successfully authed events will be layered on top of
 	// the partial state.
 	conflictedControlEvents = r.reverseTopologicalOrdering(conflictedControlEvents, TopologicalOrderByAuthEvents)
-	r.authAndApplyEvents(conflictedControlEvents)
+	r.authAndApplyEvents(conflictedControlEvents...)
 
 	// Then generate the mainline of power level events, order the remaining state
 	// events based on the mainline ordering and auth those too. The successfully
@@ -179,13 +181,13 @@ func ResolveStateConflictsV2(
 		r.powerLevelMainlinePos[event.EventID()] = pos
 	}
 	conflictedOthers = r.mainlineOrdering(conflictedOthers)
-	r.authAndApplyEvents(conflictedOthers)
+	r.authAndApplyEvents(conflictedOthers...)
 
 	// Finally we will reapply the original set of unconflicted events onto the
 	// partial state, just in case any of these were overwritten by pulling in
 	// auth events in the previous two steps, and that gives us our final resolved
 	// state.
-	r.applyEvents(unconflicted)
+	r.applyEvents(unconflicted...)
 
 	// Now that we have our final state, populate the result array with the
 	// resolved state and return it.
@@ -439,44 +441,65 @@ func (r *stateResolverV2) getFirstPowerLevelMainlineEvent(event PDU) (
 // also apply them on top of the partial state. If they fail auth checks then
 // the event is ignored and dropped. Returns two lists - the first contains the
 // accepted (authed) events and the second contains the rejected events.
-func (r *stateResolverV2) authAndApplyEvents(events []PDU) {
+func (r *stateResolverV2) authAndApplyEvents(events ...PDU) {
+	addFromAuthEventsIfNotRejected := func(event PDU, eventType, stateKey string) {
+		for _, authEventID := range event.AuthEventIDs() {
+			if _, ok := r.isRejectedCache[authEventID]; !ok {
+				r.isRejectedCache[authEventID] = r.isRejectedFn(authEventID)
+			}
+			if rejected := r.isRejectedCache[authEventID]; rejected {
+				continue
+			}
+			authEv, ok := r.authEventMap[authEventID]
+			if !ok {
+				continue
+			}
+			if authEv.Type() != eventType || !authEv.StateKeyEquals(stateKey) {
+				continue
+			}
+			_ = r.authProvider.AddEvent(event)
+		}
+	}
+
 	for _, event := range events {
 		r.authProvider.Clear()
 
 		// Now layer on the partial state events that we do know. This should
 		// mean that we make forward progress.
 		needed := StateNeededForAuth([]PDU{event})
-		if event := r.resolvedCreate; needed.Create && event != nil {
-			_ = r.authProvider.AddEvent(event)
+		if resolved := r.resolvedCreate; needed.Create {
+			if resolved != nil {
+				_ = r.authProvider.AddEvent(resolved)
+			} else {
+				addFromAuthEventsIfNotRejected(event, spec.MRoomCreate, "")
+			}
 		}
-		if event := r.resolvedJoinRules; needed.JoinRules && event != nil {
-			_ = r.authProvider.AddEvent(event)
+		if resolved := r.resolvedJoinRules; needed.JoinRules {
+			if resolved != nil {
+				_ = r.authProvider.AddEvent(resolved)
+			} else {
+				addFromAuthEventsIfNotRejected(event, spec.MRoomJoinRules, "")
+			}
 		}
-		if event := r.resolvedPowerLevels; needed.PowerLevels && event != nil {
-			_ = r.authProvider.AddEvent(event)
+		if resolved := r.resolvedPowerLevels; needed.PowerLevels {
+			if resolved != nil {
+				_ = r.authProvider.AddEvent(resolved)
+			} else {
+				addFromAuthEventsIfNotRejected(event, spec.MRoomPowerLevels, "")
+			}
 		}
 		for _, needed := range needed.Member {
-			if membershipEvent := r.resolvedMembers[spec.SenderID(needed)]; membershipEvent != nil {
-				_ = r.authProvider.AddEvent(membershipEvent)
+			if resolved := r.resolvedMembers[spec.SenderID(needed)]; resolved != nil {
+				_ = r.authProvider.AddEvent(resolved)
 			} else {
-				for _, authEventID := range event.AuthEventIDs() {
-					authEv, ok := r.authEventMap[authEventID]
-					if !ok {
-						continue
-					}
-					if authEv.Type() == spec.MRoomMember && authEv.StateKeyEquals(needed) {
-						// Don't use rejected events for auth
-						if r.isRejectedFn(authEventID) {
-							continue
-						}
-						_ = r.authProvider.AddEvent(authEv)
-					}
-				}
+				addFromAuthEventsIfNotRejected(event, spec.MRoomMember, needed)
 			}
 		}
 		for _, needed := range needed.ThirdPartyInvite {
-			if event := r.resolvedThirdPartyInvites[needed]; event != nil {
-				_ = r.authProvider.AddEvent(event)
+			if resolved := r.resolvedThirdPartyInvites[needed]; resolved != nil {
+				_ = r.authProvider.AddEvent(resolved)
+			} else {
+				addFromAuthEventsIfNotRejected(event, spec.MRoomThirdPartyInvite, needed)
 			}
 		}
 
@@ -489,12 +512,12 @@ func (r *stateResolverV2) authAndApplyEvents(events []PDU) {
 		}
 		// Apply the newly authed event to the partial state. We need to do this
 		// here so that the next loop will have partial state to auth against.
-		r.applyEvents([]PDU{event})
+		r.applyEvents(event)
 	}
 }
 
 // applyEvents applies the events on top of the partial state.
-func (r *stateResolverV2) applyEvents(events []PDU) {
+func (r *stateResolverV2) applyEvents(events ...PDU) {
 	for _, event := range events {
 		if st, sk := event.Type(), event.StateKey(); sk == nil {
 			continue
