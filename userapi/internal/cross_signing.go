@@ -19,6 +19,7 @@ import (
 	"context"
 	"crypto/ed25519"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -466,6 +467,9 @@ func (a *UserInternalAPI) crossSigningKeysFromDatabase(
 	for targetUserID := range req.UserToDevices {
 		keys, err := a.KeyDatabase.CrossSigningKeysForUser(ctx, targetUserID)
 		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				return
+			}
 			logrus.WithError(err).Errorf("Failed to get cross-signing keys for user %q", targetUserID)
 			continue
 		}

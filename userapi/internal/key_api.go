@@ -531,6 +531,9 @@ func (a *UserInternalAPI) queryRemoteKeysOnServer(
 	for userID := range userIDsForAllDevices {
 		err := a.Updater.ManualUpdate(context.Background(), spec.ServerName(serverName), userID)
 		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				return
+			}
 			logrus.WithFields(logrus.Fields{
 				logrus.ErrorKey: err,
 				"user_id":       userID,
@@ -544,6 +547,9 @@ func (a *UserInternalAPI) queryRemoteKeysOnServer(
 		// user so the fact that we're populating all devices here isn't a problem so long as we have devices.
 		err = a.populateResponseWithDeviceKeysFromDatabase(ctx, res, respMu, userID, nil)
 		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				return
+			}
 			logrus.WithFields(logrus.Fields{
 				logrus.ErrorKey: err,
 				"user_id":       userID,
