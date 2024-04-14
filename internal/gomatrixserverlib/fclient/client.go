@@ -257,7 +257,8 @@ func (f *destinationTripper) RoundTrip(r *http.Request) (*http.Response, error) 
 	var err error
 	serverName := spec.ServerName(r.URL.Host)
 	resolutionRetried := false
-	resolutionResults := []ResolutionResult{}
+	var _resolutionResults [16]ResolutionResult
+	resolutionResults := _resolutionResults[:0]
 
 retryResolution:
 	if f.wellKnownSRV {
@@ -270,8 +271,7 @@ retryResolution:
 		// If the cache returned nothing then we'll have no results here,
 		// so go and hit the network.
 		if len(resolutionResults) == 0 {
-			resolutionResults, err = ResolveServer(r.Context(), serverName)
-			if err != nil {
+			if err = ResolveServer(r.Context(), serverName, &resolutionResults); err != nil {
 				return nil, err
 			}
 			f.resolutionCache.Store(serverName, resolutionResults)

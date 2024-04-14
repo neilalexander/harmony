@@ -37,18 +37,17 @@ type ResolutionResult struct {
 // Returns a slice of ResolutionResult that can be used to send a federation
 // request to the server using a given server name.
 // Returns an error if the server name isn't valid.
-func ResolveServer(ctx context.Context, serverName spec.ServerName) (results []ResolutionResult, err error) {
-	return resolveServer(ctx, serverName, true)
+func ResolveServer(ctx context.Context, serverName spec.ServerName, results *[]ResolutionResult) error {
+	return resolveServer(ctx, serverName, true, results)
 }
 
 // resolveServer does the same thing as ResolveServer, except it also requires
 // the checkWellKnown parameter, which indicates whether a .well-known file
 // should be looked up.
-func resolveServer(ctx context.Context, serverName spec.ServerName, checkWellKnown bool) (results []ResolutionResult, err error) {
+func resolveServer(ctx context.Context, serverName spec.ServerName, checkWellKnown bool, results *[]ResolutionResult) error {
 	host, port, valid := spec.ParseAndValidateServerName(serverName)
 	if !valid {
-		err = fmt.Errorf("Invalid server name")
-		return
+		return fmt.Errorf("Invalid server name")
 	}
 
 	// 1. If the hostname is an IP literal
@@ -66,50 +65,42 @@ func resolveServer(ctx context.Context, serverName spec.ServerName, checkWellKno
 			destination = string(serverName)
 		}
 
-		results = []ResolutionResult{
-			{
-				Destination:   destination,
-				Host:          serverName,
-				TLSServerName: host,
-			},
-		}
-
-		return
+		*results = append(*results, ResolutionResult{
+			Destination:   destination,
+			Host:          serverName,
+			TLSServerName: host,
+		})
+		return nil
 	}
 
 	// 2. If the hostname is not an IP literal, and the server name includes an
 	// explicit port
 	if port != -1 {
-		results = []ResolutionResult{
-			{
-				Destination:   string(serverName),
-				Host:          serverName,
-				TLSServerName: host,
-			},
-		}
-
-		return
+		*results = append(*results, ResolutionResult{
+			Destination:   string(serverName),
+			Host:          serverName,
+			TLSServerName: host,
+		})
+		return nil
 	}
 
 	if checkWellKnown {
 		// 3. If the hostname is not an IP literal
-		var result *WellKnownResult
-		result, err = LookupWellKnown(ctx, serverName)
-		if err == nil {
+		if result, err := LookupWellKnown(ctx, serverName); err == nil {
 			// We don't want to check .well-known on the result
-			return resolveServer(ctx, result.NewAddress, false)
+			return resolveServer(ctx, result.NewAddress, false, results)
 		}
 	}
 
-	return handleNoWellKnown(ctx, serverName), nil
+	handleNoWellKnown(ctx, serverName, results)
+	return nil
 }
 
 // handleNoWellKnown implements steps 4 and 5 of the resolution algorithm (as
 // well as 3.3 and 3.4)
-func handleNoWellKnown(ctx context.Context, serverName spec.ServerName) (results []ResolutionResult) {
+func handleNoWellKnown(ctx context.Context, serverName spec.ServerName, results *[]ResolutionResult) {
 	// 4. If the /.well-known request resulted in an error response
-	records, err := lookupSRV(ctx, serverName)
-	if err == nil && len(records) > 0 {
+	if records, err := lookupSRV(ctx, serverName); err == nil && len(records) > 0 {
 		for _, rec := range records {
 			// If the domain is a FQDN, remove the trailing dot at the end. This
 			// isn't critical to send the request, as Go's HTTP client and most
@@ -120,27 +111,22 @@ func handleNoWellKnown(ctx context.Context, serverName spec.ServerName) (results
 				target = target[:len(target)-1]
 			}
 
-			results = append(results, ResolutionResult{
+			*results = append(*results, ResolutionResult{
 				Destination:   fmt.Sprintf("%s:%d", target, rec.Port),
 				Host:          serverName,
 				TLSServerName: string(serverName),
 			})
 		}
-
 		return
 	}
 
 	// 5. If the /.well-known request returned an error response, and the SRV
 	// record was not found
-	results = []ResolutionResult{
-		{
-			Destination:   fmt.Sprintf("%s:%d", serverName, 8448),
-			Host:          serverName,
-			TLSServerName: string(serverName),
-		},
-	}
-
-	return
+	*results = append(*results, ResolutionResult{
+		Destination:   fmt.Sprintf("%s:%d", serverName, 8448),
+		Host:          serverName,
+		TLSServerName: string(serverName),
+	})
 }
 
 func lookupSRV(ctx context.Context, serverName spec.ServerName) ([]*net.SRV, error) {
