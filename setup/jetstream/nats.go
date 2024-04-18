@@ -20,8 +20,8 @@ import (
 
 type NATSInstance struct {
 	*natsserver.Server
-	nc *natsclient.Conn
-	js natsclient.JetStreamContext
+	Conn      *natsclient.Conn
+	JetStream natsclient.JetStreamContext
 }
 
 var natsLock sync.Mutex
@@ -39,14 +39,14 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 	var err error
 
 	// If an existing connection exists, return it.
-	if s.nc != nil && s.js != nil {
-		return s.js, s.nc
+	if s.Conn != nil && s.JetStream != nil {
+		return s.JetStream, s.Conn
 	}
 
 	// For connecting to an external NATS server.
 	if len(cfg.Addresses) > 0 {
-		s.js, s.nc = setupNATS(process, cfg, nil)
-		return s.js, s.nc
+		s.JetStream, s.Conn = setupNATS(process, cfg, nil)
+		return s.JetStream, s.Conn
 	}
 
 	if len(cfg.Addresses) == 0 && s.Server == nil {
@@ -82,11 +82,11 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 	}
 
 	// No existing process connection, create a new one.
-	if s.nc, err = natsclient.Connect("", natsclient.InProcessServer(s.Server)); err != nil {
+	if s.Conn, err = natsclient.Connect("", natsclient.InProcessServer(s.Server)); err != nil {
 		logrus.Fatalln("Failed to create NATS client")
 	}
-	s.js, s.nc = setupNATS(process, cfg, s.nc)
-	return s.js, s.nc
+	s.JetStream, s.Conn = setupNATS(process, cfg, s.Conn)
+	return s.JetStream, s.Conn
 }
 
 // nolint:gocyclo
@@ -245,7 +245,7 @@ func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq *req,
 	if err != nil {
 		return err
 	}
-	resp, err := s.nc.Request(subj, j, time.Second*5)
+	resp, err := s.Conn.Request(subj, j, time.Second*5)
 	if err != nil {
 		return err
 	}
@@ -255,7 +255,7 @@ func CallAPI[req, res any](s *NATSInstance, component, endpoint string, rq *req,
 func ListenAPI[req, res any](s *NATSInstance, component, endpoint string, fn func(*req, *res) error) error {
 	subj := fmt.Sprintf("API.%s.%s", component, endpoint)
 	logrus.Infof("Listening on %s", subj)
-	_, err := s.nc.Subscribe(subj, func(msg *natsclient.Msg) {
+	_, err := s.Conn.Subscribe(subj, func(msg *natsclient.Msg) {
 		var req req
 		var res res
 		if err := json.Unmarshal(msg.Data, &req); err != nil {

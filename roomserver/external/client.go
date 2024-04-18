@@ -25,5 +25,5 @@ func (c *RoomserverAPIClient) PerformBackfill(
 	req *api.PerformBackfillRequest,
 	res *api.PerformBackfillResponse,
 ) error {
-	return jetstream.CallAPI(c.nats, "Roomserver", "QueryServerJoinedToRoom", req, res)
+	return jetstream.CallAPI(c.nats, "Roomserver", "PerformBackfill", req, res)
 }
