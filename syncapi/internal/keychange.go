@@ -18,7 +18,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	keytypes "github.com/neilalexander/harmony/userapi/types"

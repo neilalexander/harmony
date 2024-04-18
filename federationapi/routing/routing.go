@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	fedInternal "github.com/neilalexander/harmony/federationapi/internal"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/internal"

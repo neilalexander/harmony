@@ -18,7 +18,7 @@ package mscs
 import (
 	"context"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"

@@ -25,7 +25,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/neilalexander/harmony/setup/config"
 	log "github.com/sirupsen/logrus"

@@ -20,7 +20,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"

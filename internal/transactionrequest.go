@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/federationapi/types"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"

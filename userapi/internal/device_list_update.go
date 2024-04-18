@@ -30,7 +30,7 @@ import (
 	rsapi "github.com/neilalexander/harmony/roomserver/api"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"

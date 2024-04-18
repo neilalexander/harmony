@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/storage/postgres"
 	"github.com/neilalexander/harmony/roomserver/storage/tables"

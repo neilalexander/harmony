@@ -22,7 +22,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/juju/errors v1.0.0 // indirect
-	github.com/matrix-org/util v0.0.0-20200807132607-55161520e1d4 // indirect
+	github.com/neilalexander/harmony/internal/util v0.0.0-20200807132607-55161520e1d4 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect

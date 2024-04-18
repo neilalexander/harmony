@@ -26,7 +26,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 
 	"github.com/matrix-org/dugong"
 	"github.com/sirupsen/logrus"

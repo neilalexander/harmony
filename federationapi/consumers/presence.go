@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/federationapi/queue"
 	"github.com/neilalexander/harmony/federationapi/storage"

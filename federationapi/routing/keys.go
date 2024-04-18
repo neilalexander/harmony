@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	clienthttputil "github.com/neilalexander/harmony/clientapi/httputil"
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"

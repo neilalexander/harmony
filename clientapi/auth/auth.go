@@ -23,7 +23,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/userapi/api"
 )

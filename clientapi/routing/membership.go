@@ -34,7 +34,7 @@ import (
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 func SendBan(

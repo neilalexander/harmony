@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/mediaapi/fileutils"
 	"github.com/neilalexander/harmony/mediaapi/storage"

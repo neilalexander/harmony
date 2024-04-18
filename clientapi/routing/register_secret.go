@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal"
 	cache "github.com/patrickmn/go-cache"
 )

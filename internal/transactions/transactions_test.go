@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 type fakeType struct {

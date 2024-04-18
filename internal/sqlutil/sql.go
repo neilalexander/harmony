@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 // ErrUserExists is returned if a username already exists in the database.

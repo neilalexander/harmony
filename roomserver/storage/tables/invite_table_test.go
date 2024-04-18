@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/neilalexander/harmony/internal/sqlutil"

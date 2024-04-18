@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/federationapi/routing"
 	"github.com/neilalexander/harmony/internal/caching"

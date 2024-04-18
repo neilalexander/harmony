@@ -15,7 +15,7 @@ package routing
 import (
 	"net/http"
 
-	"github.com/matrix-org/util"
+	"github.com/neilalexander/harmony/internal/util"
 
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/clientapi/producers"
