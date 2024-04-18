@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/mediaapi/fileutils"
 	"github.com/neilalexander/harmony/mediaapi/storage"
 	"github.com/neilalexander/harmony/mediaapi/types"

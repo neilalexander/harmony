@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/federationapi/routing"
 	"github.com/neilalexander/harmony/internal/caching"
@@ -22,6 +21,7 @@ import (
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 func Test_validatePassword(t *testing.T) {

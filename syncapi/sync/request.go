@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/syncapi/storage"

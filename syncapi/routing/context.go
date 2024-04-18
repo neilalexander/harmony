@@ -23,11 +23,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserver "github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/syncapi/internal"

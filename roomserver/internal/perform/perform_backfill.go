@@ -18,9 +18,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/sirupsen/logrus"
 
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"

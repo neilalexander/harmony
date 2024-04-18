@@ -20,9 +20,9 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	userapi "github.com/neilalexander/harmony/userapi/api"

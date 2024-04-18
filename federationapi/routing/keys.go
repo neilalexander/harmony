@@ -19,12 +19,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	clienthttputil "github.com/neilalexander/harmony/clientapi/httputil"
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/sirupsen/logrus"

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/pushrules"
+	"github.com/neilalexander/harmony/internal/util"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 

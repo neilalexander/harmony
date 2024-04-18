@@ -23,12 +23,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/transactions"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"

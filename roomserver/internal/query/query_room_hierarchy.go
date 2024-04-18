@@ -21,11 +21,11 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/neilalexander/harmony/internal/util"
 	fs "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserver "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	userapi "github.com/neilalexander/harmony/userapi/api"

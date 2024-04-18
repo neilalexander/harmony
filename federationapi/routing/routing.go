@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/internal/util"
 	fedInternal "github.com/neilalexander/harmony/federationapi/internal"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/internal"
@@ -30,6 +29,7 @@ import (
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/config"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/tidwall/sjson"
 	"golang.org/x/crypto/ed25519"
 )

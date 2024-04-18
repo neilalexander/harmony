@@ -18,8 +18,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )

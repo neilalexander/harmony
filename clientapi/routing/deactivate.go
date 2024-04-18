@@ -4,10 +4,10 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/userapi/api"
 )
 

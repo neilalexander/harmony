@@ -20,11 +20,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/clientapi/producers"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/jetstream"
 	"github.com/neilalexander/harmony/syncapi/types"

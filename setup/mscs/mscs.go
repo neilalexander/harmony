@@ -18,10 +18,10 @@ package mscs
 import (
 	"context"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/setup/mscs/msc2836"

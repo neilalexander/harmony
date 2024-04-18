@@ -20,10 +20,10 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/singleflight"

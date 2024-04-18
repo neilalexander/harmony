@@ -19,11 +19,11 @@ import (
 	"net/http"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/neilalexander/harmony/internal/util"
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"

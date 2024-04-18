@@ -17,8 +17,8 @@ package routing
 import (
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/userapi/api"
 )

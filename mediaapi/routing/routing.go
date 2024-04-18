@@ -20,10 +20,10 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/httputil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/mediaapi/storage"
 	"github.com/neilalexander/harmony/mediaapi/types"
 	"github.com/neilalexander/harmony/setup/config"

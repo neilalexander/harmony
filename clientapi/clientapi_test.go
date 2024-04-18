@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/federationapi/statistics"
 	"github.com/neilalexander/harmony/internal/caching"
@@ -23,6 +22,7 @@ import (
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/pushrules"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/version"

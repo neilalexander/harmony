@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal"
+	"github.com/neilalexander/harmony/internal/util"
 	cache "github.com/patrickmn/go-cache"
 )
 

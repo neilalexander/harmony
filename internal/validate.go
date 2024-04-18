@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 const (

@@ -25,10 +25,10 @@ import (
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 
 	"github.com/matrix-org/gomatrix"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"

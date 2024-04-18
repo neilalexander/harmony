@@ -4,11 +4,11 @@ import (
 	"context"
 	"crypto/ed25519"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/sirupsen/logrus"
 
 	fsAPI "github.com/neilalexander/harmony/federationapi/api"

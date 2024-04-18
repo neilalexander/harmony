@@ -18,8 +18,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 
 	"github.com/neilalexander/harmony/internal/caching"
 	"github.com/neilalexander/harmony/internal/fulltext"

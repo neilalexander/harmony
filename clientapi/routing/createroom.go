@@ -27,9 +27,9 @@ import (
 	roomserverVersion "github.com/neilalexander/harmony/roomserver/version"
 	"github.com/neilalexander/harmony/userapi/api"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 	log "github.com/sirupsen/logrus"
 )

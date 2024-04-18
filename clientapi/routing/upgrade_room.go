@@ -18,11 +18,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserverAPI "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/version"
 	"github.com/neilalexander/harmony/setup/config"

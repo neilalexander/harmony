@@ -18,8 +18,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/process"
 
 	"github.com/neilalexander/harmony/internal/fulltext"

@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/userapi/types"
 	"github.com/stretchr/testify/assert"

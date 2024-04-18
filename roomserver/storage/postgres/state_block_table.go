@@ -21,9 +21,9 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/storage/tables"
 	"github.com/neilalexander/harmony/roomserver/types"
 )

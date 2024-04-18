@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/auth"

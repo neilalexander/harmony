@@ -19,10 +19,10 @@ import (
 	"crypto/ed25519"
 	"fmt"
 
-	"github.com/neilalexander/harmony/internal/util"
 	federationAPI "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/internal/helpers"
 	"github.com/neilalexander/harmony/roomserver/internal/input"

@@ -18,10 +18,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/nats-io/nats.go"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/neilalexander/harmony/federationapi/queue"

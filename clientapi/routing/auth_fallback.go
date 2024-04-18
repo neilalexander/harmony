@@ -19,8 +19,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 )
 

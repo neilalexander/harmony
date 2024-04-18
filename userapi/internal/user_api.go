@@ -23,12 +23,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/auth/authtypes"
 	fedsenderapi "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/pushrules"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 

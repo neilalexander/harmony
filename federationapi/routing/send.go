@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/util"
 
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/internal"

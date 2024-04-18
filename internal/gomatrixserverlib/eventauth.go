@@ -22,8 +22,8 @@ import (
 
 	"golang.org/x/crypto/ed25519"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 )
 
 // StateNeeded lists the event types and state_keys needed to authenticate an event.

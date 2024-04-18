@@ -27,7 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	fs "github.com/neilalexander/harmony/federationapi/api"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
@@ -35,6 +34,7 @@ import (
 	"github.com/neilalexander/harmony/internal/hooks"
 	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
+	"github.com/neilalexander/harmony/internal/util"
 	roomserver "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"

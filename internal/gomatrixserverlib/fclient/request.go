@@ -11,9 +11,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"golang.org/x/crypto/ed25519"
 )
 

@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/federationapi/producers"
 	"github.com/neilalexander/harmony/federationapi/types"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
 	syncTypes "github.com/neilalexander/harmony/syncapi/types"

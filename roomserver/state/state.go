@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/neilalexander/harmony/roomserver/api"

@@ -19,8 +19,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/tidwall/gjson"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"

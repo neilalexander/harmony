@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/clientapi/httputil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )
 

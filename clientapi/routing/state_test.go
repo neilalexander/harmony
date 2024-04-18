@@ -7,17 +7,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	rsapi "github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/roomserver/types"
 	"github.com/neilalexander/harmony/setup/config"
 	uapi "github.com/neilalexander/harmony/userapi/api"
 	"gotest.tools/v3/assert"
 )
-
-var ()
 
 type stateTestRoomserverAPI struct {
 	rsapi.RoomserverInternalAPI

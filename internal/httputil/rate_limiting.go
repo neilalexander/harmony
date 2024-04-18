@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 	userapi "github.com/neilalexander/harmony/userapi/api"
 )

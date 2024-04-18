@@ -22,9 +22,9 @@ import (
 	"fmt"
 
 	//"github.com/neilalexander/harmony/roomserver/internal"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/setup/config"
 	"github.com/sirupsen/logrus"
 
