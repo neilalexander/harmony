@@ -3,6 +3,7 @@ package external
 import (
 	"context"
 
+	"github.com/nats-io/nats.go/micro"
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/jetstream"
 )
@@ -19,13 +20,24 @@ func NewRoomserverAPIServer(intapi api.RoomserverInternalAPI, nats *jetstream.NA
 	}
 	ctx := context.TODO()
 
-	if err := jetstream.ListenAPI(
-		s.nats, "Roomserver", "PerformBackfill",
-		func(req *api.PerformBackfillRequest, res *api.PerformBackfillResponse) error {
-			return s.RoomserverInternalAPI.PerformBackfill(ctx, req, res)
-		},
-	); err != nil {
+	config := micro.Config{
+		Name:    "HarmonyRoomserver",
+		Version: "0.0.1",
+	}
+	svc, err := micro.AddService(nats.Conn, config)
+	if err != nil {
 		return nil, err
+	}
+	for name, handler := range map[string]micro.HandlerFunc{
+		"PerformBackfill": jetstream.MicroAPI(
+			func(req *api.PerformBackfillRequest, res *api.PerformBackfillResponse) error {
+				return s.RoomserverInternalAPI.PerformBackfill(ctx, req, res)
+			},
+		),
+	} {
+		if err := svc.AddEndpoint(name, handler); err != nil {
+			return nil, err
+		}
 	}
 
 	return s, nil

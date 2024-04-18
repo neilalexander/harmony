@@ -1,8 +1,6 @@
 package external
 
 import (
-	"context"
-
 	"github.com/neilalexander/harmony/roomserver/api"
 	"github.com/neilalexander/harmony/setup/jetstream"
 )
@@ -20,6 +18,7 @@ func NewRoomserverAPIClient(intapi api.RoomserverInternalAPI, nats *jetstream.NA
 	return c
 }
 
+/*
 func (c *RoomserverAPIClient) PerformBackfill(
 	ctx context.Context,
 	req *api.PerformBackfillRequest,
@@ -27,3 +26,4 @@ func (c *RoomserverAPIClient) PerformBackfill(
 ) error {
 	return jetstream.CallAPI(c.nats, "Roomserver", "PerformBackfill", req, res)
 }
+*/

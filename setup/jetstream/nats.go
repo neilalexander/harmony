@@ -16,6 +16,7 @@ import (
 
 	natsserver "github.com/nats-io/nats-server/v2/server"
 	natsclient "github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/micro"
 )
 
 type NATSInstance struct {
@@ -273,4 +274,20 @@ func ListenAPI[req, res any](s *NATSInstance, component, endpoint string, fn fun
 		}
 	})
 	return err
+}
+
+func MicroAPI[req, res any](fn func(*req, *res) error) micro.HandlerFunc {
+	return micro.HandlerFunc(func(r micro.Request) {
+		var req req
+		var res res
+		if err := json.Unmarshal(r.Data(), req); err != nil {
+			_ = r.Error("json_unmarshal_error", err.Error(), nil)
+			return
+		}
+		if err := fn(&req, &res); err != nil {
+			_ = r.Error("handler_error", err.Error(), nil)
+			return
+		}
+		_ = r.RespondJSON(res)
+	})
 }
