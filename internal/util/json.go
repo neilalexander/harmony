@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net/http"
 	"runtime/debug"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -205,8 +204,4 @@ func RandomString(n int) string {
 		b[i] = alphanumerics[rand.Int63()%int64(len(alphanumerics))]
 	}
 	return string(b)
-}
-
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
 }
