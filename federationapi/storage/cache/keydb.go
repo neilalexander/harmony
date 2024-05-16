@@ -46,7 +46,7 @@ func (d *KeyDatabase) FetchKeys(
 			delete(requests, req)
 		}
 	}
-	if len(results) == len(requests) {
+	if len(requests) == 0 {
 		return results, nil
 	}
 	fromDB, err := d.inner.FetchKeys(ctx, requests)
