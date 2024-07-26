@@ -4,7 +4,7 @@ require (
 	github.com/Arceliar/phony v0.0.0-20220903101357-530938a4b13d
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/MFAshby/stdemuxerhook v1.0.0
-	github.com/blevesearch/bleve/v2 v2.4.0
+	github.com/blevesearch/bleve/v2 v2.4.1
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
@@ -13,23 +13,23 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/matrix-org/dugong v0.0.0-20210921133753-66e6b1c67e2e
 	github.com/matrix-org/gomatrix v0.0.0-20220926102614-ceba4d9f7530
-	github.com/miekg/dns v1.1.58
-	github.com/nats-io/nats-server/v2 v2.10.17
+	github.com/miekg/dns v1.1.61
+	github.com/nats-io/nats-server/v2 v2.10.18
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.16.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.17.1
 	github.com/tidwall/sjson v1.2.5
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.24.0
-	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8
-	golang.org/x/image v0.15.0
+	golang.org/x/crypto v0.25.0
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
+	golang.org/x/image v0.18.0
 	golang.org/x/sync v0.7.0
-	golang.org/x/term v0.21.0
+	golang.org/x/term v0.22.0
 	gopkg.in/h2non/bimg.v1 v1.1.9
 	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/macaroon.v2 v2.1.0
@@ -39,16 +39,16 @@ require (
 )
 
 require (
-	github.com/RoaringBitmap/roaring v1.2.3 // indirect
+	github.com/RoaringBitmap/roaring v1.9.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.13.0 // indirect
-	github.com/blevesearch/bleve_index_api v1.1.6 // indirect
+	github.com/blevesearch/bleve_index_api v1.1.9 // indirect
 	github.com/blevesearch/geo v0.1.20 // indirect
-	github.com/blevesearch/go-faiss v1.0.13 // indirect
+	github.com/blevesearch/go-faiss v1.0.19 // indirect
 	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
 	github.com/blevesearch/gtreap v0.1.1 // indirect
 	github.com/blevesearch/mmap-go v1.0.4 // indirect
-	github.com/blevesearch/scorch_segment_api/v2 v2.2.9 // indirect
+	github.com/blevesearch/scorch_segment_api/v2 v2.2.14 // indirect
 	github.com/blevesearch/segment v0.9.1 // indirect
 	github.com/blevesearch/snowballstem v0.9.0 // indirect
 	github.com/blevesearch/upsidedown_store_api v1.0.2 // indirect
@@ -58,7 +58,7 @@ require (
 	github.com/blevesearch/zapx/v13 v13.3.10 // indirect
 	github.com/blevesearch/zapx/v14 v14.3.10 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.13 // indirect
-	github.com/blevesearch/zapx/v16 v16.0.12 // indirect
+	github.com/blevesearch/zapx/v16 v16.1.4 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -72,31 +72,29 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/minio/highwayhash v1.0.2 // indirect
+	github.com/minio/highwayhash v1.0.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
-	github.com/nats-io/jwt/v2 v2.5.7 // indirect
+	github.com/nats-io/jwt/v2 v2.5.8 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/prometheus/client_model v0.3.0 // indirect
-	github.com/prometheus/common v0.42.0 // indirect
-	github.com/prometheus/procfs v0.10.1 // indirect
-	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/prometheus/client_model v0.5.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.mau.fi/util v0.3.0 // indirect
-	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/mod v0.19.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
+	golang.org/x/tools v0.23.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	maunium.net/go/maulogger/v2 v2.4.1 // indirect
 )
