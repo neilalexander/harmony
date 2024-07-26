@@ -73,11 +73,22 @@ retry:
 					continue
 				}
 			} else if errors.Is(err, nats.ErrConsumerDeleted) {
-				// The consumer was deleted so stop.
-				return
+				// The consumer was deleted so recreate it.
+				logrus.WithContext(ctx).WithField("subject", subj).Warn("Consumer was deleted, recreating")
+				goto retry
+			} else if errors.Is(err, nats.ErrConsumerNotFound) {
+				// The consumer may not have been created at server startup,
+				// i.e. if it was an in-memory stream/consumer, so recreate it.
+				logrus.WithContext(ctx).WithField("subject", subj).Warn("Consumer was not found, recreating")
+				goto retry
 			} else if errors.Is(err, nats.ErrConsumerLeadershipChanged) {
 				// Leadership changed so pending pull requests became invalidated,
 				// just try again.
+				continue
+			} else if err.Error() == "nats: Server Shutdown" {
+				// The server is shutting down, but we'll rely on reconnect
+				// behaviour to try and either connect us to another node (if
+				// clustered) or to reconnect when the server comes back up.
 				continue
 			} else {
 				// Something else went wrong, so we'll panic.

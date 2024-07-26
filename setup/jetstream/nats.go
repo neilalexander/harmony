@@ -14,6 +14,7 @@ import (
 	"github.com/neilalexander/harmony/setup/process"
 
 	natsserver "github.com/nats-io/nats-server/v2/server"
+	"github.com/nats-io/nats.go"
 	natsclient "github.com/nats-io/nats.go"
 )
 
@@ -90,11 +91,26 @@ func (s *NATSInstance) Prepare(process *process.ProcessContext, cfg *config.JetS
 
 // nolint:gocyclo
 func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsclient.Conn) (natsclient.JetStreamContext, *natsclient.Conn) {
+	jsOpts := []natsclient.JSOpt{}
+	if cfg.JetStreamDomain != "" {
+		jsOpts = append(jsOpts, natsclient.Domain(cfg.JetStreamDomain))
+	}
+
 	if nc == nil {
 		var err error
 		opts := []natsclient.Option{
 			natsclient.Name("Harmony"),
 			natsclient.MaxReconnects(-1), // Try forever
+			natsclient.ReconnectJitter(time.Second, time.Second),
+			natsclient.ReconnectWait(time.Second * 10),
+			natsclient.ReconnectHandler(func(c *natsclient.Conn) {
+				js, err := c.JetStream(jsOpts...)
+				if err != nil {
+					logrus.WithError(err).Panic("Unable to get JetStream context in reconnect handler")
+					return
+				}
+				checkAndConfigureStreams(process, cfg, js)
+			}),
 		}
 		if cfg.DisableTLSValidation {
 			opts = append(opts, natsclient.Secure(&tls.Config{
@@ -108,19 +124,19 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 		}
 	}
 
-	jsOpts := []natsclient.JSOpt{}
-	if cfg.JetStreamDomain != "" {
-		jsOpts = append(jsOpts, natsclient.Domain(cfg.JetStreamDomain))
-	}
-	s, err := nc.JetStream(jsOpts...)
+	js, err := nc.JetStream(jsOpts...)
 	if err != nil {
 		logrus.WithError(err).Panic("Unable to get JetStream context")
 		return nil, nil
 	}
+	checkAndConfigureStreams(process, cfg, js)
+	return js, nc
+}
 
+func checkAndConfigureStreams(process *process.ProcessContext, cfg *config.JetStream, js nats.JetStreamContext) {
 	for _, stream := range streams { // streams are defined in streams.go
 		name := cfg.Prefixed(stream.Name)
-		info, err := s.StreamInfo(name)
+		info, err := js.StreamInfo(name)
 		if err != nil && err != natsclient.ErrStreamNotFound {
 			logrus.WithError(err).Fatal("Unable to get stream info")
 		}
@@ -152,11 +168,11 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 			case info.Config.MaxAge != stream.MaxAge:
 				// Try updating the stream first, as many things can be updated
 				// non-destructively.
-				if info, err = s.UpdateStream(stream); err != nil {
+				if info, err = js.UpdateStream(stream); err != nil {
 					logrus.WithError(err).Warnf("Unable to update stream %q, recreating...", name)
 					// We failed to update the stream, this is a last attempt to get
 					// things working but may result in data loss.
-					if err = s.DeleteStream(name); err != nil {
+					if err = js.DeleteStream(name); err != nil {
 						logrus.WithError(err).Fatalf("Unable to delete stream %q", name)
 					}
 					info = nil
@@ -175,7 +191,7 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 			namespaced := *stream
 			namespaced.Name = name
 			namespaced.Subjects = subjects
-			if _, err = s.AddStream(&namespaced); err != nil {
+			if _, err = js.AddStream(&namespaced); err != nil {
 				logger := logrus.WithError(err).WithFields(logrus.Fields{
 					"stream":   namespaced.Name,
 					"subjects": namespaced.Subjects,
@@ -194,7 +210,7 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 				logger.WithError(err).Error("Unable to add stream")
 
 				namespaced.Storage = natsclient.MemoryStorage
-				if _, err = s.AddStream(&namespaced); err != nil {
+				if _, err = js.AddStream(&namespaced); err != nil {
 					// We tried to add the stream in-memory instead but something
 					// went wrong. That's an unrecoverable situation so we will
 					// give up at this point.
@@ -226,15 +242,13 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 		streamName := cfg.Matrix.JetStream.Prefixed(stream)
 		for _, consumer := range consumers {
 			consumerName := cfg.Matrix.JetStream.Prefixed(consumer) + "Pull"
-			consumerInfo, err := s.ConsumerInfo(streamName, consumerName)
+			consumerInfo, err := js.ConsumerInfo(streamName, consumerName)
 			if err != nil || consumerInfo == nil {
 				continue
 			}
-			if err = s.DeleteConsumer(streamName, consumerName); err != nil {
+			if err = js.DeleteConsumer(streamName, consumerName); err != nil {
 				logrus.WithError(err).Errorf("Unable to clean up old consumer %q for stream %q", consumer, stream)
 			}
 		}
 	}
-
-	return s, nc
 }
