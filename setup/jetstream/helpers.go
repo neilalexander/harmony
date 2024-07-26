@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
@@ -21,92 +22,93 @@ func JetStreamConsumer(
 	f func(ctx context.Context, msgs []*nats.Msg) bool,
 	opts ...nats.SubOpt,
 ) error {
-	defer func() {
-		// If there are existing consumers from before they were pull
-		// consumers, we need to clean up the old push consumers. However,
-		// in order to not affect the interest-based policies, we need to
-		// do this *after* creating the new pull consumers, which have
-		// "Pull" suffixed to their name.
-		if _, err := js.ConsumerInfo(subj, durable); err == nil {
-			if err := js.DeleteConsumer(subj, durable); err != nil {
-				logrus.WithContext(ctx).Warnf("Failed to clean up old consumer %q", durable)
-			}
-		}
-	}()
+	go jetStreamConsumerWorker(ctx, js, subj, durable, batch, f, opts...)
+	return nil
+}
 
-	name := durable + "Pull"
-	sub, err := js.PullSubscribe(subj, name, opts...)
+func jetStreamConsumerWorker(
+	ctx context.Context, js nats.JetStreamContext, subj, durable string, batch int,
+	f func(ctx context.Context, msgs []*nats.Msg) bool,
+	opts ...nats.SubOpt,
+) {
+	// Hangover from the migration from push consumers to pull consumers.
+	durable = durable + "Pull"
+
+retry:
+	sub, err := js.PullSubscribe(subj, durable, opts...)
 	if err != nil {
-		return fmt.Errorf("nats.SubscribeSync: %w", err)
+		logrus.WithContext(ctx).WithError(err).Warnf("Failed to subscribe %q", durable)
+		time.Sleep(time.Second * 2)
+		goto retry
 	}
-	go func() {
-		for {
-			// If the parent context has given up then there's no point in
-			// carrying on doing anything, so stop the listener.
-			select {
-			case <-ctx.Done():
-				if err := sub.Unsubscribe(); err != nil {
-					logrus.WithContext(ctx).Warnf("Failed to unsubscribe %q", durable)
-				}
-				return
-			default:
+	for {
+		// If the parent context has given up then there's no point in
+		// carrying on doing anything, so stop the listener.
+		select {
+		case <-ctx.Done():
+			if err := sub.Unsubscribe(); err != nil {
+				logrus.WithContext(ctx).Warnf("Failed to unsubscribe %q", durable)
 			}
-			// The context behaviour here is surprising — we supply a context
-			// so that we can interrupt the fetch if we want, but NATS will still
-			// enforce its own deadline (roughly 5 seconds by default). Therefore
-			// it is our responsibility to check whether our context expired or
-			// not when a context error is returned. Footguns. Footguns everywhere.
-			msgs, err := sub.Fetch(batch, nats.Context(ctx))
-			if err != nil {
-				if err == context.Canceled || err == context.DeadlineExceeded {
-					// Work out whether it was the JetStream context that expired
-					// or whether it was our supplied context.
-					select {
-					case <-ctx.Done():
-						// The supplied context expired, so we want to stop the
-						// consumer altogether.
-						return
-					default:
-						// The JetStream context expired, so the fetch probably
-						// just timed out and we should try again.
-						continue
-					}
-				} else if errors.Is(err, nats.ErrConsumerDeleted) {
-					// The consumer was deleted so stop.
+			return
+		default:
+		}
+		// The context behaviour here is surprising — we supply a context
+		// so that we can interrupt the fetch if we want, but NATS will still
+		// enforce its own deadline (roughly 5 seconds by default). Therefore
+		// it is our responsibility to check whether our context expired or
+		// not when a context error is returned. Footguns. Footguns everywhere.
+		msgs, err := sub.Fetch(batch, nats.Context(ctx))
+		if err != nil {
+			if err == context.Canceled || err == context.DeadlineExceeded {
+				// Work out whether it was the JetStream context that expired
+				// or whether it was our supplied context.
+				select {
+				case <-ctx.Done():
+					// The supplied context expired, so we want to stop the
+					// consumer altogether.
 					return
-				} else {
-					// Unfortunately, there's no ErrServerShutdown or similar, so we need to compare the string
-					if err.Error() == "nats: Server Shutdown" {
-						logrus.WithContext(ctx).Warn("nats server shutting down")
-						return
-					}
-					// Something else went wrong, so we'll panic.
-					logrus.WithContext(ctx).WithField("subject", subj).Fatal(err)
-				}
-			}
-			if len(msgs) < 1 {
-				continue
-			}
-			for _, msg := range msgs {
-				if err = msg.InProgress(nats.Context(ctx)); err != nil {
-					logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.InProgress: %w", err))
+				default:
+					// The JetStream context expired, so the fetch probably
+					// just timed out and we should try again.
 					continue
 				}
-			}
-			if f(ctx, msgs) {
-				for _, msg := range msgs {
-					if err = msg.AckSync(nats.Context(ctx)); err != nil {
-						logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.AckSync: %w", err))
-					}
-				}
+			} else if errors.Is(err, nats.ErrConsumerDeleted) {
+				// The consumer was deleted so stop.
+				return
+			} else if errors.Is(err, nats.ErrConsumerLeadershipChanged) {
+				// Leadership changed so pending pull requests became invalidated,
+				// just try again.
+				continue
 			} else {
-				for _, msg := range msgs {
-					if err = msg.Nak(nats.Context(ctx)); err != nil {
-						logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.Nak: %w", err))
-					}
+				// Something else went wrong, so we'll panic.
+				logrus.WithContext(ctx).WithField("subject", subj).WithError(err).Warn("Error on pull subscriber fetch")
+				if err := sub.Unsubscribe(); err != nil {
+					logrus.WithContext(ctx).WithField("subject", subj).WithError(err).Warn("Error on unsubscribe")
+				}
+				goto retry
+			}
+		}
+		if len(msgs) < 1 {
+			continue
+		}
+		for _, msg := range msgs {
+			if err = msg.InProgress(nats.Context(ctx)); err != nil {
+				logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.InProgress: %w", err))
+				continue
+			}
+		}
+		if f(ctx, msgs) {
+			for _, msg := range msgs {
+				if err = msg.AckSync(nats.Context(ctx)); err != nil {
+					logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.AckSync: %w", err))
+				}
+			}
+		} else {
+			for _, msg := range msgs {
+				if err = msg.Nak(nats.Context(ctx)); err != nil {
+					logrus.WithContext(ctx).WithField("subject", subj).Warn(fmt.Errorf("msg.Nak: %w", err))
 				}
 			}
 		}
-	}()
-	return nil
+	}
 }

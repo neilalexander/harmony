@@ -94,6 +94,7 @@ func setupNATS(process *process.ProcessContext, cfg *config.JetStream, nc *natsc
 		var err error
 		opts := []natsclient.Option{
 			natsclient.Name("Harmony"),
+			natsclient.MaxReconnects(-1), // Try forever
 		}
 		if cfg.DisableTLSValidation {
 			opts = append(opts, natsclient.Secure(&tls.Config{
