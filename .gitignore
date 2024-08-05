@@ -62,7 +62,7 @@ dendrite.yaml
 *.log*
 
 # Generated code
-cmd/dendrite-demo-yggdrasil/embed/fs*.go
+cmd/*/embed/fs*.go
 
 # Test dependencies
 test/wasm/node_modules
