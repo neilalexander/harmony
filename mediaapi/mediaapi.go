@@ -15,8 +15,9 @@
 package mediaapi
 
 import (
-	"github.com/gorilla/mux"
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
+	"github.com/neilalexander/harmony/internal/httputil"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/mediaapi/routing"
 	"github.com/neilalexander/harmony/mediaapi/storage"
@@ -27,11 +28,13 @@ import (
 
 // AddPublicRoutes sets up and registers HTTP handlers for the MediaAPI component.
 func AddPublicRoutes(
-	mediaRouter *mux.Router,
+	routers httputil.Routers,
 	cm *sqlutil.Connections,
 	cfg *config.Dendrite,
 	userAPI userapi.MediaUserAPI,
 	client *fclient.Client,
+	fedClient fclient.FederationClient,
+	keyRing gomatrixserverlib.JSONVerifier,
 ) {
 	mediaDB, err := storage.NewMediaAPIDatasource(cm, &cfg.MediaAPI.Database)
 	if err != nil {
@@ -39,6 +42,6 @@ func AddPublicRoutes(
 	}
 
 	routing.Setup(
-		mediaRouter, cfg, mediaDB, userAPI, client,
+		routers, cfg, mediaDB, userAPI, client, fedClient, keyRing,
 	)
 }

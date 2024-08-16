@@ -16,6 +16,7 @@ package routing
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -599,6 +600,36 @@ func MakeFedAPI(
 		return f(req, fedReq, vars)
 	}
 	return httputil.MakeExternalAPI(metricsName, h)
+}
+
+// MakeFedHTTPAPI makes an http.Handler that checks matrix federation authentication.
+func MakeFedHTTPAPI(
+	serverName spec.ServerName,
+	isLocalServerName func(spec.ServerName) bool,
+	keyRing gomatrixserverlib.JSONVerifier,
+	f func(http.ResponseWriter, *http.Request),
+) http.Handler {
+	h := func(w http.ResponseWriter, req *http.Request) {
+		fedReq, errResp := fclient.VerifyHTTPRequest(
+			req, time.Now(), serverName, isLocalServerName, keyRing,
+		)
+
+		enc := json.NewEncoder(w)
+		logger := util.GetLogger(req.Context())
+		if fedReq == nil {
+
+			logger.Debugf("VerifyUserFromRequest %s -> HTTP %d", req.RemoteAddr, errResp.Code)
+			w.WriteHeader(errResp.Code)
+			if err := enc.Encode(errResp); err != nil {
+				logger.WithError(err).Error("failed to encode JSON response")
+			}
+			return
+		}
+
+		f(w, req)
+	}
+
+	return http.HandlerFunc(h)
 }
 
 type FederationWakeups struct {

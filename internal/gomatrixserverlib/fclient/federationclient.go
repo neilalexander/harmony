@@ -64,8 +64,7 @@ type FederationClient interface {
 		ctx context.Context, origin, s spec.ServerName, userID string, field string,
 	) (res RespProfile, err error)
 
-	P2PSendTransactionToRelay(ctx context.Context, u spec.UserID, t gomatrixserverlib.Transaction, forwardingServer spec.ServerName) (res EmptyResp, err error)
-	P2PGetTransactionFromRelay(ctx context.Context, u spec.UserID, prev RelayEntry, relayServer spec.ServerName) (res RespGetRelayTransaction, err error)
+	DownloadMedia(ctx context.Context, origin, destination spec.ServerName, mediaID string) (res *http.Response, err error)
 }
 
 // A FederationClient is a matrix federation client that adds
@@ -136,34 +135,6 @@ func (ac *federationClient) SendTransaction(
 	path := federationPathPrefixV1 + "/send/" + string(t.TransactionID)
 	req := NewFederationRequest("PUT", t.Origin, t.Destination, path)
 	if err = req.SetContent(t); err != nil {
-		return
-	}
-	err = ac.doRequest(ctx, req, &res)
-	return
-}
-
-// P2PSendTransactionToRelay sends a transaction for forwarding to the destination.
-func (ac *federationClient) P2PSendTransactionToRelay(
-	ctx context.Context, u spec.UserID, t gomatrixserverlib.Transaction, forwardingServer spec.ServerName,
-) (res EmptyResp, err error) {
-	path := federationPathPrefixV1 + "/send_relay/" +
-		string(t.TransactionID) + "/" +
-		url.PathEscape(u.String())
-	req := NewFederationRequest("PUT", t.Origin, forwardingServer, path)
-	if err = req.SetContent(t); err != nil {
-		return
-	}
-	err = ac.doRequest(ctx, req, &res)
-	return
-}
-
-// P2PGetTransactionFromRelay requests a transaction from a relay destined for this server.
-func (ac *federationClient) P2PGetTransactionFromRelay(
-	ctx context.Context, u spec.UserID, prev RelayEntry, relayServer spec.ServerName,
-) (res RespGetRelayTransaction, err error) {
-	path := federationPathPrefixV1 + "/relay_txn/" + url.PathEscape(u.String())
-	req := NewFederationRequest("GET", u.Domain(), relayServer, path)
-	if err = req.SetContent(prev); err != nil {
 		return
 	}
 	err = ac.doRequest(ctx, req, &res)
@@ -735,4 +706,34 @@ func (ac *federationClient) RoomHierarchy(
 		}
 	}
 	return
+}
+
+// DownloadMedia performs an authenticated federation request for a given mediaID.
+// The caller is responsible to close the returned response body.
+func (ac *federationClient) DownloadMedia(
+	ctx context.Context, origin, destination spec.ServerName, mediaID string,
+) (*http.Response, error) {
+	var identity *SigningIdentity
+	for _, id := range ac.identities {
+		if id.ServerName == origin {
+			identity = id
+			break
+		}
+	}
+	if identity == nil {
+		return nil, fmt.Errorf("no signing identity for server name %q", origin)
+	}
+
+	path := federationPathPrefixV1 + "/media/download/" + url.PathEscape(mediaID)
+	req := NewFederationRequest("GET", origin, destination, path)
+
+	if err := req.Sign(identity.ServerName, identity.KeyID, identity.PrivateKey); err != nil {
+		return nil, err
+	}
+
+	httpReq, err := req.HTTPRequest()
+	if err != nil {
+		return nil, err
+	}
+	return ac.DoHTTPRequest(ctx, httpReq)
 }
