@@ -15,7 +15,7 @@ require (
 	github.com/matrix-org/dugong v0.0.0-20210921133753-66e6b1c67e2e
 	github.com/matrix-org/gomatrix v0.0.0-20220926102614-ceba4d9f7530
 	github.com/miekg/dns v1.1.61
-	github.com/nats-io/nats-server/v2 v2.10.18
+	github.com/nats-io/nats-server/v2 v2.10.20
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -28,11 +28,11 @@ require (
 	github.com/yggdrasil-network/yggdrasil-go v0.5.7
 	github.com/yggdrasil-network/yggquic v0.0.0-20240805183540-f75726fc3d97
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.25.0
+	golang.org/x/crypto v0.26.0
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/image v0.18.0
-	golang.org/x/sync v0.7.0
-	golang.org/x/term v0.22.0
+	golang.org/x/sync v0.8.0
+	golang.org/x/term v0.23.0
 	gopkg.in/h2non/bimg.v1 v1.1.9
 	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/macaroon.v2 v2.1.0
@@ -102,9 +102,9 @@ require (
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -112,4 +112,4 @@ require (
 	nhooyr.io/websocket v1.8.11 // indirect
 )
 
-go 1.21
+go 1.21.0
