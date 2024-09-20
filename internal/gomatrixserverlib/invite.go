@@ -104,8 +104,8 @@ func GenerateStrippedState(
 	stateWanted := []StateKeyTuple{}
 	for _, t := range []string{
 		spec.MRoomName, spec.MRoomCanonicalAlias,
-		spec.MRoomJoinRules, spec.MRoomAvatar,
-		spec.MRoomEncryption, spec.MRoomCreate,
+		spec.MRoomJoinRules, spec.MRoomEncryption,
+		spec.MRoomCreate,
 	} {
 		stateWanted = append(stateWanted, StateKeyTuple{
 			EventType: t,

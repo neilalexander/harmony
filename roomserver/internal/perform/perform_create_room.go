@@ -470,8 +470,6 @@ func (c *Creator) PerformCreateRoom(ctx context.Context, userID spec.UserID, roo
 				fallthrough
 			case spec.MRoomName:
 				fallthrough
-			case spec.MRoomAvatar:
-				fallthrough
 			case spec.MRoomTopic:
 				fallthrough
 			case spec.MRoomCanonicalAlias:
