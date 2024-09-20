@@ -263,7 +263,7 @@ func OnIncomingMessagesRequest(
 		deviceUserID:     *deviceUserID,
 	}
 
-	clientEvents, start, end, err := mReq.retrieveEvents(req.Context(), rsAPI)
+	clientEvents, start, end, err := mReq.retrieveEvents()
 	if err != nil {
 		util.GetLogger(req.Context()).WithError(err).Error("mreq.retrieveEvents failed")
 		return util.JSONResponse{
@@ -338,7 +338,7 @@ func getMembershipForUser(ctx context.Context, roomID, userID string, rsAPI api.
 // homeserver in the room for older events.
 // Returns an error if there was an issue talking to the database or with the
 // remote homeserver.
-func (r *messagesReq) retrieveEvents(ctx context.Context, rsAPI api.SyncRoomserverAPI) (
+func (r *messagesReq) retrieveEvents() (
 	clientEvents []synctypes.ClientEvent, start,
 	end types.TopologyToken, err error,
 ) {

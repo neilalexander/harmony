@@ -207,11 +207,6 @@ func handleInvite(ctx context.Context, input gomatrixserverlib.HandleInviteInput
 	return handleInviteResult(ctx, inviteEvent, err, rsAPI)
 }
 
-func handleInviteV3(ctx context.Context, input gomatrixserverlib.HandleInviteV3Input, rsAPI api.FederationRoomserverAPI) (gomatrixserverlib.PDU, *util.JSONResponse) {
-	inviteEvent, err := gomatrixserverlib.HandleInviteV3(ctx, input)
-	return handleInviteResult(ctx, inviteEvent, err, rsAPI)
-}
-
 func handleInviteResult(ctx context.Context, inviteEvent gomatrixserverlib.PDU, err error, rsAPI api.FederationRoomserverAPI) (gomatrixserverlib.PDU, *util.JSONResponse) {
 	switch e := err.(type) {
 	case nil:

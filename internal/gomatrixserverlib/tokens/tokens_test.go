@@ -61,17 +61,17 @@ func serializationTestError(err error) string {
 func TestSerialization(t *testing.T) {
 	fakeToken, err := GenerateLoginToken(validTokenOp)
 	if err != nil {
-		t.Errorf(serializationTestError(err))
+		t.Error(serializationTestError(err))
 	}
 
 	fakeMacaroon, err := deSerializeMacaroon(fakeToken)
 	if err != nil {
-		t.Errorf(serializationTestError(err))
+		t.Error(serializationTestError(err))
 	}
 
 	sameFakeToken, err := serializeMacaroon(fakeMacaroon)
 	if err != nil {
-		t.Errorf(serializationTestError(err))
+		t.Error(serializationTestError(err))
 	}
 
 	if sameFakeToken != fakeToken {

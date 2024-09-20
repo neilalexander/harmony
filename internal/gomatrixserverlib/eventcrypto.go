@@ -131,54 +131,6 @@ func VerifyEventSignatures(ctx context.Context, e PDU, verifier JSONVerifier, us
 	return nil
 }
 
-func getMXIDMapping(e PDU) (*MXIDMapping, error) {
-	var content MemberContent
-	err := json.Unmarshal(e.Content(), &content)
-	if err != nil {
-		return nil, err
-	}
-
-	// if there is no mapping, we can't check the signature
-	if content.MXIDMapping == nil {
-		return nil, fmt.Errorf("missing mxid_mapping")
-	}
-
-	return content.MXIDMapping, nil
-}
-
-// validateMXIDMappingSignatures validates that the MXIDMapping is correctly signed
-func validateMXIDMappingSignatures(ctx context.Context, e PDU, mapping MXIDMapping, verifier JSONVerifier, verImpl IRoomVersion) error {
-	mappingBytes, err := json.Marshal(mapping)
-	if err != nil {
-		return err
-	}
-
-	var toVerify []VerifyJSONRequest
-	for s := range mapping.Signatures {
-		v := VerifyJSONRequest{
-			Message:              mappingBytes,
-			AtTS:                 e.OriginServerTS(),
-			ServerName:           s,
-			ValidityCheckingFunc: verImpl.SignatureValidityCheck,
-		}
-		toVerify = append(toVerify, v)
-	}
-
-	// check that the mapping is correctly signed by the server
-	results, err := verifier.VerifyJSONs(ctx, toVerify)
-	if err != nil {
-		return fmt.Errorf("failed to verify MXIDMapping: %w", err)
-	}
-
-	for _, result := range results {
-		if result.Error != nil {
-			return fmt.Errorf("failed to verify MXIDMapping: %w", result.Error)
-		}
-	}
-
-	return err
-}
-
 func extractAuthorisedViaServerName(content []byte) (spec.ServerName, error) {
 	if v := gjson.GetBytes(content, "join_authorised_via_users_server"); v.Exists() {
 		_, serverName, err := SplitID('@', v.String())

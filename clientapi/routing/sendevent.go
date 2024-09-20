@@ -226,35 +226,6 @@ func SendEvent(
 	return res
 }
 
-func updatePowerLevels(req *http.Request, r map[string]interface{}, roomID string, rsAPI api.ClientRoomserverAPI) error {
-	users, ok := r["users"]
-	if !ok {
-		return nil
-	}
-	userMap := users.(map[string]interface{})
-	validRoomID, err := spec.NewRoomID(roomID)
-	if err != nil {
-		return err
-	}
-	for user, level := range userMap {
-		uID, err := spec.NewUserID(user, true)
-		if err != nil {
-			continue // we're modifying the map in place, so we're going to have invalid userIDs after the first iteration
-		}
-		senderID, err := rsAPI.QuerySenderIDForUser(req.Context(), *validRoomID, *uID)
-		if err != nil {
-			return err
-		} else if senderID == nil {
-			util.GetLogger(req.Context()).Warnf("sender ID not found for %s in %s", uID, *validRoomID)
-			continue
-		}
-		userMap[string(*senderID)] = level
-		delete(userMap, user)
-	}
-	r["users"] = userMap
-	return nil
-}
-
 // stateEqual compares the new and the existing state event content. If they are equal, returns a *util.JSONResponse
 // with the existing event_id, making this an idempotent request.
 func stateEqual(ctx context.Context, rsAPI api.ClientRoomserverAPI, eventType, stateKey, roomID string, newContent map[string]interface{}) *util.JSONResponse {

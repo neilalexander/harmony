@@ -25,17 +25,6 @@ import (
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
 
-func queryUserIDForSender(senderID spec.SenderID) (*spec.UserID, error) {
-	if senderID == "" {
-		return nil, nil
-	}
-
-	return spec.NewUserID(string(senderID), true)
-}
-
-const testSenderID = "testSenderID"
-const testUserID = "@test:localhost"
-
 type EventFieldsToVerify struct {
 	EventID        string
 	Type           string

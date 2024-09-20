@@ -9,27 +9,17 @@ import (
 	"time"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
-	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/internal/util"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
-	"golang.org/x/crypto/bcrypt"
-
-	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/test"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage"
 	userUtil "github.com/neilalexander/harmony/userapi/util"
+	"golang.org/x/crypto/bcrypt"
 )
-
-func queryUserIDForSender(senderID spec.SenderID) (*spec.UserID, error) {
-	if senderID == "" {
-		return nil, nil
-	}
-
-	return spec.NewUserID(string(senderID), true)
-}
 
 func TestNotifyUserCountsAsync(t *testing.T) {
 	alice := test.NewUser(t)

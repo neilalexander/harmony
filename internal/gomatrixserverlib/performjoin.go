@@ -246,34 +246,6 @@ func PerformJoin(
 	}, nil
 }
 
-func storeMXIDMappings(
-	ctx context.Context,
-	events []PDU,
-	roomID spec.RoomID,
-	keyRing JSONVerifier,
-	storeSenderID spec.StoreSenderIDFromPublicID,
-) error {
-	for _, ev := range events {
-		if ev.Type() != spec.MRoomMember {
-			continue
-		}
-		mapping, err := getMXIDMapping(ev)
-		if err != nil {
-			return err
-		}
-		// we already validated it is a valid roomversion, so this should be safe to use.
-		verImpl := MustGetRoomVersion(ev.Version())
-		if err := validateMXIDMappingSignatures(ctx, ev, *mapping, keyRing, verImpl); err != nil {
-			logrus.WithError(err).Error("invalid signature for mxid_mapping")
-			continue
-		}
-		if err := storeSenderID(ctx, ev.SenderID(), mapping.UserID, roomID); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func setDefaultRoomVersionFromJoinEvent(
 	joinEvent ProtoEvent,
 ) RoomVersion {

@@ -125,7 +125,6 @@ func (ac *federationClient) doRequest(ctx context.Context, r FederationRequest, 
 
 var federationPathPrefixV1 = "/_matrix/federation/v1"
 var federationPathPrefixV2 = "/_matrix/federation/v2"
-var federationPathPrefixV3 = "/_matrix/federation/v3"
 
 // SendTransaction sends a transaction
 func (ac *federationClient) SendTransaction(
