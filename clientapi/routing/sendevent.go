@@ -122,17 +122,6 @@ func SendEvent(
 		delete(r, "join_authorised_via_users_server")
 	}
 
-	// for power level events we need to replace the userID with the pseudoID
-	if roomVersion == gomatrixserverlib.RoomVersionPseudoIDs && eventType == spec.MRoomPowerLevels {
-		err = updatePowerLevels(req, r, roomID, rsAPI)
-		if err != nil {
-			return util.JSONResponse{
-				Code: http.StatusInternalServerError,
-				JSON: spec.InternalServerError{Err: err.Error()},
-			}
-		}
-	}
-
 	evTime, err := httputil.ParseTSParam(req)
 	if err != nil {
 		return util.JSONResponse{
