@@ -146,9 +146,6 @@ func TestCheckFields(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for roomVersion := range roomVersionMeta {
-				if roomVersion == RoomVersionPseudoIDs {
-					continue
-				}
 				t.Run(tt.name+"-"+string(roomVersion), func(t *testing.T) {
 					ev, err := MustGetRoomVersion(roomVersion).NewEventBuilderFromProtoEvent(&tt.input).Build(time.Now(), "localhost", "ed25519:1", sk)
 					tt.wantErr(t, err)

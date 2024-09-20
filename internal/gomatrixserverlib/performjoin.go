@@ -120,38 +120,7 @@ func PerformJoin(
 	signingKey := input.PrivateKey
 	keyID := input.KeyID
 	origOrigin := origin
-	switch respMakeJoin.GetRoomVersion() {
-	case RoomVersionPseudoIDs:
-		// we successfully did a make_join, create a senderID for this user now
-		senderID, signingKey, err = input.GetOrCreateSenderID(ctx, *input.UserID, *input.RoomID, string(respMakeJoin.GetRoomVersion()))
-		if err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("Cannot create user room key"),
-			}
-		}
-		keyID = "ed25519:1"
-		origin = spec.ServerName(senderID)
-
-		mapping := MXIDMapping{
-			UserRoomKey: senderID,
-			UserID:      input.UserID.String(),
-		}
-		if err = mapping.Sign(origOrigin, input.KeyID, input.PrivateKey); err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("cannot sign mxid_mapping: %w", err),
-			}
-		}
-
-		input.Content["mxid_mapping"] = mapping
-	default:
-		senderID = spec.SenderID(input.UserID.String())
-	}
+	senderID = spec.SenderID(input.UserID.String())
 
 	stateKey := string(senderID)
 	joinEvent.SenderID = string(senderID)
@@ -234,22 +203,6 @@ func PerformJoin(
 			Transient:  false,
 			Reachable:  true,
 			Err:        fmt.Errorf("sanityCheckAuthChain: %w", err),
-		}
-	}
-
-	// get the membership events of all users, so we can store the mxid_mappings
-	// TODO: better way?
-	if roomVersion == RoomVersionPseudoIDs {
-		stateEvents := respSendJoin.GetStateEvents().UntrustedEvents(roomVersion)
-		events := append(authEvents, stateEvents...)
-		err = storeMXIDMappings(ctx, events, *input.RoomID, input.KeyRing, input.StoreSenderIDFromPublicID)
-		if err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("unable to store mxid_mapping: %w", err),
-			}
 		}
 	}
 

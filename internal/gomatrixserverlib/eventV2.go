@@ -197,7 +197,6 @@ var lenientByteLimitRoomVersions = map[RoomVersion]struct{}{
 	RoomVersionV9:        {},
 	RoomVersionV10:       {},
 	RoomVersionV11:       {},
-	RoomVersionPseudoIDs: {},
 	"org.matrix.msc3787": {},
 	"org.matrix.msc3667": {},
 }
@@ -251,15 +250,7 @@ func CheckFields(input PDU) error { // nolint: gocyclo
 		}
 	}
 
-	switch input.Version() {
-	case RoomVersionPseudoIDs:
-	default:
-		if err := checkID(string(input.SenderID()), "user", '@'); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return checkID(string(input.SenderID()), "user", '@')
 }
 
 func newEventFromTrustedJSONV2(eventJSON []byte, redacted bool, roomVersion IRoomVersion) (PDU, error) {

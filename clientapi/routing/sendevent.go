@@ -340,7 +340,7 @@ func generateSendEvent(
 		}
 	}
 
-	identity, err := rsAPI.SigningIdentityFor(ctx, *validRoomID, *fullUserID)
+	identity, err := rsAPI.SigningIdentityFor(ctx, *fullUserID)
 	if err != nil {
 		return nil, &util.JSONResponse{
 			Code: http.StatusInternalServerError,

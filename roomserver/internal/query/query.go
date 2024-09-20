@@ -1048,26 +1048,8 @@ func (r *Queryer) QueryRestrictedJoinAllowed(ctx context.Context, roomID spec.Ro
 }
 
 func (r *Queryer) QuerySenderIDForUser(ctx context.Context, roomID spec.RoomID, userID spec.UserID) (*spec.SenderID, error) {
-	version, err := r.DB.GetRoomVersion(ctx, roomID.String())
-	if err != nil {
-		return nil, err
-	}
-
-	switch version {
-	case gomatrixserverlib.RoomVersionPseudoIDs:
-		key, err := r.DB.SelectUserRoomPublicKey(ctx, userID, roomID)
-		if err != nil {
-			return nil, err
-		} else if key == nil {
-			return nil, nil
-		} else {
-			senderID := spec.SenderID(spec.Base64Bytes(key).Encode())
-			return &senderID, nil
-		}
-	default:
-		senderID := spec.SenderID(userID.String())
-		return &senderID, nil
-	}
+	senderID := spec.SenderID(userID.String())
+	return &senderID, nil
 }
 
 func (r *Queryer) QueryUserIDForSender(ctx context.Context, roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {

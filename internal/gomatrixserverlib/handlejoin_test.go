@@ -670,21 +670,6 @@ func TestHandleSendJoin(t *testing.T) {
 	joinEvent, err := eb.Build(time.Now(), userID.Domain(), keyID, sk)
 	assert.Nil(t, err)
 
-	// create a pseudoID join event
-	_, userPriv, err := ed25519.GenerateKey(rand.Reader)
-	assert.Nil(t, err)
-	pseudoID := spec.SenderIDFromPseudoIDKey(userPriv)
-	stateKey = string(pseudoID)
-	mapping := MXIDMapping{UserID: userID.String(), UserRoomKey: pseudoID}
-	err = mapping.Sign(remoteServer, keyID, sk)
-	assert.Nil(t, err)
-	content := MemberContent{Membership: spec.Join, MXIDMapping: &mapping}
-	contentBytes, err := json.Marshal(content)
-	assert.Nil(t, err)
-	eb = createMemberEventBuilder(RoomVersionPseudoIDs, stateKey, validRoom.String(), &stateKey, contentBytes)
-	joinEventPseudoID, err := eb.Build(time.Now(), spec.ServerName(pseudoID), "ed25519:1", userPriv)
-	assert.Nil(t, err)
-
 	ebNotJoin := createMemberEventBuilder(RoomVersionV10, userID.String(), validRoom.String(), &stateKey, spec.RawJSON(`{"membership":"ban"}`))
 	notJoinEvent, err := ebNotJoin.Build(time.Now(), userID.Domain(), keyID, sk)
 	assert.Nil(t, err)
@@ -1017,25 +1002,6 @@ func TestHandleSendJoin(t *testing.T) {
 				KeyID:             keyID,
 				PrivateKey:        sk,
 				Verifier:          verifier,
-			},
-			expectedErr: false,
-		},
-		"pseudo_id_success": {
-			input: HandleSendJoinInput{
-				Context:           context.Background(),
-				RoomID:            *validRoom,
-				EventID:           joinEventPseudoID.EventID(),
-				JoinEvent:         joinEventPseudoID.JSON(),
-				RoomVersion:       RoomVersionPseudoIDs,
-				RequestOrigin:     remoteServer,
-				LocalServerName:   localServer,
-				MembershipQuerier: &TestMembershipQuerier{membership: "join"},
-				UserIDQuerier: func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-					return userID, nil
-				},
-				KeyID:      keyID,
-				PrivateKey: sk,
-				Verifier:   verifier,
 			},
 			expectedErr: false,
 		},

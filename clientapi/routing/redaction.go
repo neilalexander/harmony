@@ -166,7 +166,7 @@ func SendRedaction(
 		}
 	}
 
-	identity, err := rsAPI.SigningIdentityFor(req.Context(), *validRoomID, *deviceUserID)
+	identity, err := rsAPI.SigningIdentityFor(req.Context(), *deviceUserID)
 	if err != nil {
 		return util.JSONResponse{
 			Code: http.StatusInternalServerError,

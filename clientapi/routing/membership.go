@@ -463,7 +463,7 @@ func buildMembershipEvent(
 		return nil, fmt.Errorf("no sender ID for %s in %s", *targetID, *validRoomID)
 	}
 
-	identity, err := rsAPI.SigningIdentityFor(ctx, *validRoomID, *userID)
+	identity, err := rsAPI.SigningIdentityFor(ctx, *userID)
 	if err != nil {
 		return nil, err
 	}

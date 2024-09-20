@@ -280,28 +280,7 @@ func (r *RoomserverInternalAPI) StoreUserRoomPublicKey(ctx context.Context, send
 	return err
 }
 
-func (r *RoomserverInternalAPI) SigningIdentityFor(ctx context.Context, roomID spec.RoomID, senderID spec.UserID) (fclient.SigningIdentity, error) {
-	roomVersion, ok := r.Cache.GetRoomVersion(roomID.String())
-	if !ok {
-		roomInfo, err := r.DB.RoomInfo(ctx, roomID.String())
-		if err != nil {
-			return fclient.SigningIdentity{}, err
-		}
-		if roomInfo != nil {
-			roomVersion = roomInfo.RoomVersion
-		}
-	}
-	if roomVersion == gomatrixserverlib.RoomVersionPseudoIDs {
-		privKey, err := r.GetOrCreateUserRoomPrivateKey(ctx, senderID, roomID)
-		if err != nil {
-			return fclient.SigningIdentity{}, err
-		}
-		return fclient.SigningIdentity{
-			PrivateKey: privKey,
-			KeyID:      "ed25519:1",
-			ServerName: spec.ServerName(spec.SenderIDFromPseudoIDKey(privKey)),
-		}, nil
-	}
+func (r *RoomserverInternalAPI) SigningIdentityFor(ctx context.Context, senderID spec.UserID) (fclient.SigningIdentity, error) {
 	identity, err := r.Cfg.Global.SigningIdentityFor(senderID.Domain())
 	if err != nil {
 		return fclient.SigningIdentity{}, err

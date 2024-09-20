@@ -394,7 +394,7 @@ func buildMembershipEvents(
 			return nil, err
 		}
 
-		identity, err := rsAPI.SigningIdentityFor(ctx, *validRoomID, *user)
+		identity, err := rsAPI.SigningIdentityFor(ctx, *user)
 		if err != nil {
 			return nil, err
 		}

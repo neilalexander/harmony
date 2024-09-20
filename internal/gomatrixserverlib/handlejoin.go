@@ -350,23 +350,6 @@ func HandleSendJoin(input HandleSendJoinInput) (*HandleSendJoinResponse, error) 
 		return nil, spec.BadJSON("Event state key must match the event sender.")
 	}
 
-	// validate the mxid_mapping of the event
-	if input.RoomVersion == RoomVersionPseudoIDs {
-		// validate the signature first
-		mapping, err := getMXIDMapping(event)
-		if err != nil {
-			return nil, spec.BadJSON(err.Error())
-		}
-		if err = validateMXIDMappingSignatures(input.Context, event, *mapping, input.Verifier, verImpl); err != nil {
-			return nil, spec.Forbidden(err.Error())
-		}
-
-		// store the user room public key -> userID mapping
-		if err = input.StoreSenderIDFromPublicID(input.Context, mapping.UserRoomKey, mapping.UserID, input.RoomID); err != nil {
-			return nil, err
-		}
-	}
-
 	// Check that the sender belongs to the server that is sending us
 	// the request. By this point we've already asserted that the sender
 	// and the state key are equal so we don't need to check both.
@@ -380,11 +363,6 @@ func HandleSendJoin(input HandleSendJoinInput) (*HandleSendJoinResponse, error) 
 	// In pseudoID rooms we don't need to hit federation endpoints to get e.g. signing keys,
 	// so we can replace the verifier with a more simple one which uses the senderID to verify the event.
 	toVerify := sender.Domain()
-	if input.RoomVersion == RoomVersionPseudoIDs {
-		input.Verifier = JSONVerifierSelf{}
-		toVerify = spec.ServerName(event.SenderID())
-	}
-
 	// Check that the room ID is correct.
 	if event.RoomID().String() != input.RoomID.String() {
 		return nil, spec.BadJSON(

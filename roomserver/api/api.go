@@ -258,7 +258,7 @@ type ClientRoomserverAPI interface {
 	// Returns whether the alias was found, whether it was removed, and an error (if any occurred)
 	RemoveRoomAlias(ctx context.Context, senderID spec.SenderID, alias string) (aliasFound bool, aliasRemoved bool, err error)
 
-	SigningIdentityFor(ctx context.Context, roomID spec.RoomID, senderID spec.UserID) (fclient.SigningIdentity, error)
+	SigningIdentityFor(ctx context.Context, senderID spec.UserID) (fclient.SigningIdentity, error)
 }
 
 type UserRoomserverAPI interface {
@@ -282,7 +282,7 @@ type FederationRoomserverAPI interface {
 	QueryMembershipAPI
 	UserRoomPrivateKeyCreator
 	AssignRoomNID(ctx context.Context, roomID spec.RoomID, roomVersion gomatrixserverlib.RoomVersion) (roomNID types.RoomNID, err error)
-	SigningIdentityFor(ctx context.Context, roomID spec.RoomID, senderID spec.UserID) (fclient.SigningIdentity, error)
+	SigningIdentityFor(ctx context.Context, senderID spec.UserID) (fclient.SigningIdentity, error)
 	// QueryServerBannedFromRoom returns whether a server is banned from a room by server ACLs.
 	QueryServerBannedFromRoom(ctx context.Context, req *QueryServerBannedFromRoomRequest, res *QueryServerBannedFromRoomResponse) error
 	GetRoomIDForAlias(ctx context.Context, req *GetRoomIDForAliasRequest, res *GetRoomIDForAliasResponse) error
