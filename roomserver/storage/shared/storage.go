@@ -1042,6 +1042,7 @@ func (d *EventDatabase) MaybeRedactEvent(
 			sender1Domain = string(sender1.Domain())
 		}
 		sender2Domain := ""
+		redactionEvent.SenderID()
 		sender2, err2 := querier.QueryUserIDForSender(ctx, redactedEvent.RoomID(), redactionEvent.SenderID())
 		if err2 == nil {
 			sender2Domain = string(sender2.Domain())

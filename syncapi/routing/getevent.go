@@ -119,16 +119,7 @@ func GetEvent(
 		}
 	}
 
-	clientEvent, err := synctypes.ToClientEvent(events[0], synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	})
-	if err != nil {
-		util.GetLogger(req.Context()).WithError(err).WithField("senderID", events[0].SenderID()).WithField("roomID", *roomID).Error("Failed converting to ClientEvent")
-		return util.JSONResponse{
-			Code: http.StatusInternalServerError,
-			JSON: spec.Unknown("internal server error"),
-		}
-	}
+	clientEvent := synctypes.ToClientEvent(events[0], synctypes.FormatAll)
 
 	return util.JSONResponse{
 		Code: http.StatusOK,

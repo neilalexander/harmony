@@ -561,12 +561,7 @@ func NewInviteResponse(ctx context.Context, rsAPI api.QuerySenderIDAPI, event *t
 
 	// Then we'll see if we can create a partial of the invite event itself.
 	// This is needed for clients to work out *who* sent the invite.
-	inviteEvent, err := synctypes.ToClientEvent(eventNoUnsigned, eventFormat, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	})
-	if err != nil {
-		return nil, err
-	}
+	inviteEvent := synctypes.ToClientEvent(eventNoUnsigned, eventFormat)
 
 	// Ensure unsigned field is empty so it isn't marshalled into the final JSON
 	inviteEvent.Unsigned = nil

@@ -230,13 +230,7 @@ func Search(req *http.Request, device *api.Device, syncDB storage.Database, fts 
 			profileInfos[userID.String()] = profile
 		}
 
-		clientEvent, err := synctypes.ToClientEvent(event, synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		})
-		if err != nil {
-			util.GetLogger(req.Context()).WithError(err).WithField("senderID", event.SenderID()).Error("Failed converting to ClientEvent")
-			continue
-		}
+		clientEvent := synctypes.ToClientEvent(event, synctypes.FormatAll)
 
 		results = append(results, Result{
 			Context: SearchContextResponse{

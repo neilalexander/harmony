@@ -21,7 +21,6 @@ import (
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
-	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
@@ -80,11 +79,7 @@ func ToClientEvents(serverEvs []gomatrixserverlib.PDU, format ClientEventFormat,
 		if se == nil {
 			continue // TODO: shouldn't happen?
 		}
-		ev, err := ToClientEvent(se, format, userIDForSender)
-		if err != nil {
-			logrus.WithError(err).Warn("Failed converting event to ClientEvent")
-			continue
-		}
+		ev := ToClientEvent(se, format)
 		evs = append(evs, *ev)
 	}
 	return evs
@@ -93,10 +88,7 @@ func ToClientEvents(serverEvs []gomatrixserverlib.PDU, format ClientEventFormat,
 // ToClientEventDefault converts a single server event to a client event.
 // It provides default logic for event.SenderID & event.StateKey -> userID conversions.
 func ToClientEventDefault(userIDQuery spec.UserIDForSender, event gomatrixserverlib.PDU) ClientEvent {
-	ev, err := ToClientEvent(event, FormatAll, userIDQuery)
-	if err != nil {
-		return ClientEvent{}
-	}
+	ev := ToClientEvent(event, FormatAll)
 	return *ev
 }
 
@@ -129,7 +121,7 @@ func FromClientStateKey(roomID spec.RoomID, stateKey string, senderIDQuery spec.
 }
 
 // ToClientEvent converts a single server event to a client event.
-func ToClientEvent(se gomatrixserverlib.PDU, format ClientEventFormat, userIDForSender spec.UserIDForSender) (*ClientEvent, error) {
+func ToClientEvent(se gomatrixserverlib.PDU, format ClientEventFormat) *ClientEvent {
 	ce := ClientEvent{
 		Content:        se.Content(),
 		Sender:         string(se.SenderID()),
@@ -153,83 +145,7 @@ func ToClientEvent(se gomatrixserverlib.PDU, format ClientEventFormat, userIDFor
 		// TODO: Set Signatures & Hashes fields
 	}
 
-	if format != FormatSyncFederation && se.Version() == gomatrixserverlib.RoomVersionPseudoIDs {
-		err := updatePseudoIDs(&ce, se, userIDForSender, format)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &ce, nil
-}
-
-func updatePseudoIDs(ce *ClientEvent, se gomatrixserverlib.PDU, userIDForSender spec.UserIDForSender, format ClientEventFormat) error {
-	ce.SenderKey = se.SenderID()
-
-	userID, err := userIDForSender(se.RoomID(), se.SenderID())
-	if err == nil && userID != nil {
-		ce.Sender = userID.String()
-	}
-
-	sk := se.StateKey()
-	if sk != nil && *sk != "" {
-		skUserID, err := userIDForSender(se.RoomID(), spec.SenderID(*sk))
-		if err == nil && skUserID != nil {
-			skString := skUserID.String()
-			ce.StateKey = &skString
-		}
-	}
-
-	var prev PrevEventRef
-	if err := json.Unmarshal(se.Unsigned(), &prev); err == nil && prev.PrevSenderID != "" {
-		prevUserID, err := userIDForSender(se.RoomID(), spec.SenderID(prev.PrevSenderID))
-		if err == nil && userID != nil {
-			prev.PrevSenderID = prevUserID.String()
-		} else {
-			errString := "userID unknown"
-			if err != nil {
-				errString = err.Error()
-			}
-			logrus.Warnf("Failed to find userID for prev_sender in ClientEvent: %s", errString)
-			// NOTE: Not much can be done here, so leave the previous value in place.
-		}
-		ce.Unsigned, err = json.Marshal(prev)
-		if err != nil {
-			err = fmt.Errorf("Failed to marshal unsigned content for ClientEvent: %w", err)
-			return err
-		}
-	}
-
-	switch se.Type() {
-	case spec.MRoomCreate:
-		updatedContent, err := updateCreateEvent(se.Content(), userIDForSender, se.RoomID())
-		if err != nil {
-			err = fmt.Errorf("Failed to update m.room.create event for ClientEvent: %w", err)
-			return err
-		}
-		ce.Content = updatedContent
-	case spec.MRoomMember:
-		updatedEvent, err := updateInviteEvent(userIDForSender, se, format)
-		if err != nil {
-			err = fmt.Errorf("Failed to update m.room.member event for ClientEvent: %w", err)
-			return err
-		}
-		if updatedEvent != nil {
-			ce.Unsigned = updatedEvent.Unsigned()
-		}
-	case spec.MRoomPowerLevels:
-		updatedEvent, err := updatePowerLevelEvent(userIDForSender, se, format)
-		if err != nil {
-			err = fmt.Errorf("Failed update m.room.power_levels event for ClientEvent: %w", err)
-			return err
-		}
-		if updatedEvent != nil {
-			ce.Content = updatedEvent.Content()
-			ce.Unsigned = updatedEvent.Unsigned()
-		}
-	}
-
-	return nil
+	return &ce
 }
 
 func updateCreateEvent(content spec.RawJSON, userIDForSender spec.UserIDForSender, roomID spec.RoomID) (spec.RawJSON, error) {

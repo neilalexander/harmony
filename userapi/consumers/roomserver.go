@@ -242,12 +242,8 @@ func (s *OutputRoomEventConsumer) processMessage(ctx context.Context, event *rst
 
 	switch {
 	case event.Type() == spec.MRoomMember:
-		cevent, clientEvErr := synctypes.ToClientEvent(event, synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return s.rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		})
-		if clientEvErr != nil {
-			return clientEvErr
-		}
+		cevent := synctypes.ToClientEvent(event, synctypes.FormatAll)
+
 		var member *localMembership
 		member, err = newLocalMembership(cevent)
 		if err != nil {
@@ -481,12 +477,7 @@ func (s *OutputRoomEventConsumer) notifyLocal(ctx context.Context, event *rstype
 	if err != nil {
 		return fmt.Errorf("s.localPushDevices: %w", err)
 	}
-	clientEvent, err := synctypes.ToClientEvent(event, synctypes.FormatSync, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return s.rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	})
-	if err != nil {
-		return err
-	}
+	clientEvent := synctypes.ToClientEvent(event, synctypes.FormatSync)
 
 	n := &api.Notification{
 		Actions: actions,

@@ -114,12 +114,7 @@ func TestToClientEvent(t *testing.T) { // nolint: gocyclo
 		t.Fatalf("failed to create userID: %s", err)
 	}
 	sk := ""
-	ce, err := ToClientEvent(ev, FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatAll)
 
 	verifyEventFields(t,
 		EventFieldsToVerify{
@@ -174,12 +169,7 @@ func TestToClientFormatSync(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create Event: %s", err)
 	}
-	ce, err := ToClientEvent(ev, FormatSync, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatSync)
 	if ce.RoomID != "" {
 		t.Errorf("ClientEvent.RoomID: wanted '', got %s", ce.RoomID)
 	}
@@ -219,12 +209,7 @@ func TestToClientEventFormatSyncFederation(t *testing.T) { // nolint: gocyclo
 		t.Fatalf("failed to create userID: %s", err)
 	}
 	sk := ""
-	ce, err := ToClientEvent(ev, FormatSyncFederation, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatSyncFederation)
 
 	verifyEventFields(t,
 		EventFieldsToVerify{
