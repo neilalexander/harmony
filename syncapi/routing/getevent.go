@@ -58,14 +58,6 @@ func GetEvent(
 	}
 	defer db.Rollback() // nolint: errcheck
 
-	roomID, err := spec.NewRoomID(rawRoomID)
-	if err != nil {
-		return util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.InvalidParam("invalid room ID"),
-		}
-	}
-
 	events, err := db.Events(ctx, []string{eventID})
 	if err != nil {
 		logger.WithError(err).Error("GetEvent: syncDB.Events failed")

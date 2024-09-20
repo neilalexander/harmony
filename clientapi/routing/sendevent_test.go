@@ -148,15 +148,9 @@ func (s *sendEventTestRoomserverAPI) InputRoomEvents(ctx context.Context, req *r
 }
 
 // Test that user ID state keys are translated correctly
-func Test_SendEvent_PseudoIDStateKeys(t *testing.T) {
+func Test_SendEvent(t *testing.T) {
 	nonpseudoIDRoomVersion := gomatrixserverlib.RoomVersionV10
-	pseudoIDRoomVersion := gomatrixserverlib.RoomVersionPseudoIDs
-
-	senderKeySeed := make([]byte, 32)
 	senderUserID := "@testuser:domain"
-	senderPrivKey := ed25519.NewKeyFromSeed(senderKeySeed)
-	senderPseudoID := string(spec.SenderIDFromPseudoIDKey(senderPrivKey))
-
 	eventType := "com.example.test"
 	roomIDStr := "!id:domain"
 
@@ -203,51 +197,6 @@ func Test_SendEvent_PseudoIDStateKeys(t *testing.T) {
 			t.Fatalf("submitted InputRoomEvent has nil state key, when it should be %v", senderUserID)
 		} else if *stateKey != senderUserID {
 			t.Fatalf("expected submitted InputRoomEvent to have user ID state key\nfound: %v\nexpected: %v", *stateKey, senderUserID)
-		}
-	})
-
-	t.Run("user ID state key are translated to room key in pseudo ID room", func(t *testing.T) {
-		eventsJSON := []string{
-			fmt.Sprintf(`{"type":"m.room.create","state_key":"","room_id":"%v","sender":"%v","content":{"creator":"%v","room_version":"%v"}}`, roomIDStr, senderPseudoID, senderPseudoID, pseudoIDRoomVersion),
-			fmt.Sprintf(`{"type":"m.room.member","state_key":"%v","room_id":"%v","sender":"%v","content":{"membership":"join"}}`, senderPseudoID, roomIDStr, senderPseudoID),
-		}
-
-		roomState, err := createEvents(eventsJSON, pseudoIDRoomVersion)
-		if err != nil {
-			t.Fatalf("failed to prepare state events: %s", err.Error())
-		}
-
-		rsAPI := &sendEventTestRoomserverAPI{
-			t:           t,
-			roomIDStr:   roomIDStr,
-			roomVersion: pseudoIDRoomVersion,
-			senderMapping: map[string]ed25519.PrivateKey{
-				senderUserID: senderPrivKey,
-			},
-			roomState: roomState,
-		}
-
-		req, err := http.NewRequest("POST", "https://domain", io.NopCloser(strings.NewReader("{}")))
-		if err != nil {
-			t.Fatalf("failed to make new request: %s", err.Error())
-		}
-
-		cfg := &config.ClientAPI{}
-
-		resp := SendEvent(req, device, roomIDStr, eventType, nil, &senderUserID, cfg, rsAPI, nil)
-
-		if resp.Code != http.StatusOK {
-			t.Fatalf("non-200 HTTP code returned: %v\nfull response: %v", resp.Code, resp)
-		}
-
-		assert.Equal(t, len(rsAPI.savedInputRoomEvents), 1)
-
-		ev := rsAPI.savedInputRoomEvents[0]
-		stateKey := ev.Event.StateKey()
-		if stateKey == nil {
-			t.Fatalf("submitted InputRoomEvent has nil state key, when it should be %v", senderPseudoID)
-		} else if *stateKey != senderPseudoID {
-			t.Fatalf("expected submitted InputRoomEvent to have pseudo ID state key\nfound: %v\nexpected: %v", *stateKey, senderPseudoID)
 		}
 	})
 }
