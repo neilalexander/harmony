@@ -85,34 +85,6 @@ func ToClientEvents(serverEvs []gomatrixserverlib.PDU, format ClientEventFormat)
 	return evs
 }
 
-// If provided state key is a user ID (state keys beginning with @ are reserved for this purpose)
-// fetch it's associated sender ID and use that instead. Otherwise returns the same state key back.
-//
-// # This function either returns the state key that should be used, or an error
-//
-// TODO: handle failure cases better (e.g. no sender ID)
-func FromClientStateKey(roomID spec.RoomID, stateKey string, senderIDQuery spec.SenderIDForUser) (*string, error) {
-	if len(stateKey) >= 1 && stateKey[0] == '@' {
-		parsedStateKey, err := spec.NewUserID(stateKey, true)
-		if err != nil {
-			// If invalid user ID, then there is no associated state event.
-			return nil, fmt.Errorf("Provided state key begins with @ but is not a valid user ID: %w", err)
-		}
-		senderID, err := senderIDQuery(roomID, *parsedStateKey)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to query sender ID: %w", err)
-		}
-		if senderID == nil {
-			// If no sender ID, then there is no associated state event.
-			return nil, fmt.Errorf("No associated sender ID found.")
-		}
-		newStateKey := string(*senderID)
-		return &newStateKey, nil
-	} else {
-		return &stateKey, nil
-	}
-}
-
 // ToClientEvent converts a single server event to a client event.
 func ToClientEvent(se gomatrixserverlib.PDU, format ClientEventFormat) *ClientEvent {
 	ce := ClientEvent{
