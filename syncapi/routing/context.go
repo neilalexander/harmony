@@ -230,11 +230,9 @@ func Context(
 		}
 	}
 
-	ev := synctypes.ToClientEventDefault(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	}, requestedEvent)
+	ev := synctypes.ToClientEvent(requestedEvent, synctypes.FormatAll)
 	response := ContextRespsonse{
-		Event:        &ev,
+		Event:        ev,
 		EventsAfter:  eventsAfterClient,
 		EventsBefore: eventsBeforeClient,
 		State: synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(newState), synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {

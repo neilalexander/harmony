@@ -150,9 +150,7 @@ func OnIncomingStateRequest(ctx context.Context, device *userapi.Device, rsAPI a
 		for _, ev := range stateRes.StateEvents {
 			stateEvents = append(
 				stateEvents,
-				synctypes.ToClientEventDefault(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-					return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-				}, ev),
+				*synctypes.ToClientEvent(ev, synctypes.FormatAll),
 			)
 		}
 	} else {
@@ -385,9 +383,7 @@ func OnIncomingStateTypeRequest(
 	}
 
 	stateEvent := stateEventInStateResp{
-		ClientEvent: synctypes.ToClientEventDefault(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		}, event),
+		ClientEvent: *synctypes.ToClientEvent(event, synctypes.FormatAll),
 	}
 
 	var res interface{}

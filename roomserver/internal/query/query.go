@@ -433,10 +433,8 @@ func (r *Queryer) QueryMembershipsForRoom(
 			return fmt.Errorf("r.DB.Events: %w", err)
 		}
 		for _, event := range events {
-			clientEvent := synctypes.ToClientEventDefault(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-				return r.QueryUserIDForSender(ctx, roomID, senderID)
-			}, event)
-			response.JoinEvents = append(response.JoinEvents, clientEvent)
+			clientEvent := synctypes.ToClientEvent(event, synctypes.FormatAll)
+			response.JoinEvents = append(response.JoinEvents, *clientEvent)
 		}
 		return nil
 	}
@@ -484,10 +482,8 @@ func (r *Queryer) QueryMembershipsForRoom(
 	}
 
 	for _, event := range events {
-		clientEvent := synctypes.ToClientEventDefault(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return r.QueryUserIDForSender(ctx, roomID, senderID)
-		}, event)
-		response.JoinEvents = append(response.JoinEvents, clientEvent)
+		clientEvent := synctypes.ToClientEvent(event, synctypes.FormatAll)
+		response.JoinEvents = append(response.JoinEvents, *clientEvent)
 	}
 
 	return nil
