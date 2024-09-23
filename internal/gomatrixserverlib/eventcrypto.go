@@ -50,30 +50,26 @@ func VerifyEventSignatures(ctx context.Context, e PDU, verifier JSONVerifier, us
 	}
 
 	// The sender should have signed the event in all cases.
-	switch e.Version() {
-	case RoomVersionPseudoIDs:
-		needed[spec.ServerName(e.SenderID())] = struct{}{}
-	default:
-		sender, err := userIDForSender(e.RoomID(), e.SenderID())
-		if err != nil {
-			return fmt.Errorf("invalid sender userID: %w", err)
-		}
-		if sender != nil {
-			serverName = sender.Domain()
-			needed[serverName] = struct{}{}
-		}
 
-		// In room versions 1 and 2, we should also check that the server
-		// that created the event is included too. This is probably the
-		// same as the sender.
-		format := verImpl.EventIDFormat()
-		if format == EventIDFormatV1 {
-			_, serverName, err = SplitID('$', e.EventID())
-			if err != nil {
-				return fmt.Errorf("failed to split event ID: %w", err)
-			}
-			needed[serverName] = struct{}{}
+	sender, err := userIDForSender(e.RoomID(), e.SenderID())
+	if err != nil {
+		return fmt.Errorf("invalid sender userID: %w", err)
+	}
+	if sender != nil {
+		serverName = sender.Domain()
+		needed[serverName] = struct{}{}
+	}
+
+	// In room versions 1 and 2, we should also check that the server
+	// that created the event is included too. This is probably the
+	// same as the sender.
+	format := verImpl.EventIDFormat()
+	if format == EventIDFormatV1 {
+		_, serverName, err = SplitID('$', e.EventID())
+		if err != nil {
+			return fmt.Errorf("failed to split event ID: %w", err)
 		}
+		needed[serverName] = struct{}{}
 	}
 
 	// Special checks for membership events.
@@ -83,30 +79,13 @@ func VerifyEventSignatures(ctx context.Context, e PDU, verifier JSONVerifier, us
 			return fmt.Errorf("failed to get membership of membership event: %w", err)
 		}
 
-		// Validate the MXIDMapping is signed correctly
-		if verImpl.Version() == RoomVersionPseudoIDs && membership == spec.Join {
-			mapping, err := getMXIDMapping(e)
-			if err != nil {
-				return err
-			}
-			err = validateMXIDMappingSignatures(ctx, e, *mapping, verifier, verImpl)
-			if err != nil {
-				return err
-			}
-		}
-
 		// For invites, the invited server should have signed the event.
 		if membership == spec.Invite {
-			switch e.Version() {
-			case RoomVersionPseudoIDs:
-				needed[spec.ServerName(*e.StateKey())] = struct{}{}
-			default:
-				_, serverName, err = SplitID('@', *e.StateKey())
-				if err != nil {
-					return fmt.Errorf("failed to split state key: %w", err)
-				}
-				needed[serverName] = struct{}{}
+			_, serverName, err = SplitID('@', *e.StateKey())
+			if err != nil {
+				return fmt.Errorf("failed to split state key: %w", err)
 			}
+			needed[serverName] = struct{}{}
 		}
 
 		// For restricted join rules, the authorising server should have signed.
@@ -138,12 +117,6 @@ func VerifyEventSignatures(ctx context.Context, e PDU, verifier JSONVerifier, us
 		toVerify = append(toVerify, v)
 	}
 
-	if verImpl.Version() == RoomVersionPseudoIDs {
-		// we already verified the mxid_mapping at this stage, so replace the KeyRing verifier
-		// with the self verifier to validate pseudoID events
-		verifier = JSONVerifierSelf{}
-	}
-
 	results, err := verifier.VerifyJSONs(ctx, toVerify)
 	if err != nil {
 		return fmt.Errorf("failed to verify JSONs: %w", err)
@@ -156,54 +129,6 @@ func VerifyEventSignatures(ctx context.Context, e PDU, verifier JSONVerifier, us
 	}
 
 	return nil
-}
-
-func getMXIDMapping(e PDU) (*MXIDMapping, error) {
-	var content MemberContent
-	err := json.Unmarshal(e.Content(), &content)
-	if err != nil {
-		return nil, err
-	}
-
-	// if there is no mapping, we can't check the signature
-	if content.MXIDMapping == nil {
-		return nil, fmt.Errorf("missing mxid_mapping")
-	}
-
-	return content.MXIDMapping, nil
-}
-
-// validateMXIDMappingSignatures validates that the MXIDMapping is correctly signed
-func validateMXIDMappingSignatures(ctx context.Context, e PDU, mapping MXIDMapping, verifier JSONVerifier, verImpl IRoomVersion) error {
-	mappingBytes, err := json.Marshal(mapping)
-	if err != nil {
-		return err
-	}
-
-	var toVerify []VerifyJSONRequest
-	for s := range mapping.Signatures {
-		v := VerifyJSONRequest{
-			Message:              mappingBytes,
-			AtTS:                 e.OriginServerTS(),
-			ServerName:           s,
-			ValidityCheckingFunc: verImpl.SignatureValidityCheck,
-		}
-		toVerify = append(toVerify, v)
-	}
-
-	// check that the mapping is correctly signed by the server
-	results, err := verifier.VerifyJSONs(ctx, toVerify)
-	if err != nil {
-		return fmt.Errorf("failed to verify MXIDMapping: %w", err)
-	}
-
-	for _, result := range results {
-		if result.Error != nil {
-			return fmt.Errorf("failed to verify MXIDMapping: %w", result.Error)
-		}
-	}
-
-	return err
 }
 
 func extractAuthorisedViaServerName(content []byte) (spec.ServerName, error) {

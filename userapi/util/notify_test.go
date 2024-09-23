@@ -9,27 +9,17 @@ import (
 	"time"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
-	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
+	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/internal/util"
-	"github.com/neilalexander/harmony/syncapi/synctypes"
-	"golang.org/x/crypto/bcrypt"
-
-	"github.com/neilalexander/harmony/internal/pushgateway"
 	"github.com/neilalexander/harmony/setup/config"
+	"github.com/neilalexander/harmony/syncapi/synctypes"
 	"github.com/neilalexander/harmony/test"
 	"github.com/neilalexander/harmony/userapi/api"
 	"github.com/neilalexander/harmony/userapi/storage"
 	userUtil "github.com/neilalexander/harmony/userapi/util"
+	"golang.org/x/crypto/bcrypt"
 )
-
-func queryUserIDForSender(senderID spec.SenderID) (*spec.UserID, error) {
-	if senderID == "" {
-		return nil, nil
-	}
-
-	return spec.NewUserID(string(senderID), true)
-}
 
 func TestNotifyUserCountsAsync(t *testing.T) {
 	alice := test.NewUser(t)
@@ -108,12 +98,7 @@ func TestNotifyUserCountsAsync(t *testing.T) {
 		}
 
 		// Insert a dummy event
-		ev, err := synctypes.ToClientEvent(dummyEvent, synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return queryUserIDForSender(senderID)
-		})
-		if err != nil {
-			t.Error(err)
-		}
+		ev := synctypes.ToClientEvent(dummyEvent, synctypes.FormatAll)
 		if err := db.InsertNotification(ctx, aliceLocalpart, serverName, dummyEvent.EventID(), 0, nil, &api.Notification{
 			Event: *ev,
 		}); err != nil {

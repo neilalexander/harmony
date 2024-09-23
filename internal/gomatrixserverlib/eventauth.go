@@ -489,15 +489,8 @@ func (a *allowerContext) aliasEventAllowed(event PDU) error {
 	// Check that event is a state event.
 	// Check that the state key matches the server sending this event.
 	// https://github.com/matrix-org/synapse/blob/v0.18.5/synapse/api/auth.py#L158
-	switch event.Version() {
-	case RoomVersionPseudoIDs:
-		if !event.StateKeyEquals(string(event.SenderID())) {
-			return errorf("alias state_key does not match sender domain, %q != %q", event.SenderID(), *event.StateKey())
-		}
-	default:
-		if !event.StateKeyEquals(string(sender.Domain())) {
-			return errorf("alias state_key does not match sender domain, %q != %q", sender.Domain(), *event.StateKey())
-		}
+	if !event.StateKeyEquals(string(sender.Domain())) {
+		return errorf("alias state_key does not match sender domain, %q != %q", sender.Domain(), *event.StateKey())
 	}
 
 	return nil
@@ -1067,13 +1060,8 @@ func (m *membershipAllower) membershipAllowedSelfForRestrictedJoin() error {
 	// 'join_authorised_via_users_server' key, containing the user ID of a user
 	// in the room that should have a suitable power level to issue invites.
 	// If no such key is specified then we should reject the join.
-	switch m.roomVersionImpl.Version() {
-	case RoomVersionPseudoIDs:
-		// TODO: pseudoIDs: what is a valid senderID? reject if m.newMember.AuthorisedVia != valid
-	default:
-		if _, _, err := SplitID('@', m.newMember.AuthorisedVia); err != nil {
-			return errorf("the 'join_authorised_via_users_server' contains an invalid value %q", m.newMember.AuthorisedVia)
-		}
+	if _, _, err := SplitID('@', m.newMember.AuthorisedVia); err != nil {
+		return errorf("the 'join_authorised_via_users_server' contains an invalid value %q", m.newMember.AuthorisedVia)
 	}
 
 	// If the nominated user ID is valid then there are two things that we

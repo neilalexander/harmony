@@ -18,24 +18,12 @@ package synctypes
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"reflect"
 	"testing"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 )
-
-func queryUserIDForSender(senderID spec.SenderID) (*spec.UserID, error) {
-	if senderID == "" {
-		return nil, nil
-	}
-
-	return spec.NewUserID(string(senderID), true)
-}
-
-const testSenderID = "testSenderID"
-const testUserID = "@test:localhost"
 
 type EventFieldsToVerify struct {
 	EventID        string
@@ -51,6 +39,7 @@ type EventFieldsToVerify struct {
 }
 
 func verifyEventFields(t *testing.T, got EventFieldsToVerify, want EventFieldsToVerify) {
+	t.Helper()
 	if got.EventID != want.EventID {
 		t.Errorf("ClientEvent.EventID: wanted %s, got %s", want.EventID, got.EventID)
 	}
@@ -114,12 +103,7 @@ func TestToClientEvent(t *testing.T) { // nolint: gocyclo
 		t.Fatalf("failed to create userID: %s", err)
 	}
 	sk := ""
-	ce, err := ToClientEvent(ev, FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatAll)
 
 	verifyEventFields(t,
 		EventFieldsToVerify{
@@ -174,12 +158,7 @@ func TestToClientFormatSync(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create Event: %s", err)
 	}
-	ce, err := ToClientEvent(ev, FormatSync, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatSync)
 	if ce.RoomID != "" {
 		t.Errorf("ClientEvent.RoomID: wanted '', got %s", ce.RoomID)
 	}
@@ -219,12 +198,7 @@ func TestToClientEventFormatSyncFederation(t *testing.T) { // nolint: gocyclo
 		t.Fatalf("failed to create userID: %s", err)
 	}
 	sk := ""
-	ce, err := ToClientEvent(ev, FormatSyncFederation, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return queryUserIDForSender(senderID)
-	})
-	if err != nil {
-		t.Fatalf("failed to create ClientEvent: %s", err)
-	}
+	ce := ToClientEvent(ev, FormatSyncFederation)
 
 	verifyEventFields(t,
 		EventFieldsToVerify{
@@ -250,312 +224,5 @@ func TestToClientEventFormatSyncFederation(t *testing.T) { // nolint: gocyclo
 			Depth:          ev.Depth(),
 			PrevEvents:     ev.PrevEventIDs(),
 			AuthEvents:     ev.AuthEventIDs(),
-		})
-}
-
-func userIDForSender(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-	if senderID == "unknownSenderID" {
-		return nil, fmt.Errorf("Cannot find userID")
-	}
-	return spec.NewUserID(testUserID, true)
-}
-
-func TestToClientEventsFormatSyncFederation(t *testing.T) { // nolint: gocyclo
-	ev, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World"
-		},
-		"origin_server_ts": 123456,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World"
-			}
-		},
-        "depth": 8,
-        "prev_events": [
-          "$f597Tp0Mm1PPxEgiprzJc2cZAjVhxCxACOGuwJb33Oo"
-        ],
-        "auth_events": [
-          "$Bj0ZGgX6VTqAQdqKH4ZG3l6rlbxY3rZlC5D3MeuK1OQ",
-          "$QsMs6A1PUVUhgSvmHBfpqEYJPgv4DXt96r8P2AK7iXQ",
-          "$tBteKtlnFiwlmPJsv0wkKTMEuUVWpQH89H7Xskxve1Q"
-        ]
-	}`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-	ev2, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test2:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World 2"
-		},
-		"origin_server_ts": 1234567,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World 2"
-			},
-            "prev_sender": "testSenderID"
-		},
-        "depth": 9,
-        "prev_events": [
-          "$f597Tp0Mm1PPxEgiprzJc2cZAjVhxCxACOGuwJb33Oo"
-        ],
-        "auth_events": [
-          "$Bj0ZGgX6VTqAQdqKH4ZG3l6rlbxY3rZlC5D3MeuK1OQ",
-          "$QsMs6A1PUVUhgSvmHBfpqEYJPgv4DXt96r8P2AK7iXQ",
-          "$tBteKtlnFiwlmPJsv0wkKTMEuUVWpQH89H7Xskxve1Q"
-        ]
-    }`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-
-	clientEvents := ToClientEvents([]gomatrixserverlib.PDU{ev, ev2}, FormatSyncFederation, userIDForSender)
-	ce := clientEvents[0]
-	sk := testSenderID
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce.EventID,
-			Type:           ce.Type,
-			OriginServerTS: ce.OriginServerTS,
-			StateKey:       ce.StateKey,
-			Content:        ce.Content,
-			Unsigned:       ce.Unsigned,
-			Sender:         ce.Sender,
-			Depth:          ce.Depth,
-			PrevEvents:     ce.PrevEvents,
-			AuthEvents:     ce.AuthEvents,
-		},
-		EventFieldsToVerify{
-			EventID:        ev.EventID(),
-			Type:           ev.Type(),
-			OriginServerTS: ev.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev.Content(),
-			Unsigned:       ev.Unsigned(),
-			Sender:         testSenderID,
-			Depth:          ev.Depth(),
-			PrevEvents:     ev.PrevEventIDs(),
-			AuthEvents:     ev.AuthEventIDs(),
-		})
-
-	ce2 := clientEvents[1]
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce2.EventID,
-			Type:           ce2.Type,
-			OriginServerTS: ce2.OriginServerTS,
-			StateKey:       ce2.StateKey,
-			Content:        ce2.Content,
-			Unsigned:       ce2.Unsigned,
-			Sender:         ce2.Sender,
-			Depth:          ce2.Depth,
-			PrevEvents:     ce2.PrevEvents,
-			AuthEvents:     ce2.AuthEvents,
-		},
-		EventFieldsToVerify{
-			EventID:        ev2.EventID(),
-			Type:           ev2.Type(),
-			OriginServerTS: ev2.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev2.Content(),
-			Unsigned:       ev2.Unsigned(),
-			Sender:         testSenderID,
-			Depth:          ev2.Depth(),
-			PrevEvents:     ev2.PrevEventIDs(),
-			AuthEvents:     ev2.AuthEventIDs(),
-		})
-}
-
-func TestToClientEventsFormatSync(t *testing.T) { // nolint: gocyclo
-	ev, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World"
-		},
-		"origin_server_ts": 123456,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World"
-			}
-		}
-    }`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-	ev2, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test2:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World 2"
-		},
-		"origin_server_ts": 1234567,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World 2"
-			},
-            "prev_sender": "testSenderID"
-		},
-        "depth": 9	
-    }`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-
-	clientEvents := ToClientEvents([]gomatrixserverlib.PDU{ev, ev2}, FormatSync, userIDForSender)
-	ce := clientEvents[0]
-	sk := testUserID
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce.EventID,
-			Type:           ce.Type,
-			OriginServerTS: ce.OriginServerTS,
-			StateKey:       ce.StateKey,
-			Content:        ce.Content,
-			Unsigned:       ce.Unsigned,
-			Sender:         ce.Sender,
-		},
-		EventFieldsToVerify{
-			EventID:        ev.EventID(),
-			Type:           ev.Type(),
-			OriginServerTS: ev.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev.Content(),
-			Unsigned:       ev.Unsigned(),
-			Sender:         testUserID,
-		})
-
-	var prev PrevEventRef
-	prev.PrevContent = []byte(`{"name": "Goodbye World 2"}`)
-	prev.PrevSenderID = testUserID
-	expectedUnsigned, _ := json.Marshal(prev)
-
-	ce2 := clientEvents[1]
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce2.EventID,
-			Type:           ce2.Type,
-			OriginServerTS: ce2.OriginServerTS,
-			StateKey:       ce2.StateKey,
-			Content:        ce2.Content,
-			Unsigned:       ce2.Unsigned,
-			Sender:         ce2.Sender,
-		},
-		EventFieldsToVerify{
-			EventID:        ev2.EventID(),
-			Type:           ev2.Type(),
-			OriginServerTS: ev2.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev2.Content(),
-			Unsigned:       expectedUnsigned,
-			Sender:         testUserID,
-		})
-}
-
-func TestToClientEventsFormatSyncUnknownPrevSender(t *testing.T) { // nolint: gocyclo
-	ev, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World"
-		},
-		"origin_server_ts": 123456,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World"
-			}
-		}
-    }`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-	ev2, err := gomatrixserverlib.MustGetRoomVersion(gomatrixserverlib.RoomVersionPseudoIDs).NewEventFromTrustedJSON([]byte(`{
-		"type": "m.room.name",
-        "state_key": "testSenderID",
-		"event_id": "$test2:localhost",
-		"room_id": "!test:localhost",
-		"sender": "testSenderID",
-		"content": {
-			"name": "Hello World 2"
-		},
-		"origin_server_ts": 1234567,
-		"unsigned": {
-			"prev_content": {
-				"name": "Goodbye World 2"
-			},
-            "prev_sender": "unknownSenderID"
-		},
-        "depth": 9	
-    }`), false)
-	if err != nil {
-		t.Fatalf("failed to create Event: %s", err)
-	}
-
-	clientEvents := ToClientEvents([]gomatrixserverlib.PDU{ev, ev2}, FormatSync, userIDForSender)
-	ce := clientEvents[0]
-	sk := testUserID
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce.EventID,
-			Type:           ce.Type,
-			OriginServerTS: ce.OriginServerTS,
-			StateKey:       ce.StateKey,
-			Content:        ce.Content,
-			Unsigned:       ce.Unsigned,
-			Sender:         ce.Sender,
-		},
-		EventFieldsToVerify{
-			EventID:        ev.EventID(),
-			Type:           ev.Type(),
-			OriginServerTS: ev.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev.Content(),
-			Unsigned:       ev.Unsigned(),
-			Sender:         testUserID,
-		})
-
-	var prev PrevEventRef
-	prev.PrevContent = []byte(`{"name": "Goodbye World 2"}`)
-	prev.PrevSenderID = "unknownSenderID"
-	expectedUnsigned, _ := json.Marshal(prev)
-
-	ce2 := clientEvents[1]
-	verifyEventFields(t,
-		EventFieldsToVerify{
-			EventID:        ce2.EventID,
-			Type:           ce2.Type,
-			OriginServerTS: ce2.OriginServerTS,
-			StateKey:       ce2.StateKey,
-			Content:        ce2.Content,
-			Unsigned:       ce2.Unsigned,
-			Sender:         ce2.Sender,
-		},
-		EventFieldsToVerify{
-			EventID:        ev2.EventID(),
-			Type:           ev2.Type(),
-			OriginServerTS: ev2.OriginServerTS(),
-			StateKey:       &sk,
-			Content:        ev2.Content(),
-			Unsigned:       expectedUnsigned,
-			Sender:         testUserID,
 		})
 }

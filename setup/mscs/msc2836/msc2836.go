@@ -92,11 +92,9 @@ type MSC2836EventRelationshipsResponse struct {
 	ParsedAuthChain []gomatrixserverlib.PDU
 }
 
-func toClientResponse(ctx context.Context, res *MSC2836EventRelationshipsResponse, rsAPI roomserver.RoomserverInternalAPI) *EventRelationshipResponse {
+func toClientResponse(res *MSC2836EventRelationshipsResponse) *EventRelationshipResponse {
 	out := &EventRelationshipResponse{
-		Events: synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(res.ParsedEvents), synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-		}),
+		Events:    synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(res.ParsedEvents), synctypes.FormatAll),
 		Limited:   res.Limited,
 		NextBatch: res.NextBatch,
 	}
@@ -196,7 +194,7 @@ func eventRelationshipHandler(db Database, rsAPI roomserver.RoomserverInternalAP
 
 		return util.JSONResponse{
 			Code: 200,
-			JSON: toClientResponse(req.Context(), res, rsAPI),
+			JSON: toClientResponse(res),
 		}
 	}
 }

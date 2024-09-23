@@ -42,7 +42,6 @@ type LatestEvents struct {
 
 type FederatedInviteClient interface {
 	SendInvite(ctx context.Context, event PDU, strippedState []InviteStrippedState) (PDU, error)
-	SendInviteV3(ctx context.Context, event ProtoEvent, userID spec.UserID, roomVersion RoomVersion, strippedState []InviteStrippedState) (PDU, error)
 }
 
 // InviteStrippedState is a cut-down set of fields from room state

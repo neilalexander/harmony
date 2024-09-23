@@ -170,106 +170,34 @@ func PerformInvite(ctx context.Context, input PerformInviteInput, fedClient Fede
 	// over federation. It might be that the remote user doesn't exist,
 	// in which case we can give up processing here.
 	var inviteEvent PDU
-	switch input.RoomVersion {
-	case RoomVersionPseudoIDs:
-		keyID := KeyID("ed25519:1")
-		origin := spec.ServerName(spec.SenderIDFromPseudoIDKey(input.SigningKey))
+	inviteeSenderID := input.Invitee.String()
+	input.EventTemplate.StateKey = &inviteeSenderID
 
-		if input.IsTargetLocal {
-			// if we invited a local user, we can also create a user room key, if it doesn't exist yet.
-			inviteeSenderID, inviteeSigningKey, err := input.SenderIDCreator(ctx, input.Invitee, input.RoomID, string(input.RoomVersion))
-			if err != nil {
-				return nil, err
-			}
+	// Sign the event so that other servers will know that we have received the invite.
+	fullEventBuilder := verImpl.NewEventBuilderFromProtoEvent(&input.EventTemplate)
+	fullEvent, err := fullEventBuilder.Build(input.EventTime, input.Inviter.Domain(), input.KeyID, input.SigningKey)
+	if err != nil {
+		logger.WithError(err).Error("failed building invite event")
+		return nil, spec.InternalServerError{}
+	}
 
-			inviteeSenderIDString := string(inviteeSenderID)
-			input.EventTemplate.StateKey = &inviteeSenderIDString
+	inviteEvent = fullEvent.Sign(
+		string(input.Invitee.Domain()), input.KeyID, input.SigningKey,
+	)
 
-			// Sign the event so that other servers will know that we have received the invite.
-			fullEventBuilder := verImpl.NewEventBuilderFromProtoEvent(&input.EventTemplate)
-			inviteEvent, err = fullEventBuilder.Build(input.EventTime, spec.ServerName(inviteeSenderID), keyID, inviteeSigningKey)
-			if err != nil {
-				logger.WithError(err).Error("failed building invite event")
-				return nil, spec.InternalServerError{}
-			}
+	err = checkEventAllowed(inviteEvent)
+	if err != nil {
+		return nil, err
+	}
 
-			// Have the inviter also sign the event
-			inviteEvent = inviteEvent.Sign(string(origin), keyID, input.SigningKey)
-
-			verifier := JSONVerifierSelf{}
-			err = VerifyEventSignatures(ctx, inviteEvent, verifier, input.UserIDQuerier)
-			if err != nil {
-				logger.WithError(err).Error("local invite event has invalid signatures")
-				return nil, spec.Forbidden(err.Error())
-			}
-
-			err = checkEventAllowed(inviteEvent)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			inviteEvent, err = fedClient.SendInviteV3(ctx, input.EventTemplate, input.Invitee, input.RoomVersion, inviteState)
-			if err != nil {
-				logger.WithError(err).Error("fedClient.SendInviteV3 failed")
-				return nil, spec.Forbidden(err.Error())
-			}
-			logger.Debugf("Federated SendInviteV3 success to user %s", input.Invitee.String())
-
-			// Have the inviter also sign the event
-			inviteEvent = inviteEvent.Sign(
-				string(origin), keyID, input.SigningKey,
-			)
-
-			verifier := JSONVerifierSelf{}
-			err := VerifyEventSignatures(ctx, inviteEvent, verifier, input.UserIDQuerier)
-			if err != nil {
-				logger.WithError(err).Error("fedClient.SendInviteV3 returned event with invalid signatures")
-				return nil, spec.Forbidden(err.Error())
-			}
-
-			err = input.StoreSenderIDFromPublicID(ctx, spec.SenderID(*inviteEvent.StateKey()), input.Invitee.String(), input.RoomID)
-			if err != nil {
-				logger.WithError(err).Errorf("failed storing senderID for %s", input.Invitee.String())
-				return nil, spec.InternalServerError{}
-			}
-
-			// TODO: This should happen before the federation call ideally,
-			// but we don't have a full PDU yet in this case by that point.
-			err = checkEventAllowed(inviteEvent)
-			if err != nil {
-				return nil, err
-			}
-		}
-	default:
-		inviteeSenderID := input.Invitee.String()
-		input.EventTemplate.StateKey = &inviteeSenderID
-
-		// Sign the event so that other servers will know that we have received the invite.
-		fullEventBuilder := verImpl.NewEventBuilderFromProtoEvent(&input.EventTemplate)
-		fullEvent, err := fullEventBuilder.Build(input.EventTime, input.Inviter.Domain(), input.KeyID, input.SigningKey)
+	if !input.IsTargetLocal {
+		eventID := inviteEvent.EventID()
+		inviteEvent, err = fedClient.SendInvite(ctx, inviteEvent, inviteState)
 		if err != nil {
-			logger.WithError(err).Error("failed building invite event")
-			return nil, spec.InternalServerError{}
+			logger.WithError(err).WithField("event_id", eventID).Error("fedClient.SendInvite failed")
+			return nil, spec.Forbidden(err.Error())
 		}
-
-		inviteEvent = fullEvent.Sign(
-			string(input.Invitee.Domain()), input.KeyID, input.SigningKey,
-		)
-
-		err = checkEventAllowed(inviteEvent)
-		if err != nil {
-			return nil, err
-		}
-
-		if !input.IsTargetLocal {
-			eventID := inviteEvent.EventID()
-			inviteEvent, err = fedClient.SendInvite(ctx, inviteEvent, inviteState)
-			if err != nil {
-				logger.WithError(err).WithField("event_id", eventID).Error("fedClient.SendInvite failed")
-				return nil, spec.Forbidden(err.Error())
-			}
-			logger.Debugf("Federated SendInvite success with event ID %s", eventID)
-		}
+		logger.Debugf("Federated SendInvite success with event ID %s", eventID)
 	}
 
 	return inviteEvent, nil

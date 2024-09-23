@@ -16,7 +16,6 @@ package perform
 
 import (
 	"context"
-	"crypto/ed25519"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -24,9 +23,7 @@ import (
 	"time"
 
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
-	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
-	"github.com/neilalexander/harmony/internal/util"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
@@ -197,27 +194,8 @@ func (r *Joiner) performJoinRoomByID(
 	checkInvitePending := false
 	info, err := r.DB.RoomInfo(ctx, req.RoomIDOrAlias)
 	if err == nil && info != nil {
-		switch info.RoomVersion {
-		case gomatrixserverlib.RoomVersionPseudoIDs:
-			senderIDPtr, queryErr := r.Queryer.QuerySenderIDForUser(ctx, *roomID, *userID)
-			if queryErr == nil {
-				checkInvitePending = true
-			}
-			if senderIDPtr == nil {
-				// create user room key if needed
-				key, keyErr := r.RSAPI.GetOrCreateUserRoomPrivateKey(ctx, *userID, *roomID)
-				if keyErr != nil {
-					util.GetLogger(ctx).WithError(keyErr).Error("GetOrCreateUserRoomPrivateKey failed")
-					return "", "", fmt.Errorf("GetOrCreateUserRoomPrivateKey failed: %w", keyErr)
-				}
-				senderID = spec.SenderIDFromPseudoIDKey(key)
-			} else {
-				senderID = *senderIDPtr
-			}
-		default:
-			checkInvitePending = true
-			senderID = spec.SenderID(userID.String())
-		}
+		checkInvitePending = true
+		senderID = spec.SenderID(userID.String())
 	}
 
 	userDomain := userID.Domain()
@@ -286,34 +264,6 @@ func (r *Joiner) performJoinRoomByID(
 
 	var buildRes rsAPI.QueryLatestEventsAndStateResponse
 	identity := r.Cfg.Matrix.SigningIdentity
-
-	// at this point we know we have an existing room
-	if inRoomRes.RoomVersion == gomatrixserverlib.RoomVersionPseudoIDs {
-		var pseudoIDKey ed25519.PrivateKey
-		pseudoIDKey, err = r.RSAPI.GetOrCreateUserRoomPrivateKey(ctx, *userID, *roomID)
-		if err != nil {
-			util.GetLogger(ctx).WithError(err).Error("GetOrCreateUserRoomPrivateKey failed")
-			return "", "", err
-		}
-
-		mapping := &gomatrixserverlib.MXIDMapping{
-			UserRoomKey: spec.SenderIDFromPseudoIDKey(pseudoIDKey),
-			UserID:      userID.String(),
-		}
-
-		// Sign the mapping with the server identity
-		if err = mapping.Sign(identity.ServerName, identity.KeyID, identity.PrivateKey); err != nil {
-			return "", "", err
-		}
-		req.Content["mxid_mapping"] = mapping
-
-		// sign the event with the pseudo ID key
-		identity = fclient.SigningIdentity{
-			ServerName: spec.ServerName(spec.SenderIDFromPseudoIDKey(pseudoIDKey)),
-			KeyID:      "ed25519:1",
-			PrivateKey: pseudoIDKey,
-		}
-	}
 
 	senderIDString := string(senderID)
 

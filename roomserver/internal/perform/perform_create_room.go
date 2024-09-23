@@ -16,14 +16,12 @@ package perform
 
 import (
 	"context"
-	"crypto/ed25519"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/neilalexander/harmony/internal/eventutil"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
-	"github.com/neilalexander/harmony/internal/gomatrixserverlib/fclient"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/util"
 	"github.com/neilalexander/harmony/roomserver/api"
@@ -74,21 +72,7 @@ func (c *Creator) PerformCreateRoom(ctx context.Context, userID spec.UserID, roo
 		}
 	}
 
-	var senderID spec.SenderID
-	if createRequest.RoomVersion == gomatrixserverlib.RoomVersionPseudoIDs {
-		// create user room key if needed
-		key, keyErr := c.RSAPI.GetOrCreateUserRoomPrivateKey(ctx, userID, roomID)
-		if keyErr != nil {
-			util.GetLogger(ctx).WithError(keyErr).Error("GetOrCreateUserRoomPrivateKey failed")
-			return "", &util.JSONResponse{
-				Code: http.StatusInternalServerError,
-				JSON: spec.InternalServerError{},
-			}
-		}
-		senderID = spec.SenderIDFromPseudoIDKey(key)
-	} else {
-		senderID = spec.SenderID(userID.String())
-	}
+	senderID := spec.SenderID(userID.String())
 
 	// TODO: Maybe, at some point, GMSL should return the events to create, so we can define the version
 	// entirely there.
@@ -175,39 +159,6 @@ func (c *Creator) PerformCreateRoom(ctx context.Context, userID spec.UserID, roo
 		}
 	}
 
-	// If we are creating a room with pseudo IDs, create and sign the MXIDMapping
-	if createRequest.RoomVersion == gomatrixserverlib.RoomVersionPseudoIDs {
-		var pseudoIDKey ed25519.PrivateKey
-		pseudoIDKey, err = c.RSAPI.GetOrCreateUserRoomPrivateKey(ctx, userID, roomID)
-		if err != nil {
-			util.GetLogger(ctx).WithError(err).Error("GetOrCreateUserRoomPrivateKey failed")
-			return "", &util.JSONResponse{
-				Code: http.StatusInternalServerError,
-				JSON: spec.InternalServerError{},
-			}
-		}
-
-		mapping := &gomatrixserverlib.MXIDMapping{
-			UserRoomKey: spec.SenderIDFromPseudoIDKey(pseudoIDKey),
-			UserID:      userID.String(),
-		}
-
-		// Sign the mapping with the server identity
-		if err = mapping.Sign(identity.ServerName, identity.KeyID, identity.PrivateKey); err != nil {
-			return "", &util.JSONResponse{
-				Code: http.StatusInternalServerError,
-				JSON: spec.InternalServerError{},
-			}
-		}
-		memberContent.MXIDMapping = mapping
-
-		// sign all events with the pseudo ID key
-		identity = &fclient.SigningIdentity{
-			ServerName: spec.ServerName(spec.SenderIDFromPseudoIDKey(pseudoIDKey)),
-			KeyID:      "ed25519:1",
-			PrivateKey: pseudoIDKey,
-		}
-	}
 	membershipEvent.Content = memberContent
 
 	var nameEvent *gomatrixserverlib.FledglingEvent

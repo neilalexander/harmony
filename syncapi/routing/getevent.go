@@ -58,14 +58,6 @@ func GetEvent(
 	}
 	defer db.Rollback() // nolint: errcheck
 
-	roomID, err := spec.NewRoomID(rawRoomID)
-	if err != nil {
-		return util.JSONResponse{
-			Code: http.StatusBadRequest,
-			JSON: spec.InvalidParam("invalid room ID"),
-		}
-	}
-
 	events, err := db.Events(ctx, []string{eventID})
 	if err != nil {
 		logger.WithError(err).Error("GetEvent: syncDB.Events failed")
@@ -119,16 +111,7 @@ func GetEvent(
 		}
 	}
 
-	clientEvent, err := synctypes.ToClientEvent(events[0], synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	})
-	if err != nil {
-		util.GetLogger(req.Context()).WithError(err).WithField("senderID", events[0].SenderID()).WithField("roomID", *roomID).Error("Failed converting to ClientEvent")
-		return util.JSONResponse{
-			Code: http.StatusInternalServerError,
-			JSON: spec.Unknown("internal server error"),
-		}
-	}
+	clientEvent := synctypes.ToClientEvent(events[0], synctypes.FormatAll)
 
 	return util.JSONResponse{
 		Code: http.StatusOK,

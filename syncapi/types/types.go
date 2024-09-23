@@ -540,16 +540,8 @@ func NewInviteResponse(ctx context.Context, rsAPI api.QuerySenderIDAPI, event *t
 	// If there is then unmarshal it into the response. This will contain the
 	// partial room state such as join rules, room name etc.
 	if inviteRoomState := gjson.GetBytes(event.Unsigned(), "invite_room_state"); inviteRoomState.Exists() {
-		if event.Version() == gomatrixserverlib.RoomVersionPseudoIDs && eventFormat != synctypes.FormatSyncFederation {
-			updatedInvite, err := synctypes.GetUpdatedInviteRoomState(func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-				return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-			}, inviteRoomState, event.PDU, event.RoomID(), eventFormat)
-			if err != nil {
-				return nil, err
-			}
-			_ = json.Unmarshal(updatedInvite, &res.InviteState.Events)
-		} else {
-			_ = json.Unmarshal([]byte(inviteRoomState.Raw), &res.InviteState.Events)
+		if err := json.Unmarshal([]byte(inviteRoomState.Raw), &res.InviteState.Events); err != nil {
+			return nil, err
 		}
 	}
 
@@ -561,12 +553,7 @@ func NewInviteResponse(ctx context.Context, rsAPI api.QuerySenderIDAPI, event *t
 
 	// Then we'll see if we can create a partial of the invite event itself.
 	// This is needed for clients to work out *who* sent the invite.
-	inviteEvent, err := synctypes.ToClientEvent(eventNoUnsigned, eventFormat, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	})
-	if err != nil {
-		return nil, err
-	}
+	inviteEvent := synctypes.ToClientEvent(eventNoUnsigned, eventFormat)
 
 	// Ensure unsigned field is empty so it isn't marshalled into the final JSON
 	inviteEvent.Unsigned = nil

@@ -263,7 +263,7 @@ func OnIncomingMessagesRequest(
 		deviceUserID:     *deviceUserID,
 	}
 
-	clientEvents, start, end, err := mReq.retrieveEvents(req.Context(), rsAPI)
+	clientEvents, start, end, err := mReq.retrieveEvents()
 	if err != nil {
 		util.GetLogger(req.Context()).WithError(err).Error("mreq.retrieveEvents failed")
 		return util.JSONResponse{
@@ -302,9 +302,7 @@ func OnIncomingMessagesRequest(
 				JSON: spec.InternalServerError{},
 			}
 		}
-		res.State = append(res.State, synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(membershipEvents), synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-			return rsAPI.QueryUserIDForSender(req.Context(), roomID, senderID)
-		})...)
+		res.State = append(res.State, synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(membershipEvents), synctypes.FormatAll)...)
 	}
 
 	if fromStream != nil {
@@ -340,7 +338,7 @@ func getMembershipForUser(ctx context.Context, roomID, userID string, rsAPI api.
 // homeserver in the room for older events.
 // Returns an error if there was an issue talking to the database or with the
 // remote homeserver.
-func (r *messagesReq) retrieveEvents(ctx context.Context, rsAPI api.SyncRoomserverAPI) (
+func (r *messagesReq) retrieveEvents() (
 	clientEvents []synctypes.ClientEvent, start,
 	end types.TopologyToken, err error,
 ) {
@@ -426,9 +424,7 @@ func (r *messagesReq) retrieveEvents(ctx context.Context, rsAPI api.SyncRoomserv
 
 	start = *r.from
 
-	return synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(filteredEvents), synctypes.FormatAll, func(roomID spec.RoomID, senderID spec.SenderID) (*spec.UserID, error) {
-		return rsAPI.QueryUserIDForSender(ctx, roomID, senderID)
-	}), start, end, nil
+	return synctypes.ToClientEvents(gomatrixserverlib.ToPDUs(filteredEvents), synctypes.FormatAll), start, end, nil
 }
 
 func (r *messagesReq) getStartEnd(events []*rstypes.HeaderedEvent) (start, end types.TopologyToken, err error) {

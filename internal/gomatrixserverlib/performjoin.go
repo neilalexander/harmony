@@ -120,38 +120,7 @@ func PerformJoin(
 	signingKey := input.PrivateKey
 	keyID := input.KeyID
 	origOrigin := origin
-	switch respMakeJoin.GetRoomVersion() {
-	case RoomVersionPseudoIDs:
-		// we successfully did a make_join, create a senderID for this user now
-		senderID, signingKey, err = input.GetOrCreateSenderID(ctx, *input.UserID, *input.RoomID, string(respMakeJoin.GetRoomVersion()))
-		if err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("Cannot create user room key"),
-			}
-		}
-		keyID = "ed25519:1"
-		origin = spec.ServerName(senderID)
-
-		mapping := MXIDMapping{
-			UserRoomKey: senderID,
-			UserID:      input.UserID.String(),
-		}
-		if err = mapping.Sign(origOrigin, input.KeyID, input.PrivateKey); err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("cannot sign mxid_mapping: %w", err),
-			}
-		}
-
-		input.Content["mxid_mapping"] = mapping
-	default:
-		senderID = spec.SenderID(input.UserID.String())
-	}
+	senderID = spec.SenderID(input.UserID.String())
 
 	stateKey := string(senderID)
 	joinEvent.SenderID = string(senderID)
@@ -237,22 +206,6 @@ func PerformJoin(
 		}
 	}
 
-	// get the membership events of all users, so we can store the mxid_mappings
-	// TODO: better way?
-	if roomVersion == RoomVersionPseudoIDs {
-		stateEvents := respSendJoin.GetStateEvents().UntrustedEvents(roomVersion)
-		events := append(authEvents, stateEvents...)
-		err = storeMXIDMappings(ctx, events, *input.RoomID, input.KeyRing, input.StoreSenderIDFromPublicID)
-		if err != nil {
-			return nil, &FederationError{
-				ServerName: input.ServerName,
-				Transient:  false,
-				Reachable:  true,
-				Err:        fmt.Errorf("unable to store mxid_mapping: %w", err),
-			}
-		}
-	}
-
 	// Process the send_join response. The idea here is that we'll try and wait
 	// for as long as possible for the work to complete by using a background
 	// context instead of the provided ctx. If the client does give up waiting,
@@ -291,34 +244,6 @@ func PerformJoin(
 		JoinEvent:     event,
 		StateSnapshot: respState,
 	}, nil
-}
-
-func storeMXIDMappings(
-	ctx context.Context,
-	events []PDU,
-	roomID spec.RoomID,
-	keyRing JSONVerifier,
-	storeSenderID spec.StoreSenderIDFromPublicID,
-) error {
-	for _, ev := range events {
-		if ev.Type() != spec.MRoomMember {
-			continue
-		}
-		mapping, err := getMXIDMapping(ev)
-		if err != nil {
-			return err
-		}
-		// we already validated it is a valid roomversion, so this should be safe to use.
-		verImpl := MustGetRoomVersion(ev.Version())
-		if err := validateMXIDMappingSignatures(ctx, ev, *mapping, keyRing, verImpl); err != nil {
-			logrus.WithError(err).Error("invalid signature for mxid_mapping")
-			continue
-		}
-		if err := storeSenderID(ctx, ev.SenderID(), mapping.UserID, roomID); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func setDefaultRoomVersionFromJoinEvent(

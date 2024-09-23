@@ -32,7 +32,6 @@ type FederationClient interface {
 	MakeLeave(ctx context.Context, origin, s spec.ServerName, roomID, userID string) (res RespMakeLeave, err error)
 	SendLeave(ctx context.Context, origin, s spec.ServerName, event gomatrixserverlib.PDU) (err error)
 	SendInviteV2(ctx context.Context, origin, s spec.ServerName, request InviteV2Request) (res RespInviteV2, err error)
-	SendInviteV3(ctx context.Context, origin, s spec.ServerName, request InviteV3Request, userID spec.UserID) (res RespInviteV2, err error)
 	MakeKnock(ctx context.Context, origin, s spec.ServerName, roomID, userID string, roomVersions []gomatrixserverlib.RoomVersion) (res RespMakeKnock, err error)
 	SendKnock(ctx context.Context, origin, s spec.ServerName, event gomatrixserverlib.PDU) (res RespSendKnock, err error)
 
@@ -126,7 +125,6 @@ func (ac *federationClient) doRequest(ctx context.Context, r FederationRequest, 
 
 var federationPathPrefixV1 = "/_matrix/federation/v1"
 var federationPathPrefixV2 = "/_matrix/federation/v2"
-var federationPathPrefixV3 = "/_matrix/federation/v3"
 
 // SendTransaction sends a transaction
 func (ac *federationClient) SendTransaction(
@@ -382,23 +380,6 @@ func (ac *federationClient) SendInviteV2(
 			Event: resp.Event,
 		}
 	}
-	return
-}
-
-// SendInviteV3 sends an invite m.room.member event to an invited server to be
-// signed by it. This is used to invite a user that is not on the local server.
-// V3 sends a partial event to allow the invitee to populate the mxid_mapping.
-func (ac *federationClient) SendInviteV3(
-	ctx context.Context, origin, s spec.ServerName, request InviteV3Request, userID spec.UserID,
-) (res RespInviteV2, err error) {
-	path := federationPathPrefixV3 + "/invite/" +
-		url.PathEscape(request.Event().RoomID) + "/" +
-		url.PathEscape(userID.String())
-	req := NewFederationRequest("PUT", origin, s, path)
-	if err = req.SetContent(request); err != nil {
-		return
-	}
-	err = ac.doRequest(ctx, req, &res)
 	return
 }
 

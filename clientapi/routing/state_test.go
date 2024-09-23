@@ -116,7 +116,6 @@ func Test_OnIncomingStateTypeRequest(t *testing.T) {
 	var tempRoomServerCfg config.RoomServer
 	tempRoomServerCfg.Defaults(config.DefaultOpts{})
 	defaultRoomVersion := tempRoomServerCfg.DefaultRoomVersion
-	pseudoIDRoomVersion := gomatrixserverlib.RoomVersionPseudoIDs
 	nonPseudoIDRoomVersion := gomatrixserverlib.RoomVersionV10
 
 	userIDStr := "@testuser:domain"
@@ -146,43 +145,6 @@ func Test_OnIncomingStateTypeRequest(t *testing.T) {
 		}
 
 		jsonResp := OnIncomingStateTypeRequest(ctx, device, rsAPI, roomIDStr, eventType, stateKey, false)
-
-		assert.DeepEqual(t, jsonResp, util.JSONResponse{
-			Code: http.StatusOK,
-			JSON: spec.RawJSON(`{"foo":"bar"}`),
-		})
-	})
-
-	t.Run("user ID key translated to room key in pseudo ID rooms", func(t *testing.T) {
-		ctx := context.Background()
-
-		stateSenderUserID := "@sender:domain"
-		stateSenderRoomKey := "testsenderkey"
-
-		rsAPI := stateTestRoomserverAPI{
-			roomVersion: pseudoIDRoomVersion,
-			roomIDStr:   roomIDStr,
-			roomState: map[gomatrixserverlib.StateKeyTuple]*types.HeaderedEvent{
-				{
-					EventType: eventType,
-					StateKey:  stateSenderRoomKey,
-				}: mustCreateStatePDU(t, pseudoIDRoomVersion, roomIDStr, eventType, stateSenderRoomKey, map[string]interface{}{
-					"foo": "bar",
-				}),
-				{
-					EventType: eventType,
-					StateKey:  stateSenderUserID,
-				}: mustCreateStatePDU(t, pseudoIDRoomVersion, roomIDStr, eventType, stateSenderUserID, map[string]interface{}{
-					"not": "thisone",
-				}),
-			},
-			userIDStr: userIDStr,
-			senderMapping: map[string]string{
-				stateSenderUserID: stateSenderRoomKey,
-			},
-		}
-
-		jsonResp := OnIncomingStateTypeRequest(ctx, device, rsAPI, roomIDStr, eventType, stateSenderUserID, false)
 
 		assert.DeepEqual(t, jsonResp, util.JSONResponse{
 			Code: http.StatusOK,

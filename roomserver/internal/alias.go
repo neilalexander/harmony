@@ -153,11 +153,7 @@ func (r *RoomserverInternalAPI) RemoveRoomAlias(ctx context.Context, senderID sp
 				return true, false, err
 			}
 
-			validRoomID, err := spec.NewRoomID(roomID)
-			if err != nil {
-				return true, false, err
-			}
-			identity, err := r.SigningIdentityFor(ctx, *validRoomID, *canonicalSender)
+			identity, err := r.SigningIdentityFor(ctx, *canonicalSender)
 			if err != nil {
 				return true, false, err
 			}

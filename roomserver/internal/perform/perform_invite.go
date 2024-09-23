@@ -160,12 +160,6 @@ func (r *Inviter) PerformInvite(
 	isTargetLocal := r.Cfg.Matrix.IsLocalServerName(req.InviteInput.Invitee.Domain())
 
 	signingKey := req.InviteInput.PrivateKey
-	if info.RoomVersion == gomatrixserverlib.RoomVersionPseudoIDs {
-		signingKey, err = r.RSAPI.GetOrCreateUserRoomPrivateKey(ctx, req.InviteInput.Inviter, req.InviteInput.RoomID)
-		if err != nil {
-			return err
-		}
-	}
 
 	input := gomatrixserverlib.PerformInviteInput{
 		RoomID:            req.InviteInput.RoomID,

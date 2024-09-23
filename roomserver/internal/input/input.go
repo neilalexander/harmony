@@ -80,7 +80,7 @@ type Inputer struct {
 	JetStream           nats.JetStreamContext
 	Durable             nats.SubOpt
 	ServerName          spec.ServerName
-	SigningIdentity     func(ctx context.Context, roomID spec.RoomID, senderID spec.UserID) (fclient.SigningIdentity, error)
+	SigningIdentity     func(ctx context.Context, senderID spec.UserID) (fclient.SigningIdentity, error)
 	FSAPI               fedapi.RoomserverFederationAPI
 	RSAPI               api.RoomserverInternalAPI
 	KeyRing             gomatrixserverlib.JSONVerifier
