@@ -20,7 +20,7 @@ RUN --mount=target=. \
     GOARCH="$TARGETARCH" \
     GOOS="linux" \
     CGO_ENABLED=$([ "$TARGETARCH" = "$USERARCH" ] && echo "1" || echo "0") \
-    go build -v -ldflags="-s -w" -trimpath -tags=elementweb -o /out/ ./cmd/...
+    go build -v -ldflags="-s -w" -trimpath -o /out/ ./cmd/...
 
 
 #
@@ -45,4 +45,3 @@ WORKDIR /etc/dendrite
 
 ENTRYPOINT ["/usr/bin/dendrite"]
 EXPOSE 8008 8448
-
