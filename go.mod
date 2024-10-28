@@ -23,7 +23,7 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
-	github.com/tidwall/gjson v1.17.1
+	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	github.com/yggdrasil-network/yggdrasil-go v0.5.9
 	github.com/yggdrasil-network/yggquic v0.0.0-20241019162232-59ff4e0afbaf
