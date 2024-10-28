@@ -209,13 +209,13 @@ func sortJSONObject(input gjson.Result, output []byte) []byte {
 	}
 
 	// Try to stay on the stack here if we can.
-	var _entries [1024]*entry
+	var _entries [128]entry
 	entries := _entries[:0]
 
 	// Iterate over each key/value pair and add it to a slice
 	// that we can sort
 	input.ForEach(func(key, value gjson.Result) bool {
-		entries = append(entries, &entry{
+		entries = append(entries, entry{
 			key:   key.String(),
 			value: value,
 		})
@@ -224,7 +224,7 @@ func sortJSONObject(input gjson.Result, output []byte) []byte {
 
 	// Using slices.SortFunc here instead of sort.Slice avoids
 	// heap escapes due to reflection.
-	slices.SortFunc(entries, func(a, b *entry) int {
+	slices.SortFunc(entries, func(a, b entry) int {
 		return strings.Compare(a.key, b.key)
 	})
 
