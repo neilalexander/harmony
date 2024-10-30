@@ -1188,25 +1188,23 @@ func syncUntil(t *testing.T,
 	}
 	// loop on /sync until we receive the last send message or timeout after 5 seconds, since we don't know if the message made it
 	// to the syncAPI when hitting /sync
-	done := make(chan bool)
-	defer close(done)
+	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*5)
 	go func() {
+		defer cancel()
 		for {
 			w := httptest.NewRecorder()
-			routers.Client.ServeHTTP(w, test.NewRequest(t, "GET", "/_matrix/client/v3/sync", test.WithQueryParams(map[string]string{
+			r := test.NewRequest(t, "GET", "/_matrix/client/v3/sync", test.WithQueryParams(map[string]string{
 				"access_token": accessToken,
 				"timeout":      "1000",
-			})))
+			}))
+			routers.Client.ServeHTTP(w, r.WithContext(ctx))
 			if checkFunc(w.Body.String()) {
-				done <- true
 				return
 			}
 		}
 	}()
 
-	select {
-	case <-done:
-	case <-time.After(time.Second * 5):
+	if <-ctx.Done(); ctx.Err() == context.DeadlineExceeded {
 		t.Fatalf("Timed out waiting for messages")
 	}
 }
