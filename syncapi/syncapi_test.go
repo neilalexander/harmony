@@ -1192,6 +1192,11 @@ func syncUntil(t *testing.T,
 	go func() {
 		defer cancel()
 		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
 			w := httptest.NewRecorder()
 			r := test.NewRequest(t, "GET", "/_matrix/client/v3/sync", test.WithQueryParams(map[string]string{
 				"access_token": accessToken,
