@@ -28,12 +28,12 @@ func JetStreamConsumer(
 		logrus.WithContext(ctx).WithError(err).Warnf("Failed to configure durable %q", durable)
 		return err
 	}
-	go jetStreamConsumerWorker(ctx, sub, subj, durable, batch, f)
+	go jetStreamConsumerWorker(ctx, sub, subj, batch, f)
 	return nil
 }
 
 func jetStreamConsumerWorker(
-	ctx context.Context, sub *nats.Subscription, subj, durable string, batch int,
+	ctx context.Context, sub *nats.Subscription, subj string, batch int,
 	f func(ctx context.Context, msgs []*nats.Msg) bool,
 ) {
 	for {
