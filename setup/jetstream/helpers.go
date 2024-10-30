@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
@@ -22,33 +21,27 @@ func JetStreamConsumer(
 	f func(ctx context.Context, msgs []*nats.Msg) bool,
 	opts ...nats.SubOpt,
 ) error {
-	go jetStreamConsumerWorker(ctx, js, subj, durable, batch, f, opts...)
+	// Hangover from the migration from push consumers to pull consumers.
+	durable = durable + "Pull"
+	sub, err := js.PullSubscribe(subj, durable, opts...)
+	if err != nil {
+		logrus.WithContext(ctx).WithError(err).Warnf("Failed to configure durable %q", durable)
+		return err
+	}
+	go jetStreamConsumerWorker(ctx, js, subj, durable, batch, f, sub, opts...)
 	return nil
 }
 
 func jetStreamConsumerWorker(
 	ctx context.Context, js nats.JetStreamContext, subj, durable string, batch int,
-	f func(ctx context.Context, msgs []*nats.Msg) bool,
+	f func(ctx context.Context, msgs []*nats.Msg) bool, sub *nats.Subscription,
 	opts ...nats.SubOpt,
 ) {
-	// Hangover from the migration from push consumers to pull consumers.
-	durable = durable + "Pull"
-
-retry:
-	sub, err := js.PullSubscribe(subj, durable, opts...)
-	if err != nil {
-		logrus.WithContext(ctx).WithError(err).Warnf("Failed to subscribe %q", durable)
-		time.Sleep(time.Second * 2)
-		goto retry
-	}
 	for {
 		// If the parent context has given up then there's no point in
 		// carrying on doing anything, so stop the listener.
 		select {
 		case <-ctx.Done():
-			if err := sub.Unsubscribe(); err != nil {
-				logrus.WithContext(ctx).Warnf("Failed to unsubscribe %q", durable)
-			}
 			return
 		default:
 		}
@@ -72,15 +65,9 @@ retry:
 					// just timed out and we should try again.
 					continue
 				}
-			} else if errors.Is(err, nats.ErrConsumerDeleted) {
-				// The consumer was deleted so recreate it.
-				logrus.WithContext(ctx).WithField("subject", subj).Warn("Consumer was deleted, recreating")
-				goto retry
-			} else if errors.Is(err, nats.ErrConsumerNotFound) {
-				// The consumer may not have been created at server startup,
-				// i.e. if it was an in-memory stream/consumer, so recreate it.
-				logrus.WithContext(ctx).WithField("subject", subj).Warn("Consumer was not found, recreating")
-				goto retry
+			} else if errors.Is(err, nats.ErrTimeout) {
+				// Pull request was invalidated, try again.
+				continue
 			} else if errors.Is(err, nats.ErrConsumerLeadershipChanged) {
 				// Leadership changed so pending pull requests became invalidated,
 				// just try again.
@@ -91,12 +78,9 @@ retry:
 				// clustered) or to reconnect when the server comes back up.
 				continue
 			} else {
-				// Something else went wrong, so we'll panic.
+				// Something else went wrong.
 				logrus.WithContext(ctx).WithField("subject", subj).WithError(err).Warn("Error on pull subscriber fetch")
-				if err := sub.Unsubscribe(); err != nil {
-					logrus.WithContext(ctx).WithField("subject", subj).WithError(err).Warn("Error on unsubscribe")
-				}
-				goto retry
+				return
 			}
 		}
 		if len(msgs) < 1 {
