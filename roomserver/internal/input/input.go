@@ -239,6 +239,7 @@ func (r *Inputer) Start() error {
 		nats.AckExplicit(),
 		nats.ReplayInstant(),
 		nats.BindStream(r.InputRoomEventTopic),
+		nats.OrderedConsumer(),
 	)
 
 	// Make sure that the room consumers have the right config.
