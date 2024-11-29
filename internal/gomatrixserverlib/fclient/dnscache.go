@@ -100,7 +100,6 @@ func (c *DNSCache) DialContext(ctx context.Context, network, address string) (ne
 	// retried set to true. This stops us from recursing more than
 	// once.
 	retried := false
-	dialer := net.Dialer{}
 
 retryLookup:
 	// Consult the cache for the hostname. This will cause the OS to
@@ -113,7 +112,7 @@ retryLookup:
 	// Try each address in the cached entry. If we successfully connect
 	// to one of those addresses then return the conn and stop there.
 	for _, addr := range entry.addrs {
-		conn, err := dialer.DialContext(ctx, "tcp", addr.String()+":"+port)
+		conn, err := destinationTripperDialer.DialContext(ctx, "tcp", addr.String()+":"+port)
 		if err != nil {
 			continue
 		}
