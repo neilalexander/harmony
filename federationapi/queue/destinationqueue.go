@@ -155,7 +155,7 @@ func (oq *destinationQueue) wakeQueueIfEventsPending(forceWakeup bool) {
 	// or if forceWakeup is true. Otherwise there is no reason to start the
 	// queue goroutine and waste resources.
 	if forceWakeup || eventsPending() {
-		logrus.Info("Starting queue due to pending events or forceWakeup")
+		logrus.Debug("Starting queue due to pending events or forceWakeup")
 		oq.wakeQueueAndNotify()
 	}
 }
