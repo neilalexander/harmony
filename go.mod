@@ -15,7 +15,7 @@ require (
 	github.com/matrix-org/dugong v0.0.0-20210921133753-66e6b1c67e2e
 	github.com/matrix-org/gomatrix v0.0.0-20220926102614-ceba4d9f7530
 	github.com/miekg/dns v1.1.62
-	github.com/nats-io/nats-server/v2 v2.10.22
+	github.com/nats-io/nats-server/v2 v2.10.23-RC.7
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -28,11 +28,11 @@ require (
 	github.com/yggdrasil-network/yggdrasil-go v0.5.9
 	github.com/yggdrasil-network/yggquic v0.0.0-20241019162232-59ff4e0afbaf
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.28.0
+	golang.org/x/crypto v0.29.0
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/image v0.21.0
-	golang.org/x/sync v0.8.0
-	golang.org/x/term v0.25.0
+	golang.org/x/sync v0.9.0
+	golang.org/x/term v0.26.0
 	gopkg.in/h2non/bimg.v1 v1.1.9
 	gopkg.in/h2non/gock.v1 v1.1.2
 	gopkg.in/macaroon.v2 v2.1.0
@@ -70,6 +70,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/frankban/quicktest v1.14.3 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
+	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -104,9 +105,9 @@ require (
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
-	golang.org/x/time v0.7.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
