@@ -236,7 +236,6 @@ func (r *Inputer) Start() error {
 		},
 		nats.HeadersOnly(),
 		nats.BindStream(r.InputRoomEventTopic),
-		nats.Durable("supervisor"),
 		nats.ManualAck(),
 	)
 
