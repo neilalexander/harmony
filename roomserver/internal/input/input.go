@@ -232,10 +232,12 @@ func (r *Inputer) Start() error {
 		func(m *nats.Msg) {
 			roomID := m.Header.Get(jetstream.RoomID)
 			r.startWorkerForRoom(roomID)
+			_ = m.AckSync()
 		},
 		nats.HeadersOnly(),
 		nats.BindStream(r.InputRoomEventTopic),
-		nats.OrderedConsumer(),
+		nats.Durable("supervisor"),
+		nats.ManualAck(),
 	)
 
 	// Make sure that the room consumers have the right config.
