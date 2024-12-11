@@ -148,7 +148,6 @@ func (r *Inputer) startWorkerForRoom(roomID string) {
 		}
 
 		consumerConfig := &nats.ConsumerConfig{
-			Name:              consumer,
 			Durable:           consumer,
 			AckPolicy:         nats.AckExplicitPolicy,
 			DeliverPolicy:     nats.DeliverAllPolicy,
@@ -228,43 +227,23 @@ func (r *Inputer) Start() error {
 	if r.EnableMetrics {
 		prometheus.MustRegister(roomserverInputBackpressure, processRoomEventDuration)
 	}
-
-	ccfg := &nats.ConsumerConfig{
-		Name:          "supervisor",
-		Durable:       "supervisor",
-		DeliverPolicy: nats.DeliverAllPolicy,
-		AckPolicy:     nats.AckExplicitPolicy,
-		MaxDeliver:    -1,
-		MaxAckPending: 1,
-		ReplayPolicy:  nats.ReplayInstantPolicy,
-	}
-
-	if _, err := r.JetStream.AddConsumer(r.InputRoomEventTopic, ccfg); err != nil {
-		if !errors.Is(err, nats.ErrConsumerNameAlreadyInUse) {
-			return err
-		}
-		if _, err = r.JetStream.UpdateConsumer(r.InputRoomEventTopic, ccfg); err != nil {
-			return err
-		}
-	}
-
 	_, err := r.JetStream.Subscribe(
-		"", // This is blank because we specified Bind().
+		"", // This is blank because we specified it in BindStream.
 		func(m *nats.Msg) {
 			roomID := m.Header.Get(jetstream.RoomID)
 			r.startWorkerForRoom(roomID)
-			_ = m.AckSync()
 		},
 		nats.HeadersOnly(),
-		nats.Bind(r.InputRoomEventTopic, "supervisor"),
+		nats.BindStream(r.InputRoomEventTopic),
+		nats.OrderedConsumer(),
 	)
 
 	// Make sure that the room consumers have the right config.
 	stream := r.Cfg.Matrix.JetStream.Prefixed(jetstream.InputRoomEvent)
 	for consumer := range r.JetStream.Consumers(stream) {
 		switch {
-		case consumer.Config.Name == "supervisor" || consumer.Config.Durable == "":
-			continue // Ignore supervisor consumers
+		case consumer.Config.Durable == "":
+			continue // Ignore ephemeral consumers
 		case consumer.Config.InactiveThreshold != inactiveThreshold:
 			consumer.Config.InactiveThreshold = inactiveThreshold
 			if _, cerr := r.JetStream.UpdateConsumer(stream, &consumer.Config); cerr != nil {
