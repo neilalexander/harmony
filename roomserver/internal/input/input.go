@@ -253,7 +253,7 @@ func (r *Inputer) Start() error {
 		func(m *nats.Msg) {
 			roomID := m.Header.Get(jetstream.RoomID)
 			r.startWorkerForRoom(roomID)
-			m.AckSync()
+			_ = m.AckSync()
 		},
 		nats.HeadersOnly(),
 		nats.Bind(r.InputRoomEventTopic, "supervisor"),
