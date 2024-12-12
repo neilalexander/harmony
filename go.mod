@@ -25,10 +25,10 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
-	github.com/yggdrasil-network/yggdrasil-go v0.5.10
+	github.com/yggdrasil-network/yggdrasil-go v0.5.11
 	github.com/yggdrasil-network/yggquic v0.0.0-20241124130540-d2bb8e485491
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.30.0
+	golang.org/x/crypto v0.31.0
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
 	golang.org/x/image v0.22.0
 	golang.org/x/sync v0.10.0
@@ -42,7 +42,7 @@ require (
 )
 
 require (
-	github.com/Arceliar/ironwood v0.0.0-20241122002527-75a6e82fa380 // indirect
+	github.com/Arceliar/ironwood v0.0.0-20241210120540-9deb08d9f8f9 // indirect
 	github.com/RoaringBitmap/roaring v1.9.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.13.0 // indirect
@@ -103,7 +103,7 @@ require (
 	go.mau.fi/util v0.3.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.31.0 // indirect
+	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
