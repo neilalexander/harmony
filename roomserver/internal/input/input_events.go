@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"runtime/pprof"
 	"time"
 
 	"github.com/neilalexander/harmony/roomserver/storage/tables"
@@ -116,10 +115,6 @@ func (r *Inputer) processRoomEvent(
 			"state_ids": len(input.StateEventIDs),
 		})
 	}
-
-	// Set goroutine labels, useful for pprof CPU profiles, useful for CPU
-	// pprof profiles to find out where time is being spent.
-	pprof.SetGoroutineLabels(context.WithValue(ctx, "room_id", event.RoomID().String()))
 
 	// Don't waste time processing the event if the room doesn't exist.
 	// A room entry locally will only be created in response to a create
