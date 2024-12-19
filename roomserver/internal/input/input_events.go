@@ -168,7 +168,7 @@ func (r *Inputer) processRoomEvent(
 			return fmt.Errorf("updater.MissingAuthPrevEvents: %w", err)
 		}
 		missingAuth = len(missingAuthIDs) > 0
-		missingPrev = !input.HasState && len(missingPrevIDs) > 0
+		missingPrev = input.Kind != api.KindOutlier && !input.HasState && len(missingPrevIDs) > 0
 	}
 
 	// If we have missing events (auth or prev), we build a list of servers to ask
