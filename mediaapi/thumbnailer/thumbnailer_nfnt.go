@@ -199,7 +199,7 @@ func createThumbnail(
 		"ActualWidth":  width,
 		"ActualHeight": height,
 		"processTime":  time.Since(start),
-	}).Info("Generated thumbnail")
+	}).Debugf("Generated thumbnail %q", dst)
 
 	stat, err := os.Stat(string(dst))
 	if err != nil {
