@@ -19,10 +19,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/neilalexander/harmony/internal/gomatrixserverlib"
 	"github.com/neilalexander/harmony/internal/gomatrixserverlib/spec"
 	"github.com/neilalexander/harmony/internal/sqlutil"
 	"github.com/neilalexander/harmony/roomserver/api"
 	rstypes "github.com/neilalexander/harmony/roomserver/types"
+	"github.com/neilalexander/harmony/setup/config"
 	"github.com/neilalexander/harmony/syncapi/storage"
 	"github.com/neilalexander/harmony/syncapi/types"
 	log "github.com/sirupsen/logrus"
@@ -37,6 +39,7 @@ import (
 // the event, but the token has already advanced by the time they fetch it, resulting
 // in missed events.
 type Notifier struct {
+	cfg   *config.Dendrite
 	lock  *sync.RWMutex
 	rsAPI api.SyncRoomserverAPI
 	// A map of RoomID => Set<UserID> : Must only be accessed by the OnNewEvent goroutine
@@ -55,8 +58,9 @@ type Notifier struct {
 // NewNotifier creates a new notifier set to the given sync position.
 // In order for this to be of any use, the Notifier needs to be told all rooms and
 // the joined users within each of them by calling Notifier.Load(*storage.SyncServerDatabase).
-func NewNotifier(rsAPI api.SyncRoomserverAPI) *Notifier {
+func NewNotifier(rsAPI api.SyncRoomserverAPI, cfg *config.Dendrite) *Notifier {
 	return &Notifier{
+		cfg:                 cfg,
 		rsAPI:               rsAPI,
 		roomIDToJoinedUsers: make(map[string]*userIDSet),
 		userDeviceStreams:   make(map[string]map[string]*UserDeviceStream),
@@ -427,6 +431,10 @@ func (n *Notifier) _fetchUserStreams(userID string) []*UserDeviceStream {
 }
 
 func (n *Notifier) _addJoinedUser(roomID, userID string) {
+	_, domain, err := gomatrixserverlib.SplitID('@', userID)
+	if err != nil || !n.cfg.Global.IsLocalServerName(domain) {
+		return
+	}
 	if _, ok := n.roomIDToJoinedUsers[roomID]; !ok {
 		n.roomIDToJoinedUsers[roomID] = newUserIDSet(8)
 	}
@@ -435,6 +443,10 @@ func (n *Notifier) _addJoinedUser(roomID, userID string) {
 }
 
 func (n *Notifier) _removeJoinedUser(roomID, userID string) {
+	_, domain, err := gomatrixserverlib.SplitID('@', userID)
+	if err != nil || !n.cfg.Global.IsLocalServerName(domain) {
+		return
+	}
 	if _, ok := n.roomIDToJoinedUsers[roomID]; !ok {
 		n.roomIDToJoinedUsers[roomID] = newUserIDSet(8)
 	}
