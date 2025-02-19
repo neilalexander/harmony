@@ -213,7 +213,7 @@ func (oqs *OutgoingQueues) SendEvent(
 
 	log.WithFields(log.Fields{
 		"destinations": len(destmap), "event": ev.EventID(),
-	}).Infof("Sending event")
+	}).Debug("Sending event")
 
 	headeredJSON, err := json.Marshal(ev)
 	if err != nil {
@@ -291,7 +291,7 @@ func (oqs *OutgoingQueues) SendEDU(
 
 	log.WithFields(log.Fields{
 		"destinations": len(destmap), "edu_type": e.Type,
-	}).Info("Sending EDU event")
+	}).Debug("Sending EDU event")
 
 	ephemeralJSON, err := json.Marshal(e)
 	if err != nil {
