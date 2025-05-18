@@ -1,3 +1,25 @@
+# Unmaintained
+
+For a number of years I worked on Matrix and Dendrite, believing that the ecosystem would be enriched by a powerful and lightweight homeserver implementation to
+live alongside or eventually replace Synapse. I am proud of the huge progress that the Dendrite team made in transforming an abandoned codebase that barely compiled
+into a modernised and functional one. The Harmony fork came into existence with the thought that it's still possible to have a perfectly good core Matrix experience
+without much of the extra weight that had accumulated over time, hence the number of features and APIs that had been removed, and that a leaner codebase would be overall
+easier to maintain as an individual developer.
+
+However, I have found myself increasingly disenfranchised. Matrix has become a perfect example of what happens when an endlessly scope-creeping monolithic specification
+is combined with a complete lack of interest in repaying technical debt or fixing fundamental protocol issues. The result over time is that the protocol has become
+extremely heavy, practically impossible to implement correctly (by whatever definition of the word), deeply flawed and, worst of all for a federated system, a complete
+interoperability and compatibility disaster.
+
+It's practically impossible to "get Matrix right" today, given the difficulty in reproducing the many Synapse bugs and the sheer lack of precision in the spec (which
+some vocal community members use as an excuse to beat us endlessly with "Dendrite is unusable!"-style criticisms), and with the recent wave of illegal and frankly
+horrifying content that has been spammed throughout and eagerly replicated across the Matrix federation, I am no longer convinced that a Matrix homeserver is even safe
+to host, or indeed that anything remotely like this is even what "right" is *supposed* to look like.
+
+I just no longer believe that Matrix is the right answer to the problems that it attempts to solve and with that I no longer have the energy or motivation to maintain
+this fork either. Perhaps Dendrite development will continue upstream or someone else will fork Harmony, but time has come for me to say goodbye to this project and to
+refocus my attention elsewhere.
+
 # Harmony
 
 Harmony is a lighter-weight fork of [Dendrite](https://github.com/matrix-org/dendrite), a second-generation homeserver for the [Matrix](https://matrix.org/) protocol.
