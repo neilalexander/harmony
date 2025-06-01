@@ -85,7 +85,7 @@ func main() {
 	internal.SetupStdLogging()
 	internal.SetupHookLogging(cfg.Logging)
 	internal.SetupPprof()
-
+	internal.SetupPyroscope(processCtx)
 	basepkg.PlatformSanityChecks()
 
 	logrus.Infof("Dendrite version %s", internal.VersionString())

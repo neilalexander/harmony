@@ -26,7 +26,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/grafana/pyroscope-go"
 	"github.com/neilalexander/harmony/internal/util"
+	"github.com/neilalexander/harmony/setup/process"
 
 	"github.com/matrix-org/dugong"
 	"github.com/sirupsen/logrus"
@@ -97,6 +99,62 @@ func SetupPprof() {
 			logrus.WithError(http.ListenAndServe(hostPort, nil)).Error("Failed to setup pprof listener")
 		}()
 	}
+}
+
+// SetupPyroscope sets up continuous profile reporting to
+// Grafana Pyroscope (https://grafana.com/docs/pyroscope/latest/).
+func SetupPyroscope(pctx *process.ProcessContext) {
+	serverAddr := os.Getenv("PYROSCOPE_ADDRESS")
+	if serverAddr == "" {
+		return
+	}
+	runtime.SetMutexProfileFraction(5)
+	runtime.SetBlockProfileRate(5)
+	profiler, err := pyroscope.Start(pyroscope.Config{
+
+		ApplicationName: "harmony",
+
+		// replace this with the address of pyroscope server
+		ServerAddress: serverAddr,
+
+		Logger: nil, // disable logging
+
+		// you can provide static tags via a map:
+		Tags: map[string]string{
+			"hostname": os.Getenv("HOSTNAME"),
+			"version":  VersionString(),
+		},
+
+		ProfileTypes: []pyroscope.ProfileType{
+			// these profile types are enabled by default:
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+
+			// these profile types are optional:
+			pyroscope.ProfileGoroutines,
+			pyroscope.ProfileMutexCount,
+			pyroscope.ProfileMutexDuration,
+			pyroscope.ProfileBlockCount,
+			pyroscope.ProfileBlockDuration,
+		},
+	})
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to start pyroscope")
+	}
+
+	go func() {
+		<-pctx.WaitForShutdown()
+		profiler.Flush(true)
+		err = profiler.Stop()
+		if err != nil {
+			logrus.WithError(err).Error("Failed to shutdown pyroscope profiler")
+			return
+		}
+	}()
+
 }
 
 // SetupStdLogging configures the logging format to standard output. Typically, it is called when the config is not yet loaded.

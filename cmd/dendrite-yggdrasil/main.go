@@ -89,6 +89,8 @@ func main() {
 	}
 
 	processCtx := process.NewProcessContext()
+	internal.SetupPyroscope(processCtx)
+
 	cm := sqlutil.NewConnectionManager(processCtx, cfg.Global.DatabaseOptions)
 	routers := httputil.NewRouters()
 
